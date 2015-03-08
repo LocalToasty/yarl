@@ -1,8 +1,27 @@
 #include "tile.h"
 
-Tile::Tile(char repr, short color, string description, bool passable) :
-	_repr(repr), _color(color), _passable(passable), _description(description)
+
+bool Tile::opaque() const
+{
+	return _opaque;
+}
+
+void Tile::setOpaque(bool opaque)
+{
+	_opaque = opaque;
+}
+Tile::Tile(char repr, short color, string description, bool opaque) :
+	_repr(repr), _color(color), _description(description),
+	_opaque(opaque), _passable(opaque)
 {}
+
+Tile::Tile(char repr, short color, string description,
+		   bool opaque, bool passable) :
+	_repr(repr), _color(color), _description(description),
+	_opaque(opaque), _passable(passable)
+{
+
+}
 
 char Tile::repr() const
 {

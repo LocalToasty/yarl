@@ -1,16 +1,76 @@
 #include "sector.h"
 
-Sector::Sector(const int width, const int height, const Tile& defTile) :
-	_width(width), _height(height),
-	_tiles(vector<Tile>(width * height))
+#include <algorithm>	// for swap
+#include <cmath>		// for abs
+
+using namespace std;
+
+const int Sector::_width	= 0x80;
+const int Sector::_height	= 0x80;
+
+Sector::Sector(const Tile& defTile, Sector* north, Sector* south, Sector* west, Sector* east) :
+	_tiles(_width * _height, defTile), _explored(_width * _height),
+	_north(north), _south(south), _west(west), _east(east)
 {
-	for (Tile& t : _tiles)
-		t = defTile;
 }
 
+// returns true if a line of sight exists between the given points
 bool Sector::los(int x1, int y1, int x2, int y2)
 {
+	if (x1 > _width || x2 > _width || y1 > _height || y2 > _height ||
+		x1 < 0 || x2 < 0 || y1 < 0 || y2 < 0)
+	{
+		return false;	// TODO: cross sector LOS
+	}
 
+	const int dx = x2 - x1;
+	const int dy = y2 - y1;
+	const int dirX = (dx > 0) ? 1 : -1;
+	const int dirY = (dy > 0) ? 1 : -1;
+
+	if (abs(dx) > abs(dy))
+	{
+
+		int y = y1;
+		int c = abs(dy);
+
+		for (int x = x1; x != x2; x += dirX)
+		{
+			if (c > abs(dx))
+			{
+				y += dirY;
+				c -= abs(dx);
+			}
+
+			// check if LOS is broken
+			if (!at(x, y).opaque())
+				return false;
+
+			c += abs(dy);
+		}
+	}
+	else
+	{
+		int x = x1;
+		int c = abs(dx);
+
+		for (int y = y1; y != y2; y += dirY)
+		{
+			if (c > abs(dy))
+			{
+				x += dirX;
+				c -= abs(dy);
+			}
+
+			// check if LOS is broken
+			if (!at(x, y).opaque())
+				return false;
+
+			c += abs(dx);
+		}
+	}
+
+	return true;
 }
 
 int Sector::width() const
@@ -33,10 +93,60 @@ list<Entity*>& Sector::entities()
 	return _entities;
 }
 
+bool Sector::explored(int x, int y)
+{
+	return _explored.at(x + _width * y);
+}
+
+void Sector::setExplored(int x, int y, bool explored)
+{
+	_explored.at(x + y * _width) = explored;
+}
+
 Tile& Sector::at(int x, int y)
 {
 	// the tiles are stored linearly
 	return _tiles.at(x + width() * y);
+}
+
+Sector* Sector::north() const
+{
+	return _north;
+}
+
+void Sector::setNorth(Sector* north)
+{
+	_north = north;
+}
+
+Sector* Sector::south() const
+{
+	return _south;
+}
+
+void Sector::setSouth(Sector* south)
+{
+	_south = south;
+}
+
+Sector* Sector::west() const
+{
+	return _west;
+}
+
+void Sector::setWest(Sector* west)
+{
+	_west = west;
+}
+
+Sector* Sector::east() const
+{
+	return _east;
+}
+
+void Sector::setEast(Sector* east)
+{
+	_east = east;
 }
 
 void Sector::hLine(const int x, const int y, const int len, const Tile& tile)
@@ -51,8 +161,8 @@ void Sector::vLine(const int x, const int y, const int len, const Tile& tile)
 		at(x, row) = tile;
 }
 void Sector::square(const int x, const int y,
-						  const int width, const int height,
-						  const Tile& tile)
+					const int width, const int height,
+					const Tile& tile)
 {
 	for (int row = y; row < y + height; row++)
 		for (int col = x; col < x + width; col++)
@@ -61,8 +171,9 @@ void Sector::square(const int x, const int y,
 }
 
 void Sector::createRoom(const int x, const int y,
-							  const int width, const int height,
-							  const Tile& ground, const Tile& hWall, const Tile& vWall)
+						const int width, const int height,
+						const Tile& ground, const Tile& hWall,
+						const Tile& vWall)
 {
 	// north wall
 	hLine(x, y, width, hWall);

@@ -27,12 +27,14 @@ Sector* Entity::sector() const
 
 void Entity::setX(int x)
 {
-	_x = x;
+	if (x > 0 && x < _sector->width())
+		_x = x;
 }
 
 void Entity::setY(int y)
 {
-	_y = y;
+	if (y > 0 && y < _sector->height())
+		_y = y;
 }
 
 void Entity::setSector(Sector* sector)

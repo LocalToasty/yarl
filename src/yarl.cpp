@@ -2,16 +2,17 @@
 
 #include <curses.h>
 
-const Tile Yarl::none		= Tile(' ', COLOR_WHITE, "");
-const Tile Yarl::ground		= Tile('.', COLOR_BLACK, "", true);
+const Tile Yarl::none		= Tile(' ', COLOR_BLACK, "");
+const Tile Yarl::ground		= Tile('.', COLOR_WHITE, "", true);
 const Tile Yarl::wallNS		= Tile('|', COLOR_WHITE, "");
 const Tile Yarl::wallWE		= Tile('-', COLOR_WHITE, "");
 const Tile Yarl::corridor	= Tile('#', COLOR_BLUE, "", true);
-const Tile Yarl::player		= Tile('@', COLOR_RED, "");
+const Tile Yarl::player		= Tile('@', COLOR_YELLOW, "");
 
 bool Yarl::init()
 {
-	_currentSector = new Sector(80, 20, none);
+	// create test world
+	_currentSector = new Sector(none);
 	_currentSector->createRoom(10, 5, 15, 7,
 							  ground, wallWE, wallNS);
 
@@ -23,6 +24,7 @@ bool Yarl::init()
 	_player = new Character(player, 12, 8, _currentSector);
 	_currentSector->entities().push_back(_player);
 
+	// initialize curses
 	initscr();
 	cbreak();
 	noecho();
@@ -48,7 +50,25 @@ void Yarl::render()
 		move(row, 0);
 		for (int col = 0; col < _currentSector->width(); col++)
 		{
-			addch(_currentSector->at(col, row).repr());
+			if(_player->los(col, row))
+			{
+				_currentSector->setExplored(col, row);
+				Tile& t = _currentSector->at(col, row);
+
+				attrset(COLOR_PAIR(t.color()) | A_BOLD);
+				addch(t.repr());
+			}
+			else if(_currentSector->explored(col, row))
+			{
+				Tile& t = _currentSector->at(col, row);
+
+				attrset(COLOR_PAIR(COLOR_BLACK) | A_DIM);
+				addch(t.repr());
+			}
+			else
+			{
+				addch(' ');
+			}
 		}
 	}
 
@@ -56,9 +76,8 @@ void Yarl::render()
 	for (Entity* c : _currentSector->entities())
 	{
 		move(c->y(), c->x());
-		if (_color) attron(COLOR_PAIR(c->t().color()));
+		attrset(COLOR_PAIR(c->t().color()));
 		addch(c->t().repr());
-		if (_color) attroff(COLOR_PAIR(c->t().color()));
 	}
 
 	refresh();
@@ -69,16 +88,24 @@ bool Yarl::loop()
 	char input = getch();
 	switch (input)
 	{
-	case DIR_N:
-	case DIR_S:
-	case DIR_W:
-	case DIR_E:
-		_player->move((Dir) input);
+	// movement
+	case Command::north:
+	case Command::south:
+	case Command::west:
+	case Command::east:
+	case Command::northWest:
+	case Command::northEast:
+	case Command::southWest:
+	case Command::southEast:
+		_player->move((Command) input);
 		break;
-	case 'q':
+
+	// quit the application
+	case Command::quit:
 		return true;
 	}
 
+	// continue main loop
 	return false;
 }
 
