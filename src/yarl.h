@@ -12,18 +12,17 @@ private:
 	Sector*		_currentSector;
 	Character*	_player;
 
-	bool		_color;
-
 	// tiles the example room will be made off
-	static const Tile none;
-	static const Tile ground;
-	static const Tile wallNS;
-	static const Tile wallWE;
-	static const Tile corridor;
+	static Tile none;
+	static Tile ground;
+	static Tile wallNS;
+	static Tile wallWE;
+	static Tile tree;
+	static Tile corridor;
 
 
 	// representation of the player character
-	static const Tile player;
+	static Tile player;
 
 private:
 	bool init();

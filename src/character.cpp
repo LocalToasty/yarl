@@ -10,54 +10,54 @@ void Character::move(Command dir)
 {
 	switch (dir) {
 	case Command::west:
-		if (sector()->at(_x - 1, _y).passable())
-			_x--;
+		if (sector()->passableAt(x() - 1, y()))
+			setX(x() - 1);
 		break;
 
 	case Command::east:
-		if (sector()->at(_x + 1, _y).passable())
-			_x++;
+		if (sector()->passableAt(x() + 1, y()))
+			setX(x() + 1);
 		break;
 
 	case Command::north:
-		if(sector()->at(_x, _y - 1).passable())
-			_y--;
+		if(sector()->passableAt(x(), y() - 1))
+			setY(y() - 1);
 		break;
 
 	case Command::south:
-		if (sector()->at(_x, _y + 1).passable())
-			_y++;
+		if (sector()->passableAt(x(), y() + 1))
+			setY(y() + 1);
 		break;
 
 	case Command::northWest:
-		if (sector()->at(_x - 1, _y - 1).passable())
+		if (sector()->passableAt(x() - 1, y() - 1))
 		{
-			_x--;
-			_y--;
+			setX(x() - 1);
+			setY(y() - 1);
 		}
 		break;
 
 	case Command::northEast:
-		if (sector()->at(_x + 1, _y - 1).passable())
+		if (sector()->passableAt(x() + 1, y() - 1))
 		{
-			_x++;
-			_y--;
+			setX(x() + 1);
+			setY(y() - 1);
 		}
 		break;
 
 	case Command::southWest:
-		if (sector()->at(_x - 1, _y + 1).passable())
+		if (sector()->passableAt(x() - 1, y() + 1))
 		{
-			_x--;
-			_y++;
+			setX(x() - 1);
+			setY(y() + 1);
 		}
 		break;
 
 	case Command::southEast:
-		if (sector()->at(_x + 1, _y + 1).passable())
+		if (sector()->passableAt(x() + 1, y() + 1))
 		{
-			_x++;
-			_y++;
+			setX(x() + 1);
+			setY(y() + 1);
 		}
 		break;
 
@@ -66,10 +66,10 @@ void Character::move(Command dir)
 
 bool Character::los(int x, int y) const
 {
-	return _sector->los(_x, _y, x, y);
+	return sector()->los(this->x(), this->y(), x, y);
 }
 
-bool Character::los(Entity& other) const
+bool Character::los(Entity* other) const
 {
-	return _sector->los(x(), y(), other.x(), other.y());
+	return sector()->los(x(), y(), other->x(), other->y());
 }

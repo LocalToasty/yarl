@@ -6,7 +6,7 @@
 
 class Entity
 {
-protected:
+private:
 	const Tile&	_t;
 	int			_x;
 	int			_y;
@@ -14,6 +14,7 @@ protected:
 
 public:
 	Entity(const Tile& t, int x, int y, Sector* sector = nullptr);
+	~Entity();
 
 	const Tile&	t()			const;
 	int			x()			const;

@@ -3,6 +3,13 @@
 Entity::Entity(const Tile& t, int x, int y, Sector* sector) :
 	_t(t), _x(x), _y(y), _sector(sector)
 {
+	if (sector != nullptr)
+		sector->entities().push_back(this);
+}
+
+Entity::~Entity()
+{
+	_sector->entities().remove(this);
 }
 
 const Tile& Entity::t() const
@@ -39,5 +46,7 @@ void Entity::setY(int y)
 
 void Entity::setSector(Sector* sector)
 {
+	_sector->entities().remove(this);
 	_sector = sector;
+	_sector->entities().push_back(this);
 }

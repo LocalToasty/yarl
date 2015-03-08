@@ -16,7 +16,7 @@ public:
 	void move(Command dir);
 
 	bool los(int x, int y)	const;
-	bool los(Entity& other)	const;
+	bool los(Entity* other)	const;
 };
 
 #endif

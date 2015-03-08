@@ -2,27 +2,27 @@
 
 #include <curses.h>
 
-const Tile Yarl::none		= Tile(' ', COLOR_BLACK, "");
-const Tile Yarl::ground		= Tile('.', COLOR_WHITE, "", true);
-const Tile Yarl::wallNS		= Tile('|', COLOR_WHITE, "");
-const Tile Yarl::wallWE		= Tile('-', COLOR_WHITE, "");
-const Tile Yarl::corridor	= Tile('#', COLOR_BLUE, "", true);
-const Tile Yarl::player		= Tile('@', COLOR_YELLOW, "");
+Tile Yarl::none		= Tile(' ', COLOR_BLACK, "");
+Tile Yarl::ground	= Tile('.', COLOR_WHITE, "", true);
+Tile Yarl::wallNS	= Tile('|', COLOR_WHITE, "");
+Tile Yarl::wallWE	= Tile('-', COLOR_WHITE, "");
+Tile Yarl::corridor	= Tile('#', COLOR_BLUE, "", true);
+Tile Yarl::tree		= Tile('T', COLOR_GREEN, "");
+Tile Yarl::player	= Tile('@', COLOR_YELLOW, "", true, false);
 
 bool Yarl::init()
 {
 	// create test world
-	_currentSector = new Sector(none);
+	_currentSector = new Sector(&none);
 	_currentSector->createRoom(10, 5, 15, 7,
-							  ground, wallWE, wallNS);
-
+							  &ground, &wallWE, &wallNS);
 	_currentSector->createRoom(40, 7, 10, 6,
-							  ground, wallWE, wallNS);
+							  &ground, &wallWE, &wallNS);
+	_currentSector->hLine(24, 8, 17, &corridor);
 
-	_currentSector->hLine(24, 8, 17, corridor);
+	new Entity(tree, 17, 8, _currentSector);
 
 	_player = new Character(player, 12, 8, _currentSector);
-	_currentSector->entities().push_back(_player);
 
 	// initialize curses
 	initscr();
@@ -31,8 +31,7 @@ bool Yarl::init()
 	curs_set(0);
 
 	// initialize colors
-	_color = has_colors();
-	if (_color)
+	if (has_colors())
 	{
 		start_color();
 		for (int i = 1; i < 8; i++)
@@ -52,18 +51,20 @@ void Yarl::render()
 		{
 			if(_player->los(col, row))
 			{
+				// render tiles the character has a LOS to in bold
 				_currentSector->setExplored(col, row);
-				Tile& t = _currentSector->at(col, row);
+				Tile* t = _currentSector->at(col, row);
 
-				attrset(COLOR_PAIR(t.color()) | A_BOLD);
-				addch(t.repr());
+				attrset(COLOR_PAIR(t->color()) | A_BOLD);
+				addch(t->repr());
 			}
 			else if(_currentSector->explored(col, row))
 			{
-				Tile& t = _currentSector->at(col, row);
+				// tiles the player has seen before are rendered in a dim grey
+				Tile* t = _currentSector->at(col, row);
 
 				attrset(COLOR_PAIR(COLOR_BLACK) | A_DIM);
-				addch(t.repr());
+				addch(t->repr());
 			}
 			else
 			{
@@ -75,9 +76,12 @@ void Yarl::render()
 	// render entities
 	for (Entity* c : _currentSector->entities())
 	{
-		move(c->y(), c->x());
-		attrset(COLOR_PAIR(c->t().color()));
-		addch(c->t().repr());
+		if(_player->los(c))
+		{
+			move(c->y(), c->x());
+			attrset(COLOR_PAIR(c->t().color()) | A_BOLD);
+			addch(c->t().repr());
+		}
 	}
 
 	refresh();

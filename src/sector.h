@@ -20,7 +20,7 @@ private:
 
 private:
 	// vector containing the tiles (stored linearly row for row)
-	vector<Tile>	_tiles;
+	vector<Tile*>	_tiles;
 	vector<bool>	_explored;
 
 	// a list of all entities in the sector (i.e. characters, items, props)
@@ -33,16 +33,18 @@ private:
 	Sector*			_east;
 
 public:
-	Sector(const Tile& defTile, Sector* north = nullptr, Sector* south = nullptr, Sector* west = nullptr, Sector* east = nullptr);
+	Sector(Tile* defTile, Sector* north = nullptr, Sector* south = nullptr, Sector* west = nullptr, Sector* east = nullptr);
+	~Sector();
 
 	bool			los(int x1, int y1, int x2, int y2);
 	list<Command>	route(int x1, int y1, int x2, int y2);
+	bool			passableAt(int x, int y);
 
 	int	width()		const;
 	int	height()	const;
 
-	const vector<Tile>&	tiles();	// returns all tiles
-	list<Entity*>&		entities();
+	const vector<Tile*>& tiles();	// returns all tiles
+	list<Entity*>& entities();
 
 	bool	explored(int x, int y);
 	void	setExplored(int x, int y, bool explored = true);
@@ -59,20 +61,20 @@ public:
 	void	setEast(Sector* east);
 	
 	// returns the tile at the given location
-	Tile&	at(int x, int y);
+	Tile*&	at(int x, int y);
 
 	// creates a horizontal / vertical line of tiles
-	void hLine(const int x, const int y, const int len, const Tile& tile);
-	void vLine(const int x, const int y, const int len, const Tile& tile);
+	void hLine(int x, int y, int len, Tile* tile);
+	void vLine(int x, int y, int len, Tile* tile);
 
 	// creates a square with the given dimensions
-	void square(const int x, const int y,
-				const int width, const int height,
-				const Tile& tile);
+	void square(int x, int y,
+			 int width, int height,
+				Tile* tile);
 
-	void createRoom(const int x, const int y,
-					const int width, const int height,
-					const Tile& ground, const Tile& hWall, const Tile& vWall);
+	void createRoom(int x, int y,
+					int width, int height,
+					Tile* ground, Tile* hWall, Tile* vWall);
 };
 
 #endif	// SECTOR_H

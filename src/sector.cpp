@@ -1,5 +1,6 @@
 #include "sector.h"
 
+#include "entity.h"
 #include <algorithm>	// for swap
 #include <cmath>		// for abs
 
@@ -8,10 +9,16 @@ using namespace std;
 const int Sector::_width	= 0x80;
 const int Sector::_height	= 0x80;
 
-Sector::Sector(const Tile& defTile, Sector* north, Sector* south, Sector* west, Sector* east) :
+Sector::Sector(Tile* defTile, Sector* north, Sector* south, Sector* west, Sector* east) :
 	_tiles(_width * _height, defTile), _explored(_width * _height),
 	_north(north), _south(south), _west(west), _east(east)
 {
+}
+
+Sector::~Sector()
+{
+	for (Entity* e : _entities)
+		delete e;
 }
 
 // returns true if a line of sight exists between the given points
@@ -23,14 +30,22 @@ bool Sector::los(int x1, int y1, int x2, int y2)
 		return false;	// TODO: cross sector LOS
 	}
 
+	// list of all entities capable of blocking the line of sight
+	list<Entity*> blockingEntities;
+	for (Entity* e : _entities)
+	{
+		if (!e->t().opaque())
+			blockingEntities.push_back(e);
+	}
+
 	const int dx = x2 - x1;
 	const int dy = y2 - y1;
+
 	const int dirX = (dx > 0) ? 1 : -1;
 	const int dirY = (dy > 0) ? 1 : -1;
 
 	if (abs(dx) > abs(dy))
 	{
-
 		int y = y1;
 		int c = abs(dy);
 
@@ -43,8 +58,13 @@ bool Sector::los(int x1, int y1, int x2, int y2)
 			}
 
 			// check if LOS is broken
-			if (!at(x, y).opaque())
+			if (!at(x, y)->opaque())
 				return false;
+
+			// check if an entity blocks the Line of sight
+			for (Entity* e : blockingEntities)
+				if (e->x() == x && e->y() == y)
+					return false;
 
 			c += abs(dy);
 		}
@@ -63,12 +83,29 @@ bool Sector::los(int x1, int y1, int x2, int y2)
 			}
 
 			// check if LOS is broken
-			if (!at(x, y).opaque())
+			if (!at(x, y)->opaque())
 				return false;
+
+			// check if an entity blocks the Line of sight
+			for (Entity* e : blockingEntities)
+				if (e->x() == x && e->y() == y)
+					return false;
 
 			c += abs(dx);
 		}
 	}
+
+	return true;
+}
+
+bool Sector::passableAt(int x, int y)
+{
+	if (!at(x, y)->passable())
+		return false;
+
+	for (Entity* e : _entities)
+		if (e->x() == x && e->y() == y && !e->t().passable())
+			return false;
 
 	return true;
 }
@@ -83,7 +120,7 @@ int Sector::height() const
 	return _height;
 }
 
-const vector<Tile>& Sector::tiles()
+const vector<Tile*>& Sector::tiles()
 {
 	return _tiles;
 }
@@ -103,7 +140,7 @@ void Sector::setExplored(int x, int y, bool explored)
 	_explored.at(x + y * _width) = explored;
 }
 
-Tile& Sector::at(int x, int y)
+Tile*& Sector::at(int x, int y)
 {
 	// the tiles are stored linearly
 	return _tiles.at(x + width() * y);
@@ -149,20 +186,20 @@ void Sector::setEast(Sector* east)
 	_east = east;
 }
 
-void Sector::hLine(const int x, const int y, const int len, const Tile& tile)
+void Sector::hLine(int x, int y, int len, Tile* tile)
 {
 	for (int col = x; col < x + len; col++)
 		at(col, y) = tile;
 }
 
-void Sector::vLine(const int x, const int y, const int len, const Tile& tile)
+void Sector::vLine(int x, int y, int len, Tile* tile)
 {
 	for (int row = y; row < y + len; row++)
 		at(x, row) = tile;
 }
-void Sector::square(const int x, const int y,
-					const int width, const int height,
-					const Tile& tile)
+void Sector::square(int x, int y,
+					int width, int height,
+					Tile* tile)
 {
 	for (int row = y; row < y + height; row++)
 		for (int col = x; col < x + width; col++)
@@ -170,10 +207,10 @@ void Sector::square(const int x, const int y,
 	
 }
 
-void Sector::createRoom(const int x, const int y,
-						const int width, const int height,
-						const Tile& ground, const Tile& hWall,
-						const Tile& vWall)
+void Sector::createRoom(int x, int y,
+						int width, int height,
+						Tile* ground, Tile* hWall,
+						Tile* vWall)
 {
 	// north wall
 	hLine(x, y, width, hWall);
