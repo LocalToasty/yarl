@@ -37,7 +37,7 @@ public:
 	~Sector();
 
 	bool			los(int x1, int y1, int x2, int y2);
-	list<Command>	route(int x1, int y1, int x2, int y2);
+//	list<Command>	route(int x1, int y1, int x2, int y2);	// TODO
 	bool			passableAt(int x, int y);
 
 	int	width()		const;
@@ -61,7 +61,8 @@ public:
 	void	setEast(Sector* east);
 	
 	// returns the tile at the given location
-	Tile*&	at(int x, int y);
+	Tile*	at(int x, int y);
+	void	setAt(int x, int y, Tile* tile);
 
 	// creates a horizontal / vertical line of tiles
 	void hLine(int x, int y, int len, Tile* tile);

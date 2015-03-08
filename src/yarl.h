@@ -5,6 +5,11 @@
 #include "sector.h"
 #include "character.h"
 #include "tile.h"
+#include "variable.h"
+#include <string>
+#include <map>
+
+using namespace std;
 
 class Yarl
 {
@@ -12,17 +17,7 @@ private:
 	Sector*		_currentSector;
 	Character*	_player;
 
-	// tiles the example room will be made off
-	static Tile none;
-	static Tile ground;
-	static Tile wallNS;
-	static Tile wallWE;
-	static Tile tree;
-	static Tile corridor;
-
-
-	// representation of the player character
-	static Tile player;
+	map<string, Variable>	_variables;
 
 private:
 	bool init();

@@ -11,7 +11,8 @@ add_executable (yarl
 				src/entity.cpp
 				src/character.cpp
 				src/sector.cpp
-				src/tile.cpp)
+				src/tile.cpp
+				src/variable.cpp)
 
 set_property (TARGET yarl PROPERTY CXX_STANDARD 11)
 

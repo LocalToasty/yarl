@@ -132,18 +132,74 @@ list<Entity*>& Sector::entities()
 
 bool Sector::explored(int x, int y)
 {
-	return _explored.at(x + _width * y);
+	// if tile is in this sector
+	if (x > 0 && x < _width && y > 0 && y < _height)
+		// the tiles are stored linearly
+		return _explored.at(x + _width * y);
+
+	// if the x / y coordinates point into an adjacent sector
+	else if (x < 0 && _west != nullptr)
+		return _west->explored(x + _width, y);
+
+	else if (y < 0 && _north != nullptr)
+		return _north->explored(x, y + _height);
+
+	else if (x > _width && _east != nullptr)
+		return _east->explored(x - _width, y);
+
+	else if (y > _height && _south != nullptr)
+		return _south->explored(x, y - _height);
+
+	else return false;	// no such tile
 }
 
 void Sector::setExplored(int x, int y, bool explored)
 {
-	_explored.at(x + y * _width) = explored;
+	// if tile is in this sector
+	if (x > 0 && x < _width && y > 0 && y < _height)
+		// the tiles are stored linearly
+		_explored.at(x + _width * y) = explored;
+
+	// if the x / y coordinates point into an adjacent sector
+	else if (x < 0 && _west != nullptr)
+		_west->setExplored(x + _width, y, explored);
+
+	else if (y < 0 && _north != nullptr)
+		_north->setExplored(x, y + _height, explored);
+
+	else if (x > _width && _east != nullptr)
+		_east->setExplored(x - _width, y, explored);
+
+	else if (y > _height && _south != nullptr)
+		_south->setExplored(x, y - _height, explored);
 }
 
-Tile*& Sector::at(int x, int y)
+Tile* Sector::at(int x, int y)
 {
-	// the tiles are stored linearly
-	return _tiles.at(x + width() * y);
+	// if tile is in this sector
+	if (x > 0 && x < _width && y > 0 && y < _height)
+		// the tiles are stored linearly
+		return _tiles.at(x + _width * y);
+
+	// if the x / y coordinates point into an adjacent sector
+	else if (x < 0 && _west != nullptr)
+		return _west->at(x + _width, y);
+
+	else if (y < 0 && _north != nullptr)
+		return _north->at(x, y + _height);
+
+	else if (x > _width && _east != nullptr)
+		return _east ->at(x - _width, y);
+
+	else if (y > _height && _south != nullptr)
+		return _south->at(x, y - _height);
+
+	else return nullptr;	// no such tile
+}
+
+void Sector::setAt(int x, int y, Tile* tile)
+{
+	_tiles.at(x + _width * y) = tile;
 }
 
 Sector* Sector::north() const
@@ -189,13 +245,13 @@ void Sector::setEast(Sector* east)
 void Sector::hLine(int x, int y, int len, Tile* tile)
 {
 	for (int col = x; col < x + len; col++)
-		at(col, y) = tile;
+		setAt(col, y, tile);
 }
 
 void Sector::vLine(int x, int y, int len, Tile* tile)
 {
 	for (int row = y; row < y + len; row++)
-		at(x, row) = tile;
+		setAt(x, row, tile);
 }
 void Sector::square(int x, int y,
 					int width, int height,
@@ -203,7 +259,7 @@ void Sector::square(int x, int y,
 {
 	for (int row = y; row < y + height; row++)
 		for (int col = x; col < x + width; col++)
-			at(col, row) = tile;
+			setAt(col, row, tile);
 	
 }
 
