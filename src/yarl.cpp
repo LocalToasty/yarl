@@ -1,3 +1,21 @@
+/*
+ * YARL - Yet another Roguelike
+ * Copyright (C) 2015  Marko van Treeck
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "yarl.h"
 
 #include <curses.h>
@@ -12,6 +30,7 @@ Tile wallWE		= Tile('-', COLOR_WHITE,	"a stone wall");
 Tile corridor	= Tile('#', COLOR_BLUE,		"a dark corridor", true);
 Tile grass		= Tile(',', COLOR_GREEN,	"a patch of grass", true);
 Tile tree		= Tile('T', COLOR_GREEN,	"a tree");
+Tile log		= Tile('o', COLOR_RED,		"a log", true);
 Tile player		= Tile('@', COLOR_YELLOW,	"you", true, false);
 
 Yarl::Yarl(int argc, char *argv[])
@@ -52,14 +71,15 @@ Yarl::Yarl(int argc, char *argv[])
 	_currentSector->hLine(24, 8, 17, &corridor);
 	_currentSector->vLine(42, 12, 5, &corridor);
 
-	new Entity(tree, 40, 18, _currentSector);
-	new Entity(tree, 45, 22, _currentSector);
-	new Entity(tree, 51, 19, _currentSector);
-	new Entity(tree, 48, 21, _currentSector);
-	new Entity(tree, 53, 24, _currentSector);
-	new Entity(tree, 47, 32, _currentSector);
+	new Entity(tree, 40, 18, 1, _currentSector,
+		{new Entity(log, 0, 0, 1)});
+	new Entity(tree, 45, 22, 1, _currentSector);
+	new Entity(tree, 51, 19, 1, _currentSector);
+	new Entity(tree, 48, 21, 1, _currentSector);
+	new Entity(tree, 53, 24, 1, _currentSector);
+	new Entity(tree, 47, 32, 1, _currentSector);
 
-	_player = new Character(player, 12, 8, _currentSector);
+	_player = new Character(player, 12, 8, 5, _currentSector);
 }
 
 bool Yarl::init()
@@ -130,13 +150,27 @@ void Yarl::render()
 		int x = c->x() + offX;
 		int y = c->y() + offY;
 
-		if (x > 0 && x < width && y > 0 && y < height &&
-			_player->los(c))
+		if (x > 0 && x < width && y > 0 && y < height)
 		{
-			move(c->y() + offY, c->x() + offX);
-			attrset(COLOR_PAIR(c->t().color()) |
-					(_variables["visibleBold"].toInt() ? A_BOLD : 0));
-			addch(c->t().repr());
+			if (_player->los(c))
+			{
+				c->setSeen();
+				c->setLastKnownX(c->x());
+				c->setLastKnownY(c->y());
+
+				move(c->y() + offY, c->x() + offX);
+				attrset(COLOR_PAIR(c->t().color()) |
+						(_variables["visibleBold"].toInt() ? A_BOLD : 0));
+				addch(c->t().repr());
+			}
+			else if (_variables["showUnknown"].toInt()	||
+					 (_variables["showUnseen"].toInt()	&&
+					  c->seen()))
+			{
+				move(c->y() + offY, c->x() + offX);
+				attrset(COLOR_PAIR(COLOR_WHITE) | A_DIM);
+				addch(c->t().repr());
+			}
 		}
 	}
 

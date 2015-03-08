@@ -1,7 +1,26 @@
+/*
+ * YARL - Yet another Roguelike
+ * Copyright (C) 2015  Marko van Treeck
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "entity.h"
 
-Entity::Entity(const Tile& t, int x, int y, Sector* sector) :
-	_t(t), _x(x), _y(y), _sector(sector)
+Entity::Entity(const Tile& t, int x, int y, int hp, Sector* sector,
+			   const list<Entity*>& inventory) :
+	_t(t), _x(x), _y(y), _hp(hp), _sector(sector), _inventory(inventory)
 {
 	if (sector != nullptr)
 		sector->entities().push_back(this);
@@ -32,6 +51,21 @@ Sector* Entity::sector() const
 	return _sector;
 }
 
+bool Entity::seen() const
+{
+	return _seen;
+}
+
+int Entity::hp() const
+{
+	return _hp;
+}
+
+list<Entity*>& Entity::inventory()
+{
+	return _inventory;
+}
+
 void Entity::setX(int x)
 {
 	if (x > 0 && x < _sector->width())
@@ -46,7 +80,41 @@ void Entity::setY(int y)
 
 void Entity::setSector(Sector* sector)
 {
-	_sector->entities().remove(this);
+	if (_sector != nullptr)
+		_sector->entities().remove(this);
+
 	_sector = sector;
 	_sector->entities().push_back(this);
+}
+
+void Entity::setSeen(bool seen)
+{
+	_seen = seen;
+}
+
+void Entity::setLastKnownX(int lastKnownX)
+{
+	_lastKnownX = lastKnownX;
+}
+
+void Entity::setLastKnownY(int lastKnownY)
+{
+	_lastKnownY = lastKnownY;
+}
+
+void Entity::setHp(int hp)
+{
+	if (hp <= 0)	// entity dies / is destroyed
+	{
+		_sector->entities().remove(this);
+
+		// drop inventory
+		for (Entity* e : _inventory)
+		{
+			e->setX(_x);
+			e->setY(_y);
+			e->setSeen(false);
+			e->setSector(_sector);
+		}
+	}
 }
