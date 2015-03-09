@@ -65,6 +65,7 @@ public:
 
 	const vector<Tile*>& tiles();	// returns all tiles
 	list<Entity*>& entities();
+	list<Entity*> entitiesAt(int x, int y);
 
 	bool explored(int x, int y);
 	void setExplored(int x, int y, bool explored = true);

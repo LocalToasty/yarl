@@ -23,6 +23,8 @@
 #include "tile.h"
 #include <list>
 
+class Item;
+
 using namespace std;
 
 class Entity
@@ -41,11 +43,11 @@ private:
 
 	int	_hp;	// hitpoints
 
-	list<Entity*>	_inventory;
+	list<Item*>	_inventory;
 
 public:
 	Entity(const Tile& t, int x, int y, int hp, Sector* sector = nullptr,
-		   const list<Entity*>& inventory = {});
+		   const list<Item*>& inventory = {});
 	~Entity();
 
 	const Tile&	t() const;
@@ -60,7 +62,7 @@ public:
 
 	int hp() const;
 
-	list<Entity*>& inventory();
+	list<Item*>& inventory();
 
 	void setX(int x);
 	void setY(int y);

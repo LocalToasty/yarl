@@ -18,6 +18,8 @@
 
 #include "yarl.h"
 
+#include "globals.h"
+#include "item.h"
 #include <curses.h>
 #include <stdexcept>
 
@@ -43,6 +45,20 @@ Yarl::Yarl(int argc, char *argv[])
 		{"showUnknown",	{"0",	"draw unexplored areas."}},
 		{"showUnseen",	{"1",	"draw explored,"
 								"but currently not seen areas."}}
+	};
+
+	_bindings =
+	{
+		{'h', Command::west},
+		{'l', Command::east},
+		{'k', Command::north},
+		{'j', Command::south},
+		{'y', Command::northWest},
+		{'u', Command::northEast},
+		{'b', Command::southWest},
+		{'n', Command::southEast},
+
+		{'q', Command::quit}
 	};
 
 	// read variables from commandline
@@ -72,7 +88,7 @@ Yarl::Yarl(int argc, char *argv[])
 	_currentSector->vLine(42, 12, 5, &corridor);
 
 	new Entity(tree, 40, 18, 1, _currentSector,
-		{new Entity(log, 0, 0, 1)});
+		{new Item(log, 0, 0, 1)});
 	new Entity(tree, 45, 22, 1, _currentSector);
 	new Entity(tree, 51, 19, 1, _currentSector);
 	new Entity(tree, 48, 21, 1, _currentSector);
@@ -180,32 +196,47 @@ void Yarl::render()
 bool Yarl::loop()
 {
 	char input = getch();
-	switch (input)
-	{
-	// movement
-	case Command::north:
-	case Command::south:
-	case Command::west:
-	case Command::east:
-	case Command::northWest:
-	case Command::northEast:
-	case Command::southWest:
-	case Command::southEast:
-		_player->move((Command) input);
-		break;
+	Command cmd = _bindings[input];
 
-	// quit the application
-	case Command::quit:
+	if (cmd == Command::quit)
 		return true;
+
+	else if (cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END)
+	{
+		int dx = 0;
+		int dy = 0;
+
+		if (cmd == Command::west ||
+			cmd == Command::northWest ||
+			cmd == Command::southWest)
+			dx = -1;
+		else if (cmd == Command::east ||
+				 cmd == Command::northEast ||
+				 cmd == Command::southEast)
+			dx = 1;
+
+		if (cmd == Command::north ||
+			cmd == Command::northWest ||
+			cmd == Command::northEast)
+			dy = -1;
+		else if (cmd == Command::south ||
+				 cmd == Command::southWest ||
+				 cmd == Command::southEast)
+			dy = 1;
+
+		if (!_player->move(dx, dy))
+			_player->attack(dx, dy);
 	}
 
 	// continue main loop
 	return false;
 }
 
-void Yarl::cleanup()
+int Yarl::cleanup()
 {
 	endwin();
+
+	return 0;
 }
 
 int Yarl::exec()
@@ -223,5 +254,5 @@ int Yarl::exec()
 		finished = loop();
 	}
 
-	cleanup();
+	return cleanup();
 }

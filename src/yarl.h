@@ -32,10 +32,11 @@ using namespace std;
 class Yarl
 {
 private:
-	Sector*		_currentSector;
-	Character*	_player;
+	Sector* _currentSector;
+	Character* _player;
 
-	map<string, Variable>	_variables;
+	map<string, Variable> _variables;
+	map<char, Command> _bindings;
 
 private:
 	bool init();
@@ -43,7 +44,7 @@ private:
 	void render();
 	bool loop();
 
-	void cleanup();
+	int cleanup();
 
 public:
 	Yarl(int argc, char* argv[]);

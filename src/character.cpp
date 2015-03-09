@@ -20,67 +20,36 @@
 #include "sector.h"
 
 Character::Character(const Tile& t, int x, int y, int hp, Sector* currentSector,
-					 const list<Entity*>& inventory) :
+					 const list<Item*>& inventory) :
 	Entity(t, x, y, hp, currentSector, inventory)
 {
 }
 
-void Character::move(Command dir)
+bool Character::move(int dx, int dy)
 {
-	switch (dir) {
-	case Command::west:
-		if (sector()->passableAt(x() - 1, y()))
-			setX(x() - 1);
-		break;
-
-	case Command::east:
-		if (sector()->passableAt(x() + 1, y()))
-			setX(x() + 1);
-		break;
-
-	case Command::north:
-		if(sector()->passableAt(x(), y() - 1))
-			setY(y() - 1);
-		break;
-
-	case Command::south:
-		if (sector()->passableAt(x(), y() + 1))
-			setY(y() + 1);
-		break;
-
-	case Command::northWest:
-		if (sector()->passableAt(x() - 1, y() - 1))
-		{
-			setX(x() - 1);
-			setY(y() - 1);
-		}
-		break;
-
-	case Command::northEast:
-		if (sector()->passableAt(x() + 1, y() - 1))
-		{
-			setX(x() + 1);
-			setY(y() - 1);
-		}
-		break;
-
-	case Command::southWest:
-		if (sector()->passableAt(x() - 1, y() + 1))
-		{
-			setX(x() - 1);
-			setY(y() + 1);
-		}
-		break;
-
-	case Command::southEast:
-		if (sector()->passableAt(x() + 1, y() + 1))
-		{
-			setX(x() + 1);
-			setY(y() + 1);
-		}
-		break;
-
+	if (sector()->passableAt(x() + dx, y() + dy))
+	{
+		setX(x() + dx);
+		setY(y() + dy);
+		return true;
 	}
+
+	return false;
+}
+
+void Character::attack(int dx, int dy)
+{
+	list<Entity*> targets = sector()->entitiesAt(x() + dx, y() + dy);
+
+	for (Entity* e : targets)
+	{
+		attack(e);
+	}
+}
+
+void Character::attack(Entity* target)
+{
+	target->setHp(target->hp() - 1);
 }
 
 bool Character::los(int x, int y) const
@@ -88,7 +57,7 @@ bool Character::los(int x, int y) const
 	return sector()->los(this->x(), this->y(), x, y);
 }
 
-bool Character::los(Entity* other) const
+bool Character::los(Entity* e) const
 {
-	return sector()->los(x(), y(), other->x(), other->y());
+	return sector()->los(x(), y(), e->x(), e->y());
 }

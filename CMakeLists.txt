@@ -9,6 +9,7 @@ add_executable (yarl
 				src/main.cpp
 				src/yarl.cpp
 				src/entity.cpp
+				src/item.cpp
 				src/character.cpp
 				src/sector.cpp
 				src/tile.cpp

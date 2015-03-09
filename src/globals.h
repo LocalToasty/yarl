@@ -21,17 +21,22 @@
 
 #include <curses.h>
 
-enum Command
+enum class Command
 {
-	north		= 'k',
-	south		= 'j',
-	west		= 'h',
-	east		= 'l',
-	northWest	= 'y',
-	northEast	= 'u',
-	southWest	= 'b',
-	southEast	= 'n',
-	quit		= 'q'
+    MOVEMENT_BEGIN,
+    north,
+    south,
+    west,
+    east,
+    northWest,
+    northEast,
+    southWest,
+    southEast,
+    MOVEMENT_END,
+
+    pickUp,
+
+    quit
 };
 
 #endif

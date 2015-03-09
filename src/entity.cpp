@@ -18,8 +18,10 @@
 
 #include "entity.h"
 
+#include "item.h"
+
 Entity::Entity(const Tile& t, int x, int y, int hp, Sector* sector,
-			   const list<Entity*>& inventory) :
+			   const list<Item*>& inventory) :
 	_t(t), _x(x), _y(y), _hp(hp), _sector(sector), _inventory(inventory)
 {
 	if (sector != nullptr)
@@ -61,7 +63,7 @@ int Entity::hp() const
 	return _hp;
 }
 
-list<Entity*>& Entity::inventory()
+list<Item*>& Entity::inventory()
 {
 	return _inventory;
 }
@@ -104,17 +106,18 @@ void Entity::setLastKnownY(int lastKnownY)
 
 void Entity::setHp(int hp)
 {
-	if (hp <= 0)	// entity dies / is destroyed
+	if (hp <= 0)
 	{
-		_sector->entities().remove(this);
-
 		// drop inventory
-		for (Entity* e : _inventory)
+		for (Item* e : _inventory)
 		{
 			e->setX(_x);
 			e->setY(_y);
 			e->setSeen(false);
 			e->setSector(_sector);
 		}
+
+		_sector->entities().remove(this);
 	}
+	_hp = hp;
 }

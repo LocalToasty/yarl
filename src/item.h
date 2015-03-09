@@ -16,28 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#ifndef ITEM_H
+#define ITEM_H
 
-#include "globals.h"
 #include "entity.h"
-#include "tile.h"
-#include "sector.h"
 
-class Character : public Entity
+class Item : public Entity
 {
 public:
-	Character(const Tile& t, int x, int y, int hp,
-			  Sector* currentSector = nullptr,
-			  const list<Item*>& inventory = {});
-
-	bool move(int dx, int dy);
-
-	void attack(int dx, int dy);
-	void attack(Entity* target);
-
-	bool los(int x, int y)	const;
-	bool los(Entity* e)	const;
+	Item(const Tile& t, int x, int y, int hp, Sector* sector = nullptr,
+		 list<Item*> inventory = {});
 };
 
 #endif
