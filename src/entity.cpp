@@ -25,12 +25,12 @@ Entity::Entity(const Tile& t, int x, int y, int hp, Sector* sector,
 	_t(t), _x(x), _y(y), _hp(hp), _sector(sector), _inventory(inventory)
 {
 	if (sector != nullptr)
-		sector->entities().push_back(this);
+		sector->addEntity(this);
 }
 
 Entity::~Entity()
 {
-	_sector->entities().remove(this);
+	_sector->removeEntity(this);
 }
 
 const Tile& Entity::t() const
@@ -83,10 +83,10 @@ void Entity::setY(int y)
 void Entity::setSector(Sector* sector)
 {
 	if (_sector != nullptr)
-		_sector->entities().remove(this);
+		_sector->removeEntity(this);
 
 	_sector = sector;
-	_sector->entities().push_back(this);
+	_sector->addEntity(this);
 }
 
 void Entity::setSeen(bool seen)
@@ -117,7 +117,7 @@ void Entity::setHp(int hp)
 			e->setSector(_sector);
 		}
 
-		_sector->entities().remove(this);
+		_sector->removeEntity(this);
 	}
 	_hp = hp;
 }

@@ -19,8 +19,8 @@
 #include "sector.h"
 
 #include "entity.h"
-#include <algorithm>	// for swap
-#include <cmath>		// for abs
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -143,9 +143,24 @@ const vector<Tile*>& Sector::tiles()
 	return _tiles;
 }
 
-list<Entity*>& Sector::entities()
+const list<Entity*>& Sector::entities() const
 {
 	return _entities;
+}
+
+void Sector::addEntity(Entity* e)
+{
+	auto pos = lower_bound(_entities.begin(), _entities.end(), e,
+						   [](Entity* l, Entity* r){
+							return !r->t().passable() &&
+									l->t().passable();});
+
+	_entities.insert(pos, e);
+}
+
+void Sector::removeEntity(Entity* e)
+{
+	_entities.remove(e);
 }
 
 list<Entity*> Sector::entitiesAt(int x, int y)
