@@ -27,6 +27,7 @@ void Tile::setOpaque(bool opaque)
 {
 	_opaque = opaque;
 }
+
 Tile::Tile(char repr, short color, string description, bool opaque) :
 	_repr(repr), _color(color), _description(description),
 	_opaque(opaque), _passable(opaque)

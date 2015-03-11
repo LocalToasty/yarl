@@ -70,14 +70,14 @@ list<Item*>& Entity::inventory()
 
 void Entity::setX(int x)
 {
-	if (x > 0 && x < _sector->width())
-		_x = x;
+	setSector(_sector->sectorAt(x, _y));
+	_x = x;
 }
 
 void Entity::setY(int y)
 {
-	if (y > 0 && y < _sector->height())
-		_y = y;
+	setSector(_sector->sectorAt(_x, y));
+	_y = y;
 }
 
 void Entity::setSector(Sector* sector)
@@ -94,14 +94,14 @@ void Entity::setSeen(bool seen)
 	_seen = seen;
 }
 
-void Entity::setLastKnownX(int lastKnownX)
+void Entity::setLastKnownX()
 {
-	_lastKnownX = lastKnownX;
+	_lastKnownX = _x;
 }
 
-void Entity::setLastKnownY(int lastKnownY)
+void Entity::setLastKnownY()
 {
-	_lastKnownY = lastKnownY;
+	_lastKnownY = _y;
 }
 
 void Entity::setHp(int hp)
@@ -111,10 +111,10 @@ void Entity::setHp(int hp)
 		// drop inventory
 		for (Item* e : _inventory)
 		{
+			e->setSector(_sector);
 			e->setX(_x);
 			e->setY(_y);
 			e->setSeen(false);
-			e->setSector(_sector);
 		}
 
 		_sector->entities().remove(this);

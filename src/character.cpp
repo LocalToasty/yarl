@@ -19,9 +19,10 @@
 #include "character.h"
 #include "sector.h"
 
-Character::Character(const Tile& t, int x, int y, int hp, Sector* currentSector,
+Character::Character(const Tile& t, int x, int y, int hp, int visionRange,
+					 Sector* currentSector,
 					 const list<Item*>& inventory) :
-	Entity(t, x, y, hp, currentSector, inventory)
+	Entity(t, x, y, hp, currentSector, inventory), _visionRange(visionRange)
 {
 }
 
@@ -52,12 +53,14 @@ void Character::attack(Entity* target)
 	target->setHp(target->hp() - 1);
 }
 
-bool Character::los(int x, int y) const
+bool Character::los(int x, int y, double factor) const
 {
-	return sector()->los(this->x(), this->y(), x, y);
+	return sector()->los(this->x(), this->y(), x, y, _visionRange * factor);
 }
 
-bool Character::los(Entity* e) const
+list<pair<pair<int, int>, Entity*>> Character::entitiesAround(int rx, int ry,
+															  int offX,
+															  int offY)
 {
-	return sector()->los(x(), y(), e->x(), e->y());
+	return sector()->entitiesAround(x(), y(), rx, rx, ry, ry, offX, offY);
 }

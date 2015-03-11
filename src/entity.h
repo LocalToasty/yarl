@@ -34,14 +34,15 @@ private:
 
 	int _x;
 	int _y;
+
+	int	_hp;	// hitpoints
+
 	Sector* _sector;
 
 	bool _seen {false};	// has the entity been seen yet?
 	// if yes, last known coordinates
-	int _lastKnownX {0};
-	int _lastKnownY {0};
-
-	int	_hp;	// hitpoints
+	int _lastKnownX;
+	int _lastKnownY;
 
 	list<Item*>	_inventory;
 
@@ -69,8 +70,8 @@ public:
 	void setSector(Sector* Sector);
 
 	void setSeen(bool seen = true);
-	void setLastKnownX(int lastKnownX);
-	void setLastKnownY(int lastKnownY);
+	void setLastKnownX();
+	void setLastKnownY();
 
 	void setHp(int hp);
 };

@@ -20,6 +20,7 @@
 
 #include "globals.h"
 #include "item.h"
+#include "generator.h"
 #include <curses.h>
 #include <stdexcept>
 
@@ -75,7 +76,7 @@ Yarl::Yarl(int argc, char *argv[])
 		{}
 	}
 
-	// create test world
+/*	// create test world
 	_currentSector = new Sector(&none);
 	_currentSector->createRoom(10, 5, 15, 7,
 							   &ground, &wallWE, &wallNS);
@@ -93,9 +94,20 @@ Yarl::Yarl(int argc, char *argv[])
 	new Entity(tree, 51, 19, 1, _currentSector);
 	new Entity(tree, 48, 21, 1, _currentSector);
 	new Entity(tree, 53, 24, 1, _currentSector);
-	new Entity(tree, 47, 32, 1, _currentSector);
+	new Entity(tree, 47, 32, 1, _currentSector);*/
 
-	_player = new Character(player, 12, 8, 5, _currentSector);
+	Sector* s1 = Generator::generateGrassland();
+	Sector* s2 = Generator::generateGrassland();
+	s1->setNorth(s2);
+	s1->setSouth(s2);
+	s1->setWest(s2);
+	s1->setEast(s2);
+	s2->setNorth(s1);
+	s2->setSouth(s1);
+	s2->setWest(s1);
+	s2->setEast(s1);
+
+	_player = new Character(player, 42, 42, 5, 16, s1);
 }
 
 bool Yarl::init()
@@ -132,12 +144,12 @@ void Yarl::render()
 		move(row, 0);
 		for (int col = 0; col < width; col++)
 		{
-			Tile* t = _currentSector->at(col - offX, row - offY);
+			Tile* t = _player->sector()->at(col - offX, row - offY);
 			if (t != nullptr &&
 				_player->los(col - offX, row - offY))
 			{
 				// render tiles the character has a LOS to
-				_currentSector->setExplored(col - offX, row - offY);
+				_player->sector()->setExplored(col - offX, row - offY);
 
 				attrset(COLOR_PAIR(t->color()) |
 						// only draw bold if the variable is set
@@ -147,7 +159,7 @@ void Yarl::render()
 			else if(t != nullptr &&
 					(_variables["showUnknown"].toInt()	||
 					 (_variables["showUnseen"].toInt()	&&
-					  _currentSector->explored(col - offX, row - offY))))
+					  _player->sector()->explored(col - offX, row - offY))))
 			{
 				// tiles the player has seen before are rendered in grey
 				attrset(COLOR_PAIR(COLOR_WHITE) | A_DIM);
@@ -161,31 +173,32 @@ void Yarl::render()
 	}
 
 	// render entities
-	for (Entity* c : _currentSector->entities())
+	for (pair<pair<int, int>, Entity*> e :
+		 _player->entitiesAround(width / 2, height / 2, offX, offY))
 	{
-		int x = c->x() + offX;
-		int y = c->y() + offY;
+		// TODO hrmpf
+		if (e.first.first >= 0 && e.first.second >- 0 &&
+			e.first.first < width && e.first.second < height)
 
-		if (x > 0 && x < width && y > 0 && y < height)
 		{
-			if (_player->los(c))
+			if (_player->los(e.first.first - offX, e.first.second - offY))
 			{
-				c->setSeen();
-				c->setLastKnownX(c->x());
-				c->setLastKnownY(c->y());
+				e.second->setSeen();
+				e.second->setLastKnownX();
+				e.second->setLastKnownY();
 
-				move(c->y() + offY, c->x() + offX);
-				attrset(COLOR_PAIR(c->t().color()) |
+				move(e.first.second, e.first.first);
+				attrset(COLOR_PAIR(e.second->t().color()) |
 						(_variables["visibleBold"].toInt() ? A_BOLD : 0));
-				addch(c->t().repr());
+				addch(e.second->t().repr());
 			}
-			else if (_variables["showUnknown"].toInt()	||
-					 (_variables["showUnseen"].toInt()	&&
-					  c->seen()))
+			else if (_variables["showUnknown"].toInt() ||
+					 (_variables["showUnseen"].toInt() &&
+					  e.second->seen()))
 			{
-				move(c->y() + offY, c->x() + offX);
+				move(e.first.second, e.first.first);
 				attrset(COLOR_PAIR(COLOR_WHITE) | A_DIM);
-				addch(c->t().repr());
+				addch(e.second->t().repr());
 			}
 		}
 	}

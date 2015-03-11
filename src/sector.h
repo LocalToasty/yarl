@@ -28,11 +28,14 @@ using namespace std;
 
 // declaration to not run into recursion issiues
 class Entity;
+class Generator;
 
 class Sector
 {
+	friend class Generator;
+
 private:
-	// size of a sector has to be hardwired so they ca be tiled
+	// size of a sector has to be hardwired so they can be tiled
 	static const int _width;
 	static const int _height;
 
@@ -56,16 +59,21 @@ public:
 		   Sector* west = nullptr, Sector* east = nullptr);
 	~Sector();
 
-	bool los(int x1, int y1, int x2, int y2);
+	bool los(int x1, int y1, int x2, int y2, double max = -1);
 //	list<Command> route(int x1, int y1, int x2, int y2);	// TODO
 	bool passableAt(int x, int y);
+	Sector* sectorAt(int& x, int& y);
 
-	int width() const;
-	int height() const;
+	static int width();
+	static int height();
 
 	const vector<Tile*>& tiles();	// returns all tiles
 	list<Entity*>& entities();
 	list<Entity*> entitiesAt(int x, int y);
+	list<pair<pair<int, int>, Entity*>> entitiesAround(int x, int y,
+													   int rw, int re,
+													   int rn, int rs,
+													   int offX, int offY);
 
 	bool explored(int x, int y);
 	void setExplored(int x, int y, bool explored = true);
@@ -84,19 +92,6 @@ public:
 	// returns the tile at the given location
 	Tile* at(int x, int y);
 	void setAt(int x, int y, Tile* tile);
-
-	// creates a horizontal / vertical line of tiles
-	void hLine(int x, int y, int len, Tile* tile);
-	void vLine(int x, int y, int len, Tile* tile);
-
-	// creates a square with the given dimensions
-	void square(int x, int y,
-				int width, int height,
-				Tile* tile);
-
-	void createRoom(int x, int y,
-					int width, int height,
-					Tile* ground, Tile* hWall, Tile* vWall);
 };
 
 #endif	// SECTOR_H

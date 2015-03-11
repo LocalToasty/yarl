@@ -16,42 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARL_H
-#define YARL_H
+#ifndef GENERATOR_H
+#define GENERATOR_H
 
-#include "globals.h"
 #include "sector.h"
-#include "character.h"
 #include "tile.h"
-#include "variable.h"
-#include <string>
-#include <map>
 
-using namespace std;
-
-class Yarl
+class Generator
 {
 private:
-	Character* _player;
-
-	map<string, Variable> _variables;
-	map<char, Command> _bindings;
-
-private:
-
-
-private:
-	bool init();
-
-	void render();
-	bool loop();
-
-	int cleanup();
+	static Tile grass;
+	static Tile mud;
+	static Tile tree;
+	static Tile none;
+	static Tile bush;
+	static Tile log;
 
 public:
-	Yarl(int argc, char* argv[]);
-
-	int exec();
+	static Sector* generateGrassland();
 };
 
-#endif
+#endif // GENERATOR_H
