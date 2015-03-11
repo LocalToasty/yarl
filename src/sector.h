@@ -45,6 +45,7 @@ private:
 	vector<bool> _explored;
 
 	// a list of all entities in the sector (i.e. characters, items, props)
+	// the bottommost entity has highest render priority
 	list<Entity*> _entities;
 
 	// pointer to adjacent sectors
@@ -68,12 +69,16 @@ public:
 	static int height();
 
 	const vector<Tile*>& tiles();	// returns all tiles
-	list<Entity*>& entities();
+
+	const list<Entity*>& entities() const;
 	list<Entity*> entitiesAt(int x, int y);
 	list<pair<pair<int, int>, Entity*>> entitiesAround(int x, int y,
 													   int rw, int re,
 													   int rn, int rs,
 													   int offX, int offY);
+
+	void addEntity(Entity* e);
+	void removeEntity(Entity* e);
 
 	bool explored(int x, int y);
 	void setExplored(int x, int y, bool explored = true);
