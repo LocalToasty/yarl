@@ -19,7 +19,6 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include "globals.h"
 #include "entity.h"
 #include "tile.h"
 #include "sector.h"

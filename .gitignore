@@ -6,6 +6,9 @@ Makefile
 CMake*
 *.cmake
 
+# Code Blocks project
+*.cbp
+
 # Compiled Object files
 *.slo
 *.lo

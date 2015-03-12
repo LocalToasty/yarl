@@ -19,8 +19,8 @@
 #ifndef SECTOR_H
 #define SECTOR_H
 
-#include "globals.h"
 #include "tile.h"
+#include "statusBar.h"
 #include <vector>
 #include <list>
 
@@ -38,7 +38,8 @@ private:
 	// size of a sector has to be hardwired so they can be tiled
 	static const int _size;
 
-private:
+	static StatusBar* _statusBar;
+
 	// vector containing the tiles (stored linearly row for row)
 	vector<Tile*> _tiles;
 	vector<bool> _explored;
@@ -84,7 +85,6 @@ public:
 	bool explored(int x, int y);
 	void setExplored(int x, int y, bool explored = true);
 
-	// getters and setters for adjacent sectors
 	Sector* north()	const;
 	Sector* south()	const;
 	Sector* west()	const;
@@ -94,6 +94,9 @@ public:
 	void setSouth(Sector* south);
 	void setWest(Sector* west);
 	void setEast(Sector* east);
+
+	static void setStatusBar(StatusBar* statusBar);
+	StatusBar* statusBar();
 	
 	// returns the tile at the given location
 	Tile* at(int x, int y);

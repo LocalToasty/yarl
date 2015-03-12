@@ -18,7 +18,6 @@
 
 #include "yarl.h"
 
-#include "globals.h"
 #include "item.h"
 #include "generator.h"
 #include <curses.h>
@@ -76,8 +75,8 @@ Yarl::Yarl(int argc, char *argv[])
 		{}
 	}
 
-/*	// create test world
-	_currentSector = new Sector(&none);
+	// create test world
+/*	_currentSector = new Sector(&none);
 	_currentSector->createRoom(10, 5, 15, 7,
 							   &ground, &wallWE, &wallNS);
 	_currentSector->createRoom(40, 7, 10, 6,
@@ -108,6 +107,8 @@ Yarl::Yarl(int argc, char *argv[])
 	s2->setEast(s1);
 
 	_player = new Character(player, 42, 42, 5, 16, s1);
+
+	Sector::setStatusBar(&_statusBar);
 }
 
 bool Yarl::init()
@@ -198,16 +199,25 @@ void Yarl::render()
 		}
 	}
 
+	// render status bar
+	attrset(COLOR_PAIR(COLOR_WHITE) | A_NORMAL);
+	mvaddstr(0, 0, _statusBar.getLine(width).c_str());
+	_moreMessages = !_statusBar.empty();
+
 	refresh();
 }
 
 bool Yarl::loop()
 {
 	char input = getch();
+
 	Command cmd = _bindings[input];
 
 	if (cmd == Command::quit)
 		return true;
+
+	if (_moreMessages)
+		return false;
 
 	else if (cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END)
 	{

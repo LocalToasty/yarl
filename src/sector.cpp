@@ -26,6 +26,8 @@ using namespace std;
 
 const int Sector::_size = 0x40;
 
+StatusBar* Sector::_statusBar = nullptr;
+
 Sector* Sector::sectorAt(int x, int y)
 {
 	if (x >= 0 && y >= 0 && x < _size && y < _size)
@@ -358,6 +360,16 @@ void Sector::setWest(Sector* west)
 Sector* Sector::east() const
 {
 	return _east;
+}
+
+void Sector::setStatusBar(StatusBar* statusBar)
+{
+	_statusBar = statusBar;
+}
+
+StatusBar* Sector::statusBar()
+{
+	return _statusBar;
 }
 
 void Sector::setEast(Sector* east)

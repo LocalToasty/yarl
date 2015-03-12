@@ -108,6 +108,8 @@ void Entity::setHp(int hp)
 {
 	if (hp <= 0)
 	{
+		_sector->statusBar()->
+			addMessage("The " + _t.description() + " is destroyed.");
 		// drop inventory
 		for (Item* e : _inventory)
 		{

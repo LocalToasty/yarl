@@ -19,11 +19,11 @@
 #ifndef YARL_H
 #define YARL_H
 
-#include "globals.h"
 #include "sector.h"
 #include "character.h"
 #include "tile.h"
 #include "variable.h"
+#include "statusBar.h"
 #include <string>
 #include <map>
 
@@ -32,13 +32,33 @@ using namespace std;
 class Yarl
 {
 private:
+	enum class Command
+	{
+		MOVEMENT_BEGIN,
+		north,
+		south,
+		west,
+		east,
+		northWest,
+		northEast,
+		southWest,
+		southEast,
+		MOVEMENT_END,
+
+		pickUp,
+
+		quit
+	};
+
+private:
 	Character* _player;
+
+	StatusBar _statusBar;
 
 	map<string, Variable> _variables;
 	map<char, Command> _bindings;
 
-private:
-
+	bool _moreMessages {false};
 
 private:
 	bool init();

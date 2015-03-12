@@ -50,6 +50,8 @@ void Character::attack(int dx, int dy)
 
 void Character::attack(Entity* target)
 {
+	sector()->statusBar()->addMessage("You attack the " +
+									  target->t().description() + '.');
 	target->setHp(target->hp() - 1);
 }
 

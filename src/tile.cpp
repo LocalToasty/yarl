@@ -50,6 +50,11 @@ short Tile::color() const
 	return _color;
 }
 
+string Tile::description() const
+{
+	return _description;
+}
+
 bool Tile::passable() const
 {
 	return _passable;
