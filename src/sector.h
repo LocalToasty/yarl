@@ -53,6 +53,8 @@ private:
 	Sector*	_south;
 	Sector*	_west;
 	Sector* _east;
+	
+	list<pair<Sector*, pair<int, int>>> expand(int x, int y);
 
 public:
 	Sector(Tile* defTile,
@@ -61,7 +63,7 @@ public:
 	~Sector();
 
 	bool los(int x1, int y1, int x2, int y2, double maxRange = -1);
-//	list<Command> route(int x1, int y1, int x2, int y2);	// TODO
+//	list<Command> path(int x1, int y1, int x2, int y2);	// TODO
 	bool passableAt(int x, int y);
 	Sector* sectorAt(int x, int y);
 	static int mod(int i);

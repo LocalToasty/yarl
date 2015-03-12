@@ -28,6 +28,37 @@ const int Sector::_size = 0x40;
 
 StatusBar* Sector::_statusBar = nullptr;
 
+list<pair<Sector*, pair<int, int>>> Sector::expand(int x, int y)
+{	
+	list<pair<Sector*, pair<int, int>>> passableNeighbours;
+	
+	Sector* s = sectorAt(x - 1, y);
+	int i = mod(x - 1);
+	
+	if (s != nullptr && s->passableAt(i, y))
+		passableNeighbours.push_back({s, {i, y}});
+		
+	s = sectorAt(x + 1, y);
+	i = mod(x + 1);
+	
+	if (s != nullptr && s->passableAt(i, y))
+		passableNeighbours.push_back({s, {i, y}});
+		
+	s = sectorAt(x, y - 1);
+	i = mod(y - 1);
+	
+	if (s != nullptr && s->passableAt(x, i))
+		passableNeighbours.push_back({s, {x, i}});
+		
+	s = sectorAt(x, y + 1);
+	i = mod(y + 1);
+	
+	if (s != nullptr && s->passableAt(x, i))
+		passableNeighbours.push_back({s, {x, i}});
+	
+	return passableNeighbours;
+}
+
 Sector* Sector::sectorAt(int x, int y)
 {
 	if (x >= 0 && y >= 0 && x < _size && y < _size)
