@@ -36,8 +36,7 @@ class Sector
 
 private:
 	// size of a sector has to be hardwired so they can be tiled
-	static const int _width;
-	static const int _height;
+	static const int _size;
 
 private:
 	// vector containing the tiles (stored linearly row for row)
@@ -63,10 +62,10 @@ public:
 	bool los(int x1, int y1, int x2, int y2, double max = -1);
 //	list<Command> route(int x1, int y1, int x2, int y2);	// TODO
 	bool passableAt(int x, int y);
-	Sector* sectorAt(int& x, int& y);
+	Sector* sectorAt(int x, int y);
+	static int mod(int i);
 
-	static int width();
-	static int height();
+	static int size();
 
 	const vector<Tile*>& tiles();	// returns all tiles
 

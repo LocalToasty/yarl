@@ -71,13 +71,13 @@ list<Item*>& Entity::inventory()
 void Entity::setX(int x)
 {
 	setSector(_sector->sectorAt(x, _y));
-	_x = x;
+	_x = Sector::mod(x);
 }
 
 void Entity::setY(int y)
 {
 	setSector(_sector->sectorAt(_x, y));
-	_y = y;
+	_y = Sector::mod(y);
 }
 
 void Entity::setSector(Sector* sector)

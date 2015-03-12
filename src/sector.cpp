@@ -24,45 +24,45 @@
 
 using namespace std;
 
-const int Sector::_width	= 0x40;
-const int Sector::_height	= 0x40;
+const int Sector::_size = 0x40;
 
-// Returns the sector in which the given coordinates lie and modifies the
-// coordinates accordingly.
-Sector* Sector::sectorAt(int& x, int& y)
+Sector* Sector::sectorAt(int x, int y)
 {
-	if (x >= 0 && x < _width && y >= 0 && y < _height)
+	if (x >= 0 && y >= 0 && x < _size && y < _size)
 	{
 		return this;
 	}
 	// if the x / y coordinates point into an adjacent sector
 	else if (x < 0 && _west != nullptr)
 	{
-		x += _width;
-		return _west->sectorAt(x, y);
+		return _west->sectorAt(x + _size , y);
 	}
 	else if (y < 0 && _north != nullptr)
 	{
-		y += _height;
-		return _north->sectorAt(x, y);
+		return _north->sectorAt(x, y + _size);
 	}
-	else if (x >= _width && _east != nullptr)
+	else if (x >= _size && _east != nullptr)
 	{
-		x -= _width;
-		return _east->sectorAt(x, y);
+		return _east->sectorAt(x - _size, y);
 	}
-	else if (y >= _height && _south != nullptr)
+	else if (y >= _size && _south != nullptr)
 	{
-		y -= _height;
-		return _south->sectorAt(x, y);
+		return _south->sectorAt(x, y - _size);
 	}
 	else
 		return nullptr;
 }
 
+int Sector::mod(int i)
+{
+	i %= _size;
+
+	return (i >= 0) ? i : _size + i;
+}
+
 Sector::Sector(Tile* defTile, Sector* north, Sector* south,
 			   Sector* west, Sector* east) :
-	_tiles(_width * _height, defTile), _explored(_width * _height),
+	_tiles(_size * _size, defTile), _explored(_size * _size),
 	_north(north), _south(south), _west(west), _east(east)
 {
 }
@@ -155,6 +155,9 @@ bool Sector::passableAt(int x, int y)
 	if (s == nullptr)
 		return false;
 
+	x = mod(x);
+	y = mod(y);
+
 	if (!s->at(x, y)->passable())
 		return false;
 
@@ -165,14 +168,9 @@ bool Sector::passableAt(int x, int y)
 	return true;
 }
 
-int Sector::width()
+int Sector::size()
 {
-	return _width;
-}
-
-int Sector::height()
-{
-	return _height;
+	return _size;
 }
 
 const vector<Tile*>& Sector::tiles()
@@ -203,6 +201,8 @@ void Sector::removeEntity(Entity* e)
 list<Entity*> Sector::entitiesAt(int x, int y)
 {
 	Sector* s = sectorAt(x, y);
+	x = mod(x);
+	y = mod(y);
 
 	// if tile is in this sector
 	if (s != nullptr)
@@ -212,7 +212,6 @@ list<Entity*> Sector::entitiesAt(int x, int y)
 			if (e->x() == x && e->y() == y)
 				ent.push_back(e);
 
-		int i = ent.size();
 		return ent;
 	}
 	else return list<Entity*>();
@@ -224,6 +223,9 @@ list<pair<pair<int, int>, Entity*>> Sector::entitiesAround(int x, int y,
 														   int offX, int offY)
 {
 	Sector* s = sectorAt(x, y);
+	x = mod(x);
+	y = mod(y);
+
 	list<pair<pair<int, int>, Entity*>> ents;
 
 	for (Entity* e : s->_entities)
@@ -233,27 +235,27 @@ list<pair<pair<int, int>, Entity*>> Sector::entitiesAround(int x, int y,
 
 	if (rw > x && _west != nullptr)
 		ents.splice(ents.end(),
-					s->_west->entitiesAround(x, y, rw - _width, _width - x,
+					s->_west->entitiesAround(x, y, rw - _size, _size - x,
 											 (rn > y) ? y : rn,
-											 _height - y,
-											 offX - _width, offY));
-	if (re > _width - x && _east != nullptr)
+											 _size - y,
+											 offX - _size, offY));
+	if (re > _size - x && _east != nullptr)
 		ents.splice(ents.end(),
-					s->_east->entitiesAround(x, y, x, re - _width,
+					s->_east->entitiesAround(x, y, x, re - _size,
 											 rn > y ? y : rn,
-											 rs > _height - y ? _height - y
+											 rs > _size - y ? _size - y
 															  : rs,
-											 offX + _width, offY));
+											 offX + _size, offY));
 	if (rn > y && _north != nullptr)
 		ents.splice(ents.end(),
 					s->_north->entitiesAround(x, y, rw, re,
-											  rn - _height, _height - y,
-											  offX, offY - _height));
-	if (rs > _height - y && _south != nullptr)
+											  rn - _size, _size - y,
+											  offX, offY - _size));
+	if (rs > _size - y && _south != nullptr)
 		ents.splice(ents.end(),
 					s->_south->entitiesAround(x, y, rw, re,
-											  y, rs - _height,
-											  offX, offY + _height));
+											  y, rs - _size,
+											  offX, offY + _size));
 	return ents;
 }
 
@@ -263,7 +265,11 @@ bool Sector::explored(int x, int y)
 	Sector* s = sectorAt(x, y);
 
 	if (s != nullptr)
-		return s->_explored.at(x + y * _width);
+	{
+		x = mod(x);
+		y = mod(y);
+		return s->_explored.at(x + y * _size);
+	}
 	else
 		return false;	// no such tile
 }
@@ -273,7 +279,11 @@ void Sector::setExplored(int x, int y, bool explored)
 	Sector* s = sectorAt(x, y);
 
 	if (s != nullptr)
-		s->_explored.at(x + y * _width) = explored;
+	{
+		x = mod(x);
+		y = mod(y);
+		s->_explored.at(x + y * _size) = explored;
+	}
 }
 
 Tile* Sector::at(int x, int y)
@@ -281,7 +291,11 @@ Tile* Sector::at(int x, int y)
 	Sector* s = sectorAt(x, y);
 
 	if (s != nullptr)
-		return s->_tiles.at(x + _width * y);
+	{
+		x = mod(x);
+		y = mod(y);
+		return s->_tiles.at(x + y * _size);
+	}
 	else
 		return nullptr;
 }
@@ -292,7 +306,9 @@ void Sector::setAt(int x, int y, Tile* tile)
 
 	if (s != nullptr)
 	{
-		_tiles.at(x + _width * y) = tile;
+		x = mod(x);
+		y = mod(y);
+		_tiles.at(x + y * _size) = tile;
 	}
 }
 
