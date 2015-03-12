@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck
+ * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,25 +76,6 @@ Yarl::Yarl(int argc, char *argv[])
 	}
 
 	// create test world
-/*	_currentSector = new Sector(&none);
-	_currentSector->createRoom(10, 5, 15, 7,
-							   &ground, &wallWE, &wallNS);
-	_currentSector->createRoom(40, 7, 10, 6,
-							   &ground, &wallWE, &wallNS);
-	_currentSector->createRoom(38, 16, 20, 10,
-							   &grass, &tree, &tree);
-
-	_currentSector->hLine(24, 8, 17, &corridor);
-	_currentSector->vLine(42, 12, 5, &corridor);
-
-	new Entity(tree, 40, 18, 1, _currentSector,
-		{new Item(log, 0, 0, 1)});
-	new Entity(tree, 45, 22, 1, _currentSector);
-	new Entity(tree, 51, 19, 1, _currentSector);
-	new Entity(tree, 48, 21, 1, _currentSector);
-	new Entity(tree, 53, 24, 1, _currentSector);
-	new Entity(tree, 47, 32, 1, _currentSector);*/
-
 	Sector* s1 = Generator::generateGrassland();
 	Sector* s2 = Generator::generateGrassland();
 	s1->setNorth(s2);
@@ -200,9 +181,12 @@ void Yarl::render()
 	}
 
 	// render status bar
-	attrset(COLOR_PAIR(COLOR_WHITE) | A_NORMAL);
-	mvaddstr(0, 0, _statusBar.getLine(width).c_str());
-	_moreMessages = !_statusBar.empty();
+	if (!_statusBar.empty())
+	{
+		attrset(COLOR_PAIR(COLOR_WHITE) | A_NORMAL);
+		mvaddstr(0, 0, _statusBar.getLine(width).c_str());
+		_moreMessages = !_statusBar.empty();
+	}
 
 	refresh();
 }

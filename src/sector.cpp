@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck
+ * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,13 +87,19 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 	const int dirX = (dx > 0) ? 1 : -1;
 	const int dirY = (dy > 0) ? 1 : -1;
 
-	// list of all entities capable of blocking the line of sight
-	list<Entity*> blockingEntities;
+	// coordinates are normalised to the sector of (x1,x2)
+	Sector* s = sectorAt(x1, y1);
+	x1 = mod(x1);
+	y1 = mod(y1);
+	x2 = x1 + dx;
+	y2 = y1 + dy;
 
-	for (Entity* e: _entities)
+	// first contains normalised coordinates of entity
+	list<pair<pair<int, int>, Entity*>> blockingEntities;
+	for (Entity* e : s->_entities)
 	{
 		if (!e->t().opaque())
-			blockingEntities.push_back(e);
+			blockingEntities.push_back({{e->x(), e->y()}, e});
 	}
 
 	if (abs(dx) > abs(dy))
@@ -114,8 +120,8 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 				return false;
 
 			// check if an entity blocks the Line of sight
-			for (Entity* e : blockingEntities)
-				if (e->x() == x && e->y() == y)
+			for (pair<pair<int, int>, Entity*> e : blockingEntities)
+				if (e.first.first == x && e.first.second == y)
 					return false;
 
 			c += abs(dy);
@@ -139,8 +145,8 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 				return false;
 
 			// check if an entity blocks the Line of sight
-			for (Entity* e : blockingEntities)
-				if (e->x() == x && e->y() == y)
+			for (pair<pair<int, int>, Entity*> e : blockingEntities)
+				if (e.first.first == x && e.first.second == y)
 					return false;
 
 			c += abs(dx);
@@ -150,18 +156,23 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 	return true;
 }
 
+// returns true if neither the terrain nor the any entities at the coordinates
+// are implassable.
 bool Sector::passableAt(int x, int y)
 {
 	Sector* s = sectorAt(x, y);
+	// if the sector at (x1,y1) doesn't exist, the terrain is impassable
 	if (s == nullptr)
 		return false;
 
 	x = mod(x);
 	y = mod(y);
 
+	// check for terrain passability
 	if (!s->at(x, y)->passable())
 		return false;
 
+	// check for entitiy passability
 	for (Entity* e : s->entitiesAt(x, y))
 		if (!e->t().passable())
 			return false;

@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck
+ * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ public:
 
 	static int size();
 
-	const vector<Tile*>& tiles();	// returns all tiles
+	const vector<Tile*>& tiles();
 
 	const list<Entity*>& entities() const;
 	list<Entity*> entitiesAt(int x, int y);
@@ -97,8 +97,7 @@ public:
 
 	static void setStatusBar(StatusBar* statusBar);
 	StatusBar* statusBar();
-	
-	// returns the tile at the given location
+
 	Tile* at(int x, int y);
 	void setAt(int x, int y, Tile* tile);
 };
