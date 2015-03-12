@@ -40,12 +40,12 @@ Sector* Generator::generateGrassland()
 		}
 	}
 
-	int noOfTrees = Sector::width() * Sector::height() / 16;
+    int noOfTrees = Sector::size() * Sector::size() / 16;
 
 	for (int i = 0; i < noOfTrees; i++)
 	{
-		int x = rand() % Sector::width();
-		int y = rand() % Sector::height();
+        int x = rand() % Sector::size();
+        int y = rand() % Sector::size();
 		new Entity(tree, x, y, 1, grassland, {new Item(log, 0, 0, 1)});
 	}
 
