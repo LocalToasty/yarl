@@ -174,32 +174,27 @@ void Yarl::render()
 
 	// render entities
 	for (pair<pair<int, int>, Entity*> e :
-		 _player->entitiesAround(width / 2, height / 2, offX, offY))
+		 _player->entitiesAround(_player->x(), _player->y(),
+								 offX, offY, width, height))
 	{
-		// TODO hrmpf
-		if (e.first.first >= 0 && e.first.second >- 0 &&
-			e.first.first < width && e.first.second < height)
-
+		if (_player->los(e.first.first - offX, e.first.second - offY))
 		{
-			if (_player->los(e.first.first - offX, e.first.second - offY))
-			{
-				e.second->setSeen();
-				e.second->setLastKnownX();
-				e.second->setLastKnownY();
+			e.second->setSeen();
+			e.second->setLastKnownX();
+			e.second->setLastKnownY();
 
-				move(e.first.second, e.first.first);
-				attrset(COLOR_PAIR(e.second->t().color()) |
-						(_variables["visibleBold"].toInt() ? A_BOLD : 0));
-				addch(e.second->t().repr());
-			}
-			else if (_variables["showUnknown"].toInt() ||
-					 (_variables["showUnseen"].toInt() &&
-					  e.second->seen()))
-			{
-				move(e.first.second, e.first.first);
-				attrset(COLOR_PAIR(COLOR_WHITE) | A_DIM);
-				addch(e.second->t().repr());
-			}
+			move(e.first.second, e.first.first);
+			attrset(COLOR_PAIR(e.second->t().color()) |
+					(_variables["visibleBold"].toInt() ? A_BOLD : 0));
+			addch(e.second->t().repr());
+		}
+		else if (_variables["showUnknown"].toInt() ||
+				 (_variables["showUnseen"].toInt() &&
+				  e.second->seen()))
+		{
+			move(e.first.second, e.first.first);
+			attrset(COLOR_PAIR(COLOR_WHITE) | A_DIM);
+			addch(e.second->t().repr());
 		}
 	}
 

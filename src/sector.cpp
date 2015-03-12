@@ -87,12 +87,11 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 
 	// list of all entities capable of blocking the line of sight
 	list<Entity*> blockingEntities;
-	// TODO: optimisation
-	for (pair<pair<int, int>, Entity*> e :
-		 entitiesAround(x1, x2, abs(dx), abs(dx), abs(dy), abs(dy), 0, 0))
+
+	for (Entity* e: _entities)
 	{
-		if (!e.second->t().opaque())
-			blockingEntities.push_back(e.second);
+		if (!e->t().opaque())
+			blockingEntities.push_back(e);
 	}
 
 	if (abs(dx) > abs(dy))
@@ -218,44 +217,58 @@ list<Entity*> Sector::entitiesAt(int x, int y)
 }
 
 list<pair<pair<int, int>, Entity*>> Sector::entitiesAround(int x, int y,
-														   int rw, int re,
-														   int rn, int rs,
-														   int offX, int offY)
+														   int offX, int offY,
+														   int width,
+														   int height,
+														   bool goNorth,
+														   bool goSouth)
 {
+	// It's probably possible to implement this function in a nicer way,
+	// but seriously: who cares
 	Sector* s = sectorAt(x, y);
 	x = mod(x);
 	y = mod(y);
 
 	list<pair<pair<int, int>, Entity*>> ents;
 
-	for (Entity* e : s->_entities)
-		if (e->x() >= x - rw && e->x() <= x + re &&
-				e->y() >= y - rn && e->y() <= y + rs)
-			ents.push_back({{e->x() + offX, e->y() + offY}, e});
+	// sectors to the west
+	int tmpX = offX;
+	Sector* tmpS = s;
+	while (tmpS != nullptr && tmpX + _size >= 0)
+	{
+		for (Entity* e : tmpS->_entities)
+			if (e->x() + tmpX >= 0 && e->y() + offY >= 0 &&
+				e->x() + tmpX < width && e->y() + offY < height)
+				ents.push_back({{e->x() + tmpX, e->y() + offY}, e});
+		tmpX -= _size;
+		tmpS = tmpS->_west;
+	}
 
-	if (rw > x && _west != nullptr)
+	// sectors to the east
+	tmpS = s->_east;
+	tmpX = offX + _size;
+	while (tmpS != nullptr && tmpX - _size < width)
+	{
+		for (Entity* e : tmpS->_entities)
+			if (e->x() + tmpX >= 0 && e->y() + offY >= 0 &&
+				e->x() + tmpX < width && e->y() + offY < height)
+				ents.push_back({{e->x() + tmpX, e->y() + offY}, e});
+		tmpX += _size;
+		tmpS = tmpS->_east;
+	}
+
+	// north
+	if (goNorth && offY >= 0 && s->_north != nullptr)
 		ents.splice(ents.end(),
-					s->_west->entitiesAround(x, y, rw - _size, _size - x,
-											 (rn > y) ? y : rn,
-											 _size - y,
-											 offX - _size, offY));
-	if (re > _size - x && _east != nullptr)
+					s->_north->entitiesAround(x, y, offX, offY - _size,
+											  width, height, true, false));
+
+	// north
+	if (goSouth && offY - _size < height && s->_south != nullptr)
 		ents.splice(ents.end(),
-					s->_east->entitiesAround(x, y, x, re - _size,
-											 rn > y ? y : rn,
-											 rs > _size - y ? _size - y
-															  : rs,
-											 offX + _size, offY));
-	if (rn > y && _north != nullptr)
-		ents.splice(ents.end(),
-					s->_north->entitiesAround(x, y, rw, re,
-											  rn - _size, _size - y,
-											  offX, offY - _size));
-	if (rs > _size - y && _south != nullptr)
-		ents.splice(ents.end(),
-					s->_south->entitiesAround(x, y, rw, re,
-											  y, rs - _size,
-											  offX, offY + _size));
+					s->_south->entitiesAround(x, y, offX, offY + _size,
+											  width, height, true, false));
+
 	return ents;
 }
 

@@ -58,9 +58,11 @@ bool Character::los(int x, int y, double factor) const
 	return sector()->los(this->x(), this->y(), x, y, _visionRange * factor);
 }
 
-list<pair<pair<int, int>, Entity*>> Character::entitiesAround(int rx, int ry,
+list<pair<pair<int, int>, Entity*>> Character::entitiesAround(int x, int y,
 															  int offX,
-															  int offY)
+															  int offY,
+															  int width,
+															  int height)
 {
-	return sector()->entitiesAround(x(), y(), rx, rx, ry, ry, offX, offY);
+	return sector()->entitiesAround(x, y, offX, offY, width, height);
 }

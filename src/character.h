@@ -41,8 +41,9 @@ public:
 
 	bool los(int x, int y, double factor = 1) const;
 
-	list<pair<pair<int, int>, Entity*>> entitiesAround(int rx, int ry,
-													   int offX, int offY);
+	list<pair<pair<int, int>, Entity*>> entitiesAround(int rx, int y,
+													   int offX, int offY,
+													   int width, int height);
 };
 
 #endif

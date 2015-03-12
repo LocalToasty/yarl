@@ -59,7 +59,7 @@ public:
 		   Sector* west = nullptr, Sector* east = nullptr);
 	~Sector();
 
-	bool los(int x1, int y1, int x2, int y2, double max = -1);
+	bool los(int x1, int y1, int x2, int y2, double maxRange = -1);
 //	list<Command> route(int x1, int y1, int x2, int y2);	// TODO
 	bool passableAt(int x, int y);
 	Sector* sectorAt(int x, int y);
@@ -71,10 +71,12 @@ public:
 
 	const list<Entity*>& entities() const;
 	list<Entity*> entitiesAt(int x, int y);
+
 	list<pair<pair<int, int>, Entity*>> entitiesAround(int x, int y,
-													   int rw, int re,
-													   int rn, int rs,
-													   int offX, int offY);
+													   int offX, int offY,
+													   int width, int height,
+													   bool goNorth = true,
+													   bool goSouth = true);
 
 	void addEntity(Entity* e);
 	void removeEntity(Entity* e);
