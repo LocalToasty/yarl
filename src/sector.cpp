@@ -98,7 +98,7 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 	list<pair<pair<int, int>, Entity*>> blockingEntities;
 	for (Entity* e : s->_entities)
 	{
-		if (!e->t().opaque())
+		if (!e->t().transparent())
 			blockingEntities.push_back({{e->x(), e->y()}, e});
 	}
 
@@ -116,7 +116,7 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 			}
 
 			// check if LOS is broken
-			if (!at(x, y)->opaque())
+			if (!at(x, y)->transparent())
 				return false;
 
 			// check if an entity blocks the Line of sight
@@ -141,7 +141,7 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 			}
 
 			// check if LOS is broken
-			if (!at(x, y)->opaque())
+			if (!at(x, y)->transparent())
 				return false;
 
 			// check if an entity blocks the Line of sight

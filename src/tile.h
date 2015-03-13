@@ -30,26 +30,26 @@ private:
 	char	_repr;
 	short	_color;
 	string	_description;
-	bool	_opaque;
+	bool	_transparent;
 	bool	_passable;
 
 public:
 	Tile(char repr = ' ', short color = COLOR_BLACK, string description = "",
-		 bool opaque = false);
-	Tile(char repr, short color, string description, bool opaque,
+		 bool transparent = false);
+	Tile(char repr, short color, string description, bool transparent,
 		 bool passable);
 
 	char	repr()			const;
 	short	color()			const;
 	string	description()	const;
 	bool	passable()		const;
-	bool	opaque()		const;
+	bool	transparent()		const;
 
 	void	setRepr(char repr);
 	void	setColor(short color);
 	void	setDescription(string description);
 	void	setPassable(bool passable);
-	void	setOpaque(bool opaque);
+	void	setTransparent(bool transparent);
 };
 
 #endif
