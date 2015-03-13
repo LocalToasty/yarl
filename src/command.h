@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015  Marko van Treeck
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,43 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARL_H
-#define YARL_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
 
-#include "sector.h"
-#include "character.h"
-#include "tile.h"
-#include "variable.h"
-#include "statusBar.h"
-#include "command.h"
-#include <string>
-#include <map>
-
-using namespace std;
-
-class Yarl
+enum class Command
 {
-private:
-	Character* _player;
+	MOVEMENT_BEGIN,
+	west,
+	south,
+	north,
+	east,
+	northEast,
+	northWest,
+	southEast,
+	southWest,
+	MOVEMENT_END,
 
-	StatusBar _statusBar;
+	none,
 
-	map<string, Variable> _variables;
-	map<char, Command> _bindings;
-
-	bool _moreMessages {false};
-
-	bool init(int argc, char* argv[]);
-
-	void render();
-	bool loop();
-
-	int cleanup();
-
-	string usage();
-
-public:
-	int exec(int argc, char* argv[]);
+	quit
 };
 
-#endif
+
+#endif // COMMANDS_H

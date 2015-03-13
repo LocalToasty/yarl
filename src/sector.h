@@ -21,6 +21,7 @@
 
 #include "tile.h"
 #include "statusBar.h"
+#include "command.h"
 #include <vector>
 #include <list>
 
@@ -61,9 +62,8 @@ public:
 	~Sector();
 
 	bool los(int x1, int y1, int x2, int y2, double maxRange = -1);
-//	list<Command> route(int x1, int y1, int x2, int y2);	// TODO
-	bool passableAt(int x, int y);
-	Sector* sectorAt(int x, int y);
+	vector<Command> path(int x1, int y1, int x2, int y2);
+
 	static int mod(int i);
 
 	static int size();
@@ -71,7 +71,12 @@ public:
 	const vector<Tile*>& tiles();
 
 	const list<Entity*>& entities() const;
+
+	Tile* at(int x, int y);
+	void setAt(int x, int y, Tile* tile);
 	list<Entity*> entitiesAt(int x, int y);
+	bool passableAt(int x, int y);
+	Sector* sectorAt(int x, int y);
 
 	list<pair<pair<int, int>, Entity*>> entitiesAround(int x, int y,
 													   int offX, int offY,
@@ -97,9 +102,6 @@ public:
 
 	static void setStatusBar(StatusBar* statusBar);
 	StatusBar* statusBar();
-
-	Tile* at(int x, int y);
-	void setAt(int x, int y, Tile* tile);
 };
 
 #endif	// SECTOR_H
