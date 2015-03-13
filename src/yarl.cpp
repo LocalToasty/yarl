@@ -22,6 +22,10 @@
 #include "generator.h"
 #include <curses.h>
 #include <stdexcept>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -35,7 +39,7 @@ Tile tree		= Tile('T', COLOR_GREEN,	"a tree");
 Tile log		= Tile('o', COLOR_RED,		"a log", true);
 Tile player		= Tile('@', COLOR_YELLOW,	"you", true, false);
 
-Yarl::Yarl(int argc, char *argv[])
+bool Yarl::init(int argc, char* argv[])
 {
 	// initialize variables
 	_variables =
@@ -60,6 +64,58 @@ Yarl::Yarl(int argc, char *argv[])
 
 		{'q', Command::quit}
 	};
+
+	// get config file path
+
+	// config path can be supplied via an environment variable
+	const char* cfg = getenv("YARLCONF");
+	string configFilePath;
+	if (cfg != nullptr)
+		configFilePath = cfg;
+
+	// if nothing else is specified, the config file is stored in the home
+	// directory.
+	if (configFilePath.empty())
+	{
+#if __unix || __unix__	// UNIXoids (i.e. Linux, MacOS, BSD and so forth)
+		configFilePath = getenv("HOME");
+		configFilePath.append("/.yarlrc");
+
+#elif _WIN32 || _WIN64	// Windows
+		configFilePath = getenv("HOMEDRIVE");
+		configFilePath.append(getenv("HOMEPATH");
+		configFilePath.append("\.yarlrc");
+#endif
+	}
+
+	// if there is a potential
+	if (!configFilePath.empty())
+	{
+		ifstream config(configFilePath);
+
+		if (config.is_open())
+		{
+			string var;
+			while (getline(config, var))
+			{
+				istringstream iss(var);
+
+				string name;
+				iss >> name;
+
+				string val;
+				if (!getline(iss, val))
+				{
+					cerr << "Error: " << configFilePath
+						 << ": expected variable value after \""
+						 << name << "\"\n";
+					return false;
+				}
+
+				_variables[name] = val;
+			}
+		}
+	}
 
 	// read variables from commandline
 	if (argc % 2 == 0)
@@ -90,15 +146,10 @@ Yarl::Yarl(int argc, char *argv[])
 	_player = new Character(player, 42, 42, 5, 16, s1);
 
 	Sector::setStatusBar(&_statusBar);
-}
-
-bool Yarl::init()
-{
-	// initialize curses
 	initscr();
 	cbreak();
 	noecho();
-	curs_set(0);
+	curs_set(0);	// no cursor
 
 	// initialize colors
 	if (has_colors() && _variables["color"].toInt())
@@ -241,9 +292,15 @@ int Yarl::cleanup()
 	return 0;
 }
 
-int Yarl::exec()
+string Yarl::usage()
 {
-	if (!init())
+	return "Usage:\n"
+		   "yarl {<VAR NAME> <VAR VALUE>}\n";
+}
+
+int Yarl::exec(int argc, char* argv[])
+{
+	if (!init(argc, argv))
 	{
 		return -1;
 	}

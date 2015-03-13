@@ -20,6 +20,6 @@
 
 int main(int argc, char* argv[])
 {
-	Yarl app(argc, argv);
-	return app.exec();
+	Yarl app;
+	return app.exec(argc, argv);
 }

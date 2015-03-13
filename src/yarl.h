@@ -50,7 +50,6 @@ private:
 		quit
 	};
 
-private:
 	Character* _player;
 
 	StatusBar _statusBar;
@@ -60,18 +59,17 @@ private:
 
 	bool _moreMessages {false};
 
-private:
-	bool init();
+	bool init(int argc, char* argv[]);
 
 	void render();
 	bool loop();
 
 	int cleanup();
 
-public:
-	Yarl(int argc, char* argv[]);
+	string usage();
 
-	int exec();
+public:
+	int exec(int argc, char* argv[]);
 };
 
 #endif
