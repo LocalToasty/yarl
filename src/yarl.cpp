@@ -43,7 +43,7 @@ Yarl::Yarl(int argc, char *argv[])
 		{"color",		{"1",	"enable / disable color."}},
 		{"visibleBold",	{"1",	"draw visible tiles bold."}},
 		{"showUnknown",	{"0",	"draw unexplored areas."}},
-		{"showUnseen",	{"1",	"draw explored,"
+		{"showUnseen",	{"1",	"draw explored, "
 								"but currently not seen areas."}}
 	};
 

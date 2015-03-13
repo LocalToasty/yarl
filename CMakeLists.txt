@@ -6,6 +6,7 @@ find_package (Curses REQUIRED)
 include_directories (${CURSES_INCLUDE_DIR})
 
 add_executable (yarl
+				src/command.h
 				src/main.cpp
 				src/yarl.cpp
 				src/entity.cpp

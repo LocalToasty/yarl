@@ -16,44 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARL_H
-#define YARL_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
 
-#include "sector.h"
-#include "character.h"
-#include "tile.h"
-#include "variable.h"
-#include "statusBar.h"
-#include "command.h"
-#include <string>
-#include <map>
-
-using namespace std;
-
-class Yarl
+enum class Command
 {
-private:
-	Character* _player;
+	MOVEMENT_BEGIN,
+	west,
+	south,
+	north,
+	east,
+	northEast,
+	northWest,
+	southEast,
+	southWest,
+	MOVEMENT_END,
 
-	StatusBar _statusBar;
+	none,
 
-	map<string, Variable> _variables;
-	map<char, Command> _bindings;
-
-	bool _moreMessages {false};
-
-private:
-	bool init();
-
-	void render();
-	bool loop();
-
-	int cleanup();
-
-public:
-	Yarl(int argc, char* argv[]);
-
-	int exec();
+	quit
 };
 
-#endif
+
+#endif // COMMANDS_H

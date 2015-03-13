@@ -20,6 +20,7 @@
 
 #include "entity.h"
 #include <algorithm>
+#include <tuple>
 #include <cmath>
 
 using namespace std;
@@ -28,35 +29,219 @@ const int Sector::_size = 0x40;
 
 StatusBar* Sector::_statusBar = nullptr;
 
-list<pair<Sector*, pair<int, int>>> Sector::expand(int x, int y)
-{	
-	list<pair<Sector*, pair<int, int>>> passableNeighbours;
-	
-	Sector* s = sectorAt(x - 1, y);
-	int i = mod(x - 1);
-	
-	if (s != nullptr && s->passableAt(i, y))
-		passableNeighbours.push_back({s, {i, y}});
-		
-	s = sectorAt(x + 1, y);
-	i = mod(x + 1);
-	
-	if (s != nullptr && s->passableAt(i, y))
-		passableNeighbours.push_back({s, {i, y}});
-		
-	s = sectorAt(x, y - 1);
-	i = mod(y - 1);
-	
-	if (s != nullptr && s->passableAt(x, i))
-		passableNeighbours.push_back({s, {x, i}});
-		
-	s = sectorAt(x, y + 1);
-	i = mod(y + 1);
-	
-	if (s != nullptr && s->passableAt(x, i))
-		passableNeighbours.push_back({s, {x, i}});
-	
-	return passableNeighbours;
+int min(int x, int y)
+{
+	return (x < y) ? x : y;
+}
+
+int max(int x, int y)
+{
+	return (x > y) ? x : y;
+}
+
+int heuristic(int x1, int y1, int x2, int y2)
+{
+	int dx = abs(x2 - x1);
+	int dy = abs(y2 - y1);
+
+	return max(dx, dy);
+}
+
+vector<Command> Sector::path(int x1, int y1, int x2, int y2)
+{
+	// A* search (see http://en.wikipedia.org/wiki/A*_search_algorithm)
+
+	typedef tuple<Sector*, int, int> C;	// c
+
+	typedef struct Node
+	{
+		int h;	// heuristic of distance to goal
+		int g;	// cost so far
+		Command action;	// action taken to reach this node
+		Node* parent;	// previous node; nullptr if none
+		C c;	// coordinates
+	} Node;
+
+	// if the destination is not passable, there is no route to it.
+	if (!passableAt(x2, y2))
+	{
+		return {Command::none};
+	}
+
+	// maximum length of path
+	int maxLength = heuristic(x1, y1, x2, y2) * 4;
+
+	// frontier is a priority queue initialised with the starting point
+	list<Node*> frontier;
+
+	frontier.push_back(new Node {0, 0, Command::none, nullptr,
+								 C(sectorAt(x1, y1), x1, y1)});
+
+	vector<Node*> explored;
+
+	C goal(sectorAt(x2, y2), x2, y2);
+
+	for (;;)	// forever
+	{
+		if (frontier.empty())	// failure
+		{
+			for (Node* n : explored)	// cleanup
+				delete n;
+
+			return {Command::none};
+		}
+
+		Node* node = frontier.front();
+		frontier.pop_front();
+
+		if (node->c == goal)	// optimal path found
+		{
+			vector<Command> directions;
+
+			// get all commands
+			for (; node->parent != nullptr; node = node->parent)
+			{
+				directions.push_back(node->action);
+			}
+
+			// bring them into the right order
+			reverse(directions.begin(), directions.end());
+
+			// cleanup
+			for (Node* n : frontier)
+				delete n;
+			for (Node* n : explored)
+				delete n;
+
+			return directions;
+		}
+
+		explored.push_back(node);
+
+		// get all the adjacent nodes
+		// I hope this wall of text can somehow be broken down...
+		vector<pair<Command, C>> passableNeighbours;
+		int x = get<1>(node->c);
+		int y = get<2>(node->c);
+
+		// north
+		int ty = y - 1;
+		if (passableAt(x, ty))
+			passableNeighbours.push_back({Command::north,
+										  C(sectorAt(x, ty), x, ty)});
+
+		int tx = x - 1;
+		// north west
+		if (passableAt(tx, ty))
+			passableNeighbours.push_back({Command::northWest,
+										  C(sectorAt(tx, ty), tx, ty)});
+
+		// west
+		if (passableAt(tx, y))
+			passableNeighbours.push_back({Command::west,
+										  C(sectorAt(tx, y), tx, y)});
+
+		ty = y + 1;
+		// south west
+		if (passableAt(tx, ty))
+			passableNeighbours.push_back({Command::southWest,
+										  C(sectorAt(tx, ty), tx, ty)});
+
+		// south
+		if (passableAt(x, ty))
+			passableNeighbours.push_back({Command::south,
+										  C(sectorAt(x, ty), x, ty)});
+
+		tx = x + 1;
+		// south east
+		if (passableAt(tx, ty))
+			passableNeighbours.push_back({Command::southEast,
+										  C(sectorAt(tx, ty), tx, ty)});
+
+		// east
+		if (passableAt(tx, y))
+			passableNeighbours.push_back({Command::east,
+										  C(sectorAt(tx, y), tx, y)});
+
+		ty = y - 1;
+		// north east
+		if (passableAt(tx, ty))
+			passableNeighbours.push_back({Command::northEast,
+										  C(sectorAt(tx, ty), tx, ty)});
+
+		for (pair<Command, C> neighbour : passableNeighbours)
+		{
+			// if the node is in the explored set, dismiss it
+			bool inExplored = false;
+			for (Node* n : explored)
+			{
+				if (n->c == neighbour.second)
+				{
+					inExplored = true;
+					break;
+				}
+			}
+
+			auto comp = [](const Node* l, const Node* r)
+			{
+				return l->h < r->h;
+			};
+
+			bool inFrontier = false;
+			for (Node* n : frontier)
+			{
+				if (n->c == neighbour.second)
+				{
+					inFrontier = true;
+
+					// node was already found earlier, but the newly found path
+					// to node is shorter
+					if (n->g >
+						node->g + 1 + heuristic(get<1>(neighbour.second),
+												get<2>(neighbour.second),
+												x2, y2))
+					{
+						// replace the old node
+						delete n;
+						frontier.remove(n);
+
+						n = new Node {node->g + 1 +
+									  heuristic(get<1>(neighbour.second),
+												get<2>(neighbour.second),
+												x2, y2),
+									  node->g + 1, neighbour.first, node,
+									  neighbour.second};
+
+						auto pos = lower_bound(frontier.begin(), frontier.end(),
+											   n, comp);
+
+						frontier.insert(pos, n);
+						break;
+					}
+				}
+			}
+
+			// if the node is not yet in the frontier and nor has been found
+			// yet, add it to the frontier
+			if (!inExplored && !inFrontier)
+			{
+				Node* n = new Node {node->g + 1 +
+									heuristic(get<1>(neighbour.second),
+											  get<2>(neighbour.second),
+											  x2, y2),
+											  node->g + 1, neighbour.first, node,
+									neighbour.second};
+
+				if (n->g < maxLength)
+				{
+					auto pos = lower_bound(frontier.begin(), frontier.end(),
+										   n, comp);
+
+					frontier.insert(pos, n);
+				}
+			}
+		}
+	}
 }
 
 Sector* Sector::sectorAt(int x, int y)
@@ -217,10 +402,17 @@ const list<Entity*>& Sector::entities() const
 
 void Sector::addEntity(Entity* e)
 {
-	auto pos = lower_bound(_entities.begin(), _entities.end(), e,
-						   [](Entity* l, Entity* r){
-							return !r->t().passable() &&
-									l->t().passable();});
+	// Entities which are passable should be drawn before those wich are not.
+	// Entities which are transparent should be drawn before those wich are not.
+	// This is to ensure that the impassable / opaque entities are drawn on
+	// top.
+	auto comp = [](Entity* l, Entity* r)
+	{
+		return l->t().passable() && !r->t().passable() ||
+			   l->t().opaque() && !r->t().opaque();
+	};
+
+	auto pos = lower_bound(_entities.begin(), _entities.end(), e, comp);
 
 	_entities.insert(pos, e);
 }
@@ -427,7 +619,7 @@ void Sector::setEast(Sector* east)
 //	for (int row = y; row < y + height; row++)
 //		for (int col = x; col < x + width; col++)
 //			setAt(col, row, tile);
-	
+
 //}
 
 //void Sector::createRoom(int x, int y,
