@@ -23,31 +23,53 @@
 
 using namespace std;
 
+enum class Color
+{
+	black,
+	red,
+	green,
+	yellow,
+	blue,
+	magenta,
+	cyan,
+	white
+};
+
 class Terminal
 {
 public:
-    enum class Color
-    {
-		black,
-		red,
-		green,
-		yellow,
-		blue,
-		magenta,
-		cyan,
-		white
-    };
+//	Constructor(bool usecolor = true);
 
-	virtual int Renderer() = 0;
-
+	// width of the terminal screen
 	virtual int width() = 0;
+	// height of the terminal screen
 	virtual int height() = 0;
 
-	virtual void addch(char c, Color c = Color::white, bool dim = false) = 0;
-	virtual void addstr(string s, Color c = Color::white, bool dim = false) = 0;
-	virtual void move(int x, int y) = 0;
+	// turn the cursor on or off
+	virtual int cursor(bool val) = 0;
 
-	virtual char getch() = 0;
+	// replace the character at the current cursor location
+	virtual void addChar(char c, Color col = Color::white,
+					   bool standout = false) = 0;
+	// write a string of characters
+	virtual void addString(string s, Color col = Color::white,
+					  bool standout = false) = 0;
+
+	// move the cursor to the given coordinates
+	virtual void moveCursor(int x, int y) = 0;
+
+	// combined functions
+	virtual void moveAddChar(int x, int y, char c, Color col = Color::white,
+						 bool standout = false);
+	virtual void moveAddString(int x, int y, string s, Color col = Color::white,
+						  bool standout = false);
+
+	// read one character from the keyboard
+	virtual char getChar() = 0;
+
+	// show all changes made to the streambuffer
+	virtual void refreshScreen() = 0;
+	virtual void close() = 0;
 };
 
 #endif

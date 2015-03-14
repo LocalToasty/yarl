@@ -21,12 +21,12 @@
 #include "item.h"
 #include <cstdlib>	// for rand
 
-Tile Generator::none	= {' ', COLOR_BLACK,	"void"};
-Tile Generator::mud		= {'.', COLOR_RED,		"mud", true};
-Tile Generator::grass	= {',', COLOR_GREEN,	"patch of grass", true};
-Tile Generator::tree	= {'T', COLOR_GREEN,	"tree"};
-Tile Generator::bush	= {'o', COLOR_GREEN,	"bush"};
-Tile Generator::log		= {'o', COLOR_RED,		"log"};
+Tile Generator::none	= {' ', Color::black,	"void"};
+Tile Generator::mud		= {'.', Color::red,		"mud", true};
+Tile Generator::grass	= {',', Color::green,	"patch of grass", true};
+Tile Generator::tree	= {'T', Color::green,	"tree"};
+Tile Generator::bush	= {'o', Color::green,	"bush"};
+Tile Generator::log		= {'o', Color::red,		"log"};
 
 Sector* Generator::generateGrassland()
 {

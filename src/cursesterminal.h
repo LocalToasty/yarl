@@ -16,41 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TILE_H
-#define TILE_H
+#ifndef CURSESTERMINAL_H
+#define CURSESTERMINAL_H
 
 #include "terminal.h"
-#include <string>
 
-using namespace std;
-
-class Tile
+class CursesTerminal : public Terminal
 {
 private:
-	char _repr;
-	Color _color;
-	string _description;
-	bool _transparent;
-	bool _passable;
+	short cp(Color col);
 
 public:
-	Tile(char repr = ' ', Color color = Color::black,
-		 string description = "", bool transparent = false);
+	CursesTerminal(bool usecolor = true);
+	~CursesTerminal();
 
-	Tile(char repr, Color color, string description, bool transparent,
-		 bool passable);
+	int width();
+	int height();
 
-	char repr() const;
-	Color color() const;
-	string description() const;
-	bool passable() const;
-	bool transparent() const;
+	int cursor(bool val);
 
-	void setRepr(char repr);
-	void setColor(Color color);
-	void setDescription(string description);
-	void setPassable(bool passable);
-	void setTransparent(bool transparent);
+	void addChar(char c, Color col = Color::white, bool standout = false);
+	void addString(string s, Color col = Color::white, bool standout = false);
+
+	void moveCursor(int x, int y);
+
+	char getChar();
+
+	void refreshScreen();
+	void close();
 };
 
 #endif

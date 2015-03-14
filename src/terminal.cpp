@@ -16,41 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TILE_H
-#define TILE_H
-
 #include "terminal.h"
-#include <string>
 
-using namespace std;
-
-class Tile
+void Terminal::moveAddChar(int x, int y, char c, Color col, bool standout)
 {
-private:
-	char _repr;
-	Color _color;
-	string _description;
-	bool _transparent;
-	bool _passable;
+	moveCursor(x, y);
+	addChar(c, col, standout);
+}
 
-public:
-	Tile(char repr = ' ', Color color = Color::black,
-		 string description = "", bool transparent = false);
 
-	Tile(char repr, Color color, string description, bool transparent,
-		 bool passable);
-
-	char repr() const;
-	Color color() const;
-	string description() const;
-	bool passable() const;
-	bool transparent() const;
-
-	void setRepr(char repr);
-	void setColor(Color color);
-	void setDescription(string description);
-	void setPassable(bool passable);
-	void setTransparent(bool transparent);
-};
-
-#endif
+void Terminal::moveAddString(int x, int y, std::string s, Color col,
+							 bool standout)
+{
+	moveCursor(x, y);
+	addString(s, col, standout);
+}
