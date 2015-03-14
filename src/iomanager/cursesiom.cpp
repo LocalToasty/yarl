@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cursesterminal.h"
+#include "cursesiom.h"
 #include <curses.h>
 
-short CursesTerminal::cp(Color col)
+short CursesIOManager::cp(Color col)
 {
 	switch (col)
 	{
@@ -49,7 +49,7 @@ short CursesTerminal::cp(Color col)
 	}
 }
 
-CursesTerminal::CursesTerminal(bool usecolor)
+CursesIOManager::CursesIOManager(bool usecolor)
 {
 	initscr();
 	cbreak();
@@ -65,49 +65,49 @@ CursesTerminal::CursesTerminal(bool usecolor)
 	}
 }
 
-int CursesTerminal::width()
+int CursesIOManager::width()
 {
 	return getmaxx(stdscr);
 }
 
-int CursesTerminal::height()
+int CursesIOManager::height()
 {
 	return getmaxy(stdscr);
 }
 
-int CursesTerminal::cursor(bool val)
+int CursesIOManager::cursor(bool val)
 {
 	curs_set(val);
 }
 
-void CursesTerminal::addChar(char c, Color col, bool standout)
+void CursesIOManager::addChar(char c, Color col, bool standout)
 {
 	attrset(COLOR_PAIR(cp(col)) | (standout ? A_BOLD : A_NORMAL));
 	addch(c);
 }
 
-void CursesTerminal::addString(string s, Color col, bool standout)
+void CursesIOManager::addString(string s, Color col, bool standout)
 {
 	attrset(COLOR_PAIR(cp(col)) | (standout ? A_BOLD : A_NORMAL));
 	addstr(s.c_str());
 }
 
-void CursesTerminal::moveCursor(int x, int y)
+void CursesIOManager::moveCursor(int x, int y)
 {
 	move(y, x);
 }
 
-char CursesTerminal::getChar()
+char CursesIOManager::getChar()
 {
 	return (char) getch();
 }
 
-void CursesTerminal::refreshScreen()
+void CursesIOManager::refreshScreen()
 {
 	refresh();
 }
 
-void CursesTerminal::close()
+void CursesIOManager::close()
 {
 	endwin();
 }

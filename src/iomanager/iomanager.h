@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#ifndef IOMANAGER_H
+#define IOMANAGER_H
 
 #include <string>
 
@@ -35,10 +35,10 @@ enum class Color
 	white
 };
 
-class Terminal
+class IOManager
 {
 public:
-//	Constructor(bool usecolor = true);
+//	Constructor(bool usecolor);
 
 	// width of the terminal screen
 	virtual int width() = 0;

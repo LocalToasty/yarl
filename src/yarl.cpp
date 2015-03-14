@@ -20,7 +20,7 @@
 
 #include "item.h"
 #include "generator.h"
-#include "cursesterminal.h"
+#include "iomanager/cursesiom.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
@@ -123,7 +123,7 @@ bool Yarl::init(int argc, char* argv[])
 		{}
 	}
 
-	_terminal = new CursesTerminal(_variables["color"].toInt());
+	_iom = new CursesIOManager(_variables["color"].toInt());
 
 	// create test world
 	Sector* s1 = Generator::generateGrassland();
@@ -146,8 +146,8 @@ bool Yarl::init(int argc, char* argv[])
 void Yarl::render()
 {
 	// get window proportions
-	int width = _terminal->width();
-	int height = _terminal->height();
+	int width = _iom->width();
+	int height = _iom->height();
 
 	int offX = width / 2 - _player->x();
 	int offY = height / 2 - _player->y();
@@ -155,7 +155,7 @@ void Yarl::render()
 	// render the room
 	for (int row = 0; row < height; row++)
 	{
-		_terminal->moveCursor(0, row);
+		_iom->moveCursor(0, row);
 		for (int col = 0; col < width; col++)
 		{
 			Tile* t = _player->sector()->at(col - offX, row - offY);
@@ -165,7 +165,7 @@ void Yarl::render()
 				// render tiles the character has a LOS to
 				_player->sector()->setExplored(col - offX, row - offY);
 
-				_terminal->addChar(t->repr(), t->color(),
+				_iom->addChar(t->repr(), t->color(),
 								 _variables["visibleBold"].toInt());
 			}
 			else if(t != nullptr &&
@@ -174,11 +174,11 @@ void Yarl::render()
 					  _player->sector()->explored(col - offX, row - offY))))
 			{
 				// tiles the player has seen before are rendered in grey
-				_terminal->addChar(t->repr());
+				_iom->addChar(t->repr());
 			}
 			else
 			{
-				_terminal->addChar(' ');
+				_iom->addChar(' ');
 			}
 		}
 	}
@@ -194,7 +194,7 @@ void Yarl::render()
 			e.second->setLastKnownX();
 			e.second->setLastKnownY();
 
-			_terminal->moveAddChar(e.first.first, e.first.second,
+			_iom->moveAddChar(e.first.first, e.first.second,
 							   e.second->t().repr(), e.second->t().color(),
 							   _variables["visibleBold"].toInt());
 		}
@@ -202,7 +202,7 @@ void Yarl::render()
 				 (_variables["showUnseen"].toInt() &&
 				  e.second->seen()))
 		{
-			_terminal->moveAddChar(e.first.first, e.first.second,
+			_iom->moveAddChar(e.first.first, e.first.second,
 							   e.second->t().repr());
 		}
 	}
@@ -210,16 +210,16 @@ void Yarl::render()
 	// render status bar
 	if (!_statusBar.empty())
 	{
-		_terminal->moveAddString(0, 0, _statusBar.getLine(width).c_str());
+		_iom->moveAddString(0, 0, _statusBar.getLine(width).c_str());
 		_moreMessages = !_statusBar.empty();
 	}
 
-	_terminal->refreshScreen();
+	_iom->refreshScreen();
 }
 
 bool Yarl::loop()
 {
-	char input = _terminal->getChar();
+	char input = _iom->getChar();
 
 	Command cmd = _bindings[input];
 
@@ -262,8 +262,8 @@ bool Yarl::loop()
 
 int Yarl::cleanup()
 {
-	_terminal->close();
-	delete _terminal;
+	_iom->close();
+	delete _iom;
 
 	return 0;
 }

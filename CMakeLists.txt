@@ -7,8 +7,8 @@ include_directories (${CURSES_INCLUDE_DIR})
 
 add_executable (yarl
 				src/command.h
-				src/terminal.cpp
-				src/cursesterminal.cpp
+				src/iomanager/iomanager.cpp
+				src/iomanager/cursesiom.cpp
 				src/main.cpp
 				src/yarl.cpp
 				src/entity.cpp

@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CURSESTERMINAL_H
-#define CURSESTERMINAL_H
+#ifndef CURSESIOM_H
+#define CURSESIOM_H
 
-#include "terminal.h"
+#include "iomanager.h"
 
-class CursesTerminal : public Terminal
+class CursesIOManager : public IOManager
 {
 private:
 	short cp(Color col);
 
 public:
-	CursesTerminal(bool usecolor = true);
-	~CursesTerminal();
+	CursesIOManager(bool usecolor = true);
+	~CursesIOManager();
 
 	int width();
 	int height();

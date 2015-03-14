@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "terminal.h"
+#include "iomanager.h"
 
-void Terminal::moveAddChar(int x, int y, char c, Color col, bool standout)
+void IOManager::moveAddChar(int x, int y, char c, Color col, bool standout)
 {
 	moveCursor(x, y);
 	addChar(c, col, standout);
 }
 
 
-void Terminal::moveAddString(int x, int y, std::string s, Color col,
+void IOManager::moveAddString(int x, int y, std::string s, Color col,
 							 bool standout)
 {
 	moveCursor(x, y);
