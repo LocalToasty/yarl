@@ -23,6 +23,7 @@
 #include "character.h"
 #include "tile.h"
 #include "variable.h"
+#include "terminal.h"
 #include "statusBar.h"
 #include "command.h"
 #include <string>
@@ -35,6 +36,7 @@ class Yarl
 private:
 	Character* _player;
 
+	Terminal* _terminal;
 	StatusBar _statusBar;
 
 	map<string, Variable> _variables;

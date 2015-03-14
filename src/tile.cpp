@@ -28,12 +28,12 @@ void Tile::setTransparent(bool transparent)
 	_transparent = transparent;
 }
 
-Tile::Tile(char repr, short color, string description, bool transparent) :
+Tile::Tile(char repr, Color color, string description, bool transparent) :
 	_repr(repr), _color(color), _description(description),
 	_transparent(transparent), _passable(transparent)
 {}
 
-Tile::Tile(char repr, short color, string description,
+Tile::Tile(char repr, Color color, string description,
 		   bool transparent, bool passable) :
 	_repr(repr), _color(color), _description(description),
 	_transparent(transparent), _passable(passable)
@@ -45,7 +45,7 @@ char Tile::repr() const
 	return _repr;
 }
 
-short Tile::color() const
+Color Tile::color() const
 {
 	return _color;
 }
@@ -65,7 +65,7 @@ void Tile::setRepr(char repr)
 	_repr = repr;
 }
 
-void Tile::setColor(short color)
+void Tile::setColor(Color color)
 {
 	_color = color;
 }
