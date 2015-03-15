@@ -19,7 +19,7 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include "iomanager/iomanager.h"
+#include "iomanager.h"
 #include <string>
 
 using namespace std;

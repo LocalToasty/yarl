@@ -20,7 +20,7 @@
 
 #include "item.h"
 #include "generator.h"
-#include "iomanager/cursesiom.h"
+#include "cursesiomanager.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>

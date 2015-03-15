@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cursesiom.h"
+#include "cursesiomanager.h"
 #include <curses.h>
 
 short CursesIOManager::cp(Color col)

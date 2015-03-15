@@ -5,17 +5,21 @@ project (yarl)
 find_package (Curses REQUIRED)
 include_directories (${CURSES_INCLUDE_DIR})
 
+include_directories ("src/"
+					 "src/gameplay/"
+					 "src/iomanager/")
+
 add_executable (yarl
-				src/command.h
-				src/iomanager/iomanager.cpp
-				src/iomanager/cursesiom.cpp
 				src/main.cpp
 				src/yarl.cpp
-				src/entity.cpp
-				src/item.cpp
-				src/character.cpp
-				src/sector.cpp
-				src/tile.cpp
+				src/gameplay/entity.cpp
+				src/gameplay/item.cpp
+				src/gameplay/character.cpp
+				src/gameplay/sector.cpp
+				src/gameplay/tile.cpp
+				src/command.h
+				src/iomanager/iomanager.cpp
+				src/iomanager/cursesiomanager.cpp
 				src/variable.cpp
 				src/statusBar.cpp
 				src/generator.cpp)
