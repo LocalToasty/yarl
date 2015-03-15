@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMANDS_H
-#define COMMANDS_H
+#ifndef COMMAND_H
+#define COMMAND_H
 
 enum class Command
 {
@@ -38,4 +38,4 @@ enum class Command
 };
 
 
-#endif // COMMANDS_H
+#endif

@@ -36,4 +36,4 @@ public:
 	static Sector* generateGrassland();
 };
 
-#endif // GENERATOR_H
+#endif

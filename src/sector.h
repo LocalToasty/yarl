@@ -104,4 +104,4 @@ public:
 	StatusBar* statusBar();
 };
 
-#endif	// SECTOR_H
+#endif

@@ -18,14 +18,20 @@
 
 #include "yarl.h"
 
+#include "yarlconfig.h"
 #include "item.h"
 #include "generator.h"
-#include "iomanager/cursesiom.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#if USE_SDL == ON
+#include "iomanager/sdliom.h"
+#else
+#include "iomanager/cursesiom.h"
+#endif
 
 using namespace std;
 
@@ -123,7 +129,11 @@ bool Yarl::init(int argc, char* argv[])
 		{}
 	}
 
+#if USE_SDL == ON
+	_iom = new SDLIOManager(_variables["color"].toInt());
+#else
 	_iom = new CursesIOManager(_variables["color"].toInt());
+#endif
 
 	// create test world
 	Sector* s1 = Generator::generateGrassland();
