@@ -27,11 +27,11 @@ does not represent the final product.
 
 ## How to compile
 
-YARL can be compiled using [CMake](http://www.cmake.org/) 3.2 or later:
+YARL can be compiled using [CMake](http://www.cmake.org/) 3.1 or later:
 
 `$ cmake . && make`
 
-Due to CMake 3.2 being relatively new, many distributions do not yet offer
+Due to CMake 3.1 being relatively new, many distributions do not yet offer
 it in their repositories. On such systems YARL can be compiled with the
 following command:
 
