@@ -35,7 +35,7 @@
 
 using namespace std;
 
-Tile player		= Tile('@', Color::yellow,	"you", true, false);
+Tile player	= Tile( '@', Color::yellow,	"you", true, false );
 
 bool Yarl::init(int argc, char* argv[])
 {
@@ -233,7 +233,7 @@ bool Yarl::loop()
 
 	Command cmd = _bindings[input];
 
-	if (cmd == Command::quit)
+	if (cmd == Command::quit || input == 0)
 		return true;
 
 	if (_moreMessages)

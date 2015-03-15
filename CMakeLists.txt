@@ -2,8 +2,9 @@ cmake_minimum_required (VERSION 3.1)
 
 project (yarl)
 
-set (YARL_VERSION_MAJOR 0)
-set (YARL_VERSION_MINOR 0)
+set (VERSION_MAJOR 0)
+set (VERSION_MINOR 0)
+set (BRANCH develop)
 
 option (USE_SDL "use SDL as backend of the IOManager" ON)
 

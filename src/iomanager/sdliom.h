@@ -43,18 +43,20 @@ private:
 	int _cursX {0};
 	int _cursY {0};
 
+	Uint32 color( Color col );
+
 public:
-	SDLIOManager(bool usecolor, const char* charset = "charset.bmp");
+	SDLIOManager( bool usecolor, const char* charset = "charset.bmp" );
 
 	int width();
 	int height();
 
-	int cursor(bool val);
+	int cursor( bool val );
 
-	void addChar(char c, Color col = Color::white, bool standout = false);
-	void addString(string s, Color col = Color::white, bool standout = false);
+	void addChar( char c, Color col = Color::white, bool standout = false );
+	void addString( string s, Color col = Color::white, bool standout = false );
 
-	void moveCursor(int x, int y);
+	void moveCursor( int x, int y );
 
 	char getChar();
 
