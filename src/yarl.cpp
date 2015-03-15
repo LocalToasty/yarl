@@ -18,18 +18,24 @@
 
 #include "yarl.h"
 
+#include "yarlconfig.h"
 #include "item.h"
 #include "generator.h"
-#include "cursesiomanager.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
+#if USE_SDL == ON
+#include "iomanager/sdliomanager.h"
+#else
+#include "iomanager/cursesiomanager.h"
+#endif
+
 using namespace std;
 
-Tile player		= Tile('@', Color::yellow,	"you", true, false);
+Tile player	= Tile( '@', Color::yellow,	"you", true, false );
 
 bool Yarl::init(int argc, char* argv[])
 {
@@ -123,7 +129,11 @@ bool Yarl::init(int argc, char* argv[])
 		{}
 	}
 
+#if USE_SDL == ON
+	_iom = new SDLIOManager(_variables["color"].toInt());
+#else
 	_iom = new CursesIOManager(_variables["color"].toInt());
+#endif
 
 	// create test world
 	Sector* s1 = Generator::generateGrassland();
@@ -223,7 +233,7 @@ bool Yarl::loop()
 
 	Command cmd = _bindings[input];
 
-	if (cmd == Command::quit)
+	if (cmd == Command::quit || input == 0)
 		return true;
 
 	if (_moreMessages)

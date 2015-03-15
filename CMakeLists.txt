@@ -2,8 +2,31 @@ cmake_minimum_required (VERSION 3.1)
 
 project (yarl)
 
-find_package (Curses REQUIRED)
-include_directories (${CURSES_INCLUDE_DIR})
+set (VERSION_MAJOR 0)
+set (VERSION_MINOR 0)
+set (BRANCH develop)
+
+option (USE_SDL "use SDL as backend of the IOManager" ON)
+
+if (USE_SDL)
+	message (STATUS "Using SDL as IOManager backend.")
+	include (FindPkgConfig)
+	pkg_search_module (SDL2 REQUIRED sdl2)
+	include_directories (${SDL2_INCLUDE_DIRS})
+	set (EXTRA_LIBS ${SDL2_LIBRARIES})
+	set (IOM_SOURCE "src/iomanager/sdliomanager.cpp")
+else (USE_SDL)
+	message (STATUS "Using Curses as IOManager backend.")
+	find_package (Curses REQUIRED)
+	include_directories (${CURSES_INCLUDE_DIR})
+	set (EXTRA_LIBS ${CURSES_LIBRARIES})
+	set (IOM_SOURCE "src/iomanager/cursesiomanager.cpp")
+endif (USE_SDL)
+
+configure_file ("${PROJECT_SOURCE_DIR}/yarlconfig.h.in"
+				"${PROJECT_BINARY_DIR}/yarlconfig.h")
+
+include_directories ("${PROJECT_BINARY_DIR}")
 
 include_directories ("src/"
 					 "src/gameplay/"
@@ -19,11 +42,11 @@ add_executable (yarl
 				src/gameplay/tile.cpp
 				src/command.h
 				src/iomanager/iomanager.cpp
-				src/iomanager/cursesiomanager.cpp
+				${IOM_SOURCE}
 				src/variable.cpp
 				src/statusBar.cpp
 				src/generator.cpp)
 
 set_property (TARGET yarl PROPERTY CXX_STANDARD 11)
 
-target_link_libraries(yarl ${CURSES_LIBRARIES})
+target_link_libraries(yarl ${EXTRA_LIBS})
