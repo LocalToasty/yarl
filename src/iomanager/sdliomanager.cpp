@@ -189,6 +189,8 @@ char SDLIOManager::getChar()
 				return ( char ) e.key.keysym.sym;
 			}
 		}
+
+		SDL_Delay( 20 );	// to lower CPU usage
 	}
 }
 
