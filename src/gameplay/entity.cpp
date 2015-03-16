@@ -17,15 +17,19 @@
  */
 
 #include "entity.h"
+#include "world.h"
+#include "sector.h"
 
 #include "item.h"
 
-Entity::Entity(const Tile& t, int x, int y, int hp, Sector* sector,
+Entity::Entity(const Tile& t, int x, int y, int hp, World* world,
 			   const list<Item*>& inventory) :
-	_t(t), _x(x), _y(y), _hp(hp), _sector(sector), _inventory(inventory)
+	_t(t), _x(x), _y(y), _hp(hp), _world(world), _inventory(inventory)
 {
-	if (sector != nullptr)
-		sector->addEntity(this);
+	_sector = world->sector( x, y );
+
+	if( _sector != nullptr)
+		_sector->addEntity( this );
 }
 
 Entity::~Entity()
@@ -48,6 +52,11 @@ int Entity::y() const
 	return _y;
 }
 
+World* Entity::world() const
+{
+	return _world;
+}
+
 Sector* Entity::sector() const
 {
 	return _sector;
@@ -68,25 +77,27 @@ list<Item*>& Entity::inventory()
 	return _inventory;
 }
 
-void Entity::setX(int x)
+void Entity::setX( int x )
 {
-	setSector(_sector->sectorAt(x, _y));
-	_x = Sector::mod(x);
+	_x = x;
+	setSector(_world->sector(_x, _y));
 }
 
 void Entity::setY(int y)
 {
-	setSector(_sector->sectorAt(_x, y));
-	_y = Sector::mod(y);
+	_y = y;
+	setSector(_world->sector(_x, _y));
 }
 
-void Entity::setSector(Sector* sector)
+void Entity::setSector( Sector* sector )
 {
-	if (_sector != nullptr)
-		_sector->removeEntity(this);
+	if( _sector != nullptr )
+		_sector->removeEntity( this );
+
+	if( sector != nullptr )
+		sector->addEntity( this );
 
 	_sector = sector;
-	_sector->addEntity(this);
 }
 
 void Entity::setSeen(bool seen)
@@ -108,12 +119,11 @@ void Entity::setHp(int hp)
 {
 	if (hp <= 0)
 	{
-		_sector->statusBar()->
+		_world->statusBar().
 			addMessage("The " + _t.description() + " is destroyed.");
 		// drop inventory
 		for (Item* e : _inventory)
 		{
-			e->setSector(_sector);
 			e->setX(_x);
 			e->setY(_y);
 			e->setSeen(false);

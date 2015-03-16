@@ -35,17 +35,17 @@ include_directories ("src/"
 add_executable (yarl
 				src/main.cpp
 				src/yarl.cpp
+				src/command.h
+				src/variable.cpp
+				src/statusbar.cpp
+				src/gameplay/world.cpp
 				src/gameplay/entity.cpp
 				src/gameplay/item.cpp
 				src/gameplay/character.cpp
 				src/gameplay/sector.cpp
 				src/gameplay/tile.cpp
-				src/command.h
 				src/iomanager/iomanager.cpp
-				${IOM_SOURCE}
-				src/variable.cpp
-				src/statusBar.cpp
-				src/generator.cpp)
+				${IOM_SOURCE})
 
 set_property (TARGET yarl PROPERTY CXX_STANDARD 11)
 

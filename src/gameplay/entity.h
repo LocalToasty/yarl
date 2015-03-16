@@ -19,11 +19,12 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "sector.h"
 #include "tile.h"
 #include <list>
 
 class Item;
+class World;
+class Sector;
 
 using namespace std;
 
@@ -37,6 +38,7 @@ private:
 
 	int	_hp;	// hitpoints
 
+	World* _world;
 	Sector* _sector;
 
 	bool _seen {false};	// has the entity been seen yet?
@@ -47,7 +49,7 @@ private:
 	list<Item*>	_inventory;
 
 public:
-	Entity(const Tile& t, int x, int y, int hp, Sector* sector = nullptr,
+	Entity(const Tile& t, int x, int y, int hp, World* world,
 		   const list<Item*>& inventory = {});
 	~Entity();
 
@@ -55,6 +57,7 @@ public:
 
 	int x() const;
 	int y() const;
+	World* world() const;
 	Sector* sector() const;
 
 	bool seen() const;

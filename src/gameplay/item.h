@@ -24,7 +24,7 @@
 class Item : public Entity
 {
 public:
-	Item(const Tile& t, int x, int y, int hp, Sector* sector = nullptr,
+	Item(const Tile& t, int x, int y, int hp, World* world,
 		 list<Item*> inventory = {});
 };
 
