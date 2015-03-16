@@ -310,14 +310,6 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 	x2 = x1 + dx;
 	y2 = y1 + dy;
 
-	// first contains normalised coordinates of entity
-	list<pair<pair<int, int>, Entity*>> blockingEntities;
-	for (Entity* e : s->_entities)
-	{
-		if (!e->t().transparent())
-			blockingEntities.push_back({{e->x(), e->y()}, e});
-	}
-
 	if (abs(dx) > abs(dy))
 	{
 		int y = y1;
@@ -332,12 +324,12 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 			}
 
 			// check if LOS is broken
-			if (!at(x, y)->transparent())
+			if (!s->at(x, y)->transparent())
 				return false;
 
 			// check if an entity blocks the Line of sight
-			for (pair<pair<int, int>, Entity*> e : blockingEntities)
-				if (e.first.first == x && e.first.second == y)
+			for ( Entity* e : s->entitiesAt( x, y ) )
+				if ( !e->t().transparent() )
 					return false;
 
 			c += abs(dy);
@@ -357,12 +349,12 @@ bool Sector::los(int x1, int y1, int x2, int y2, double max)
 			}
 
 			// check if LOS is broken
-			if (!at(x, y)->transparent())
+			if (!s->at(x, y)->transparent())
 				return false;
 
 			// check if an entity blocks the Line of sight
-			for (pair<pair<int, int>, Entity*> e : blockingEntities)
-				if (e.first.first == x && e.first.second == y)
+			for ( Entity* e : s->entitiesAt( x, y ) )
+				if ( !e->t().transparent() )
 					return false;
 
 			c += abs(dx);
