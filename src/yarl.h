@@ -20,24 +20,24 @@
 #define YARL_H
 
 #include "sector.h"
-#include "character.h"
 #include "tile.h"
 #include "variable.h"
-#include "iomanager/iomanager.h"
-#include "statusBar.h"
+#include "statusbar.h"
 #include "command.h"
 #include <string>
 #include <map>
 
 using namespace std;
 
+class World;
+class IOManager;
+
 class Yarl
 {
 private:
-	Character* _player;
+	World* _world;
 
 	IOManager* _iom;
-	StatusBar _statusBar;
 
 	map<string, Variable> _variables;
 	map<char, Command> _bindings;

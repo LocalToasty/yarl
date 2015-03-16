@@ -29,20 +29,17 @@ private:
 	int _visionRange;
 
 public:
-	Character(const Tile& t, int x, int y, int hp, int visionRange,
-			  Sector* currentSector = nullptr,
-			  const list<Item*>& inventory = {});
+	Character( const Tile& t, int x, int y, int hp, int visionRange,
+			   World* world,
+			   const list<Item*>& inventory = {});
 
-	bool move(int dx, int dy);
+	bool move( int dx, int dy );
 
-	void attack(int dx, int dy);
-	void attack(Entity* target);
+	void attack( int dx, int dy );
+	void attack( Entity* target );
 
-	bool los(int x, int y, double factor = 1) const;
-
-	list<pair<pair<int, int>, Entity*>> entitiesAround(int rx, int y,
-													   int offX, int offY,
-													   int width, int height);
+	bool los( int x, int y, double factor = 1 ) const;
+	bool los( Entity* e );
 };
 
 #endif

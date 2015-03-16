@@ -17,21 +17,21 @@
  */
 
 #include "character.h"
+#include "world.h"
 #include "sector.h"
 
 Character::Character(const Tile& t, int x, int y, int hp, int visionRange,
-					 Sector* currentSector,
-					 const list<Item*>& inventory) :
-	Entity(t, x, y, hp, currentSector, inventory), _visionRange(visionRange)
+					 World* world, const list<Item*>& inventory) :
+	Entity(t, x, y, hp, world, inventory), _visionRange(visionRange)
 {
 }
 
-bool Character::move(int dx, int dy)
+bool Character::move( int dx, int dy )
 {
-	if (sector()->passableAt(x() + dx, y() + dy))
+	if ( world()->passable( x() + dx, y() + dy ) )
 	{
-		setX(x() + dx);
-		setY(y() + dy);
+		setX( x() + dx );
+		setY( y() + dy );
 		return true;
 	}
 
@@ -40,7 +40,7 @@ bool Character::move(int dx, int dy)
 
 void Character::attack(int dx, int dy)
 {
-	list<Entity*> targets = sector()->entitiesAt(x() + dx, y() + dy);
+	vector<Entity*> targets = world()->entities( x() + dx, y() + dy );
 
 	for (Entity* e : targets)
 	{
@@ -50,21 +50,17 @@ void Character::attack(int dx, int dy)
 
 void Character::attack(Entity* target)
 {
-	sector()->statusBar()->addMessage("You attack the " +
+	world()->statusBar().addMessage("You attack the " +
 									  target->t().description() + '.');
 	target->setHp(target->hp() - 1);
 }
 
 bool Character::los(int x, int y, double factor) const
 {
-	return sector()->los(this->x(), this->y(), x, y, _visionRange * factor);
+	return world()->los( this->x(), this->y(), x, y, _visionRange * factor );
 }
 
-list<pair<pair<int, int>, Entity*>> Character::entitiesAround(int x, int y,
-															  int offX,
-															  int offY,
-															  int width,
-															  int height)
+bool Character::los(Entity* e)
 {
-	return sector()->entitiesAround(x, y, offX, offY, width, height);
+	return los( e->x(), e->y() );
 }

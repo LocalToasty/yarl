@@ -19,8 +19,8 @@
 #include "item.h"
 
 
-Item::Item(const Tile& t, int x, int y, int hp,
-		   Sector* sector, list<Item*> inventory) :
-	Entity(t, x, y, hp, sector, inventory)
+Item::Item( const Tile& t, int x, int y, int hp,
+			World* world, list<Item*> inventory ) :
+	Entity( t, x, y, hp, world, inventory )
 {
 }

@@ -16,53 +16,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SECTOR_H
-#define SECTOR_H
+#ifndef WORLD_H
+#define WORLD_H
 
-#include "tile.h"
 #include "command.h"
+#include "statusbar.h"
 #include <vector>
-#include <list>
 
 using namespace std;
 
+class Sector;
+class Character;
 class Tile;
-
-// declaration to not run into recursion issiues
 class Entity;
 
-class Sector
+class World
 {
 private:
-	// size of a sector has to be hardwired so they can be tiled
-	static const int _size;
+	int _width;
+	int _height;
 
-	// vector containing the tiles (stored linearly row for row)
-	vector<Tile*> _tiles;
-	vector<bool> _explored;
+	vector<Sector*> _sectors;
 
-	// a list of all entities in the sector (i.e. characters, items, props)
-	// the bottommost entity has highest render priority
-	list<Entity*> _entities;
+	StatusBar _statusBar;
+
+	Character* _player;
+
+	static Tile grass;
+	static Tile mud;
+	static Tile tree;
+	static Tile none;
+	static Tile bush;
+	static Tile stump;
+	static Tile hero;
 
 public:
-	Sector(Tile* defTile);
-	~Sector();
+	World( int width, int height );
+	~World();
 
-	static int size();
+	bool los(int x1, int y1, int x2, int y2, double range = -1 );
+	vector<Command> route( int x1, int y1, int x2, int y2 );
 
-	const list<Entity*>& entities() const;
-	vector<Entity*> entities( int x, int y ) const;
-	void addEntity(Entity* e);
-	void removeEntity(Entity* e);
+	Sector* sector( int x, int y );
+	Character* player();
 
 	Tile* tile( int x, int y );
-	void setTile( int x, int y, Tile* tile );
+	void setTile( int x, int y, Tile* t );
+
+	bool explored( int x, int y );
+	bool setExplored( int x, int y, bool explored = true );
 
 	bool passable( int x, int y );
 
-	bool explored( int x, int y );
-	void setExplored( int x, int y, bool explored = true );
+	vector<Entity*> entities( int x, int y );
+	vector<Entity*> entities( int x1, int y1, int x2, int y2 );
+	void addEntitiy( Entity* e );
+	void removeEntity( Entity* e );
+
+	StatusBar& statusBar();
 };
 
 #endif

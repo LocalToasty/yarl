@@ -20,7 +20,8 @@
 
 #include "yarlconfig.h"
 #include "item.h"
-#include "generator.h"
+#include "character.h"
+#include "world.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
@@ -34,8 +35,6 @@
 #endif
 
 using namespace std;
-
-Tile player	= Tile( '@', Color::yellow,	"you", true, false );
 
 bool Yarl::init(int argc, char* argv[])
 {
@@ -136,55 +135,44 @@ bool Yarl::init(int argc, char* argv[])
 #endif
 
 	// create test world
-	Sector* s1 = Generator::generateGrassland();
-	Sector* s2 = Generator::generateGrassland();
-	s1->setNorth(s2);
-	s1->setSouth(s2);
-	s1->setWest(s2);
-	s1->setEast(s2);
-	s2->setNorth(s1);
-	s2->setSouth(s1);
-	s2->setWest(s1);
-	s2->setEast(s1);
+	_world = new World( 5, 5 );
 
-	_player = new Character(player, 42, 42, 5, 16, s1);
-
-	Sector::setStatusBar(&_statusBar);
 	return true;
 }
 
 void Yarl::render()
 {
+	Character* player = _world->player();
 	// get window proportions
 	int width = _iom->width();
 	int height = _iom->height();
 
-	int offX = width / 2 - _player->x();
-	int offY = height / 2 - _player->y();
+	int offX = width / 2 - player->x();
+	int offY = height / 2 - player->y();
 
 	// render the room
-	for (int row = 0; row < height; row++)
+	for ( int row = 0; row < height; row++ )
 	{
-		_iom->moveCursor(0, row);
-		for (int col = 0; col < width; col++)
+		_iom->moveCursor( 0, row );
+		for ( int col = 0; col < width; col++ )
 		{
-			Tile* t = _player->sector()->at(col - offX, row - offY);
+			Tile* t = _world->tile( col - offX, row - offY );
 			if (t != nullptr &&
-				_player->los(col - offX, row - offY))
+				player->los( col - offX, row - offY ) )
 			{
 				// render tiles the character has a LOS to
-				_player->sector()->setExplored(col - offX, row - offY);
+				_world->setExplored( col - offX, row - offY );
 
-				_iom->addChar(t->repr(), t->color(),
-								 _variables["visibleBold"].toInt());
+				_iom->addChar( t->repr(), t->color(),
+							   _variables["visibleBold"].toInt() );
 			}
-			else if(t != nullptr &&
-					(_variables["showUnknown"].toInt()	||
-					 (_variables["showUnseen"].toInt()	&&
-					  _player->sector()->explored(col - offX, row - offY))))
+			else if( t != nullptr &&
+					 ( _variables["showUnknown"].toInt() ||
+					   ( _variables["showUnseen"].toInt() &&
+						 _world->explored( col - offX, row - offY ) ) ) )
 			{
 				// tiles the player has seen before are rendered in grey
-				_iom->addChar(t->repr());
+				_iom->addChar( t->repr() );
 			}
 			else
 			{
@@ -194,34 +182,34 @@ void Yarl::render()
 	}
 
 	// render entities
-	for (pair<pair<int, int>, Entity*> e :
-		 _player->entitiesAround(_player->x(), _player->y(),
-								 offX, offY, width, height))
+	for( Entity* e :
+		 _world->entities( player->x() - width / 2, player->y() - height / 2,
+						   player->x() + width / 2, player->y() + height / 2 ) )
 	{
-		if (_player->los(e.first.first - offX, e.first.second - offY))
+		if( player->los( e ))
 		{
-			e.second->setSeen();
-			e.second->setLastKnownX();
-			e.second->setLastKnownY();
+			e->setSeen();
+			e->setLastKnownX();
+			e->setLastKnownY();
 
-			_iom->moveAddChar(e.first.first, e.first.second,
-							   e.second->t().repr(), e.second->t().color(),
-							   _variables["visibleBold"].toInt());
+			_iom->moveAddChar( e->x() + offX, e->y() + offY,
+							   e->t().repr(), e->t().color(),
+							   _variables["visibleBold"].toInt() );
 		}
-		else if (_variables["showUnknown"].toInt() ||
-				 (_variables["showUnseen"].toInt() &&
-				  e.second->seen()))
+		else if( _variables["showUnknown"].toInt() ||
+				 ( _variables["showUnseen"].toInt() &&
+				   e->seen() ) )
 		{
-			_iom->moveAddChar(e.first.first, e.first.second,
-							   e.second->t().repr());
+			_iom->moveAddChar( e->x() + offX, e->y() + offY,
+							   e->t().repr());
 		}
 	}
 
 	// render status bar
-	if (!_statusBar.empty())
+	if (!_world->statusBar().empty())
 	{
-		_iom->moveAddString(0, 0, _statusBar.getLine(width).c_str());
-		_moreMessages = !_statusBar.empty();
+		_iom->moveAddString( 0, 0, _world->statusBar().getLine(width).c_str() );
+		_moreMessages = !_world->statusBar().empty();
 	}
 
 	_iom->refreshScreen();
@@ -262,8 +250,8 @@ bool Yarl::loop()
 				 cmd == Command::southEast)
 			dy = 1;
 
-		if (!_player->move(dx, dy))
-			_player->attack(dx, dy);
+		if (!_world->player()->move(dx, dy))
+			_world->player()->attack(dx, dy);
 	}
 
 	// continue main loop
