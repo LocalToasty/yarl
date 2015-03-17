@@ -86,6 +86,43 @@ bool Yarl::init(int argc, char* argv[])
 #endif
 	}
 
+	for( int i = 0; i < argc; i++ )
+	{
+		string arg = argv[i];
+
+		if( arg == "-h" || arg == "--help" )
+		{
+			usage();
+			return false;
+		}
+
+		else if( arg == "-v" || arg == "--version" )
+		{
+			cout << PROJECT_NAME
+				 << ", version " << VERSION_MAJOR << '.' << VERSION_MINOR
+				 << '.' << VERSION_PATCH << " (" << BUILD_TYPE << ")\n"
+					"Copyright (C) 2015  Marko van Treeck "
+					"<markovantreeck@gmail.com>\n"
+					"License GPLv3+: GNU GPL version 3 or later "
+					"<http://gnu.org/licenses/>";
+			return false;
+		}
+
+		else if( arg == "-c" || arg == "--config" )
+		{
+			i++;
+			if( i < argc )
+				configFilePath == argv[i];
+			else
+			{
+				cerr << "Error: expected configuration file name!\n";
+
+				usage( cerr );
+				return false;
+			}
+		}
+	}
+
 	// if there is a potential config file, try to load it
 	if (!configFilePath.empty())
 	{
@@ -113,20 +150,6 @@ bool Yarl::init(int argc, char* argv[])
 				_variables[name] = val;
 			}
 		}
-	}
-
-	// read variables from commandline
-	if (argc % 2 == 0)
-		argc --;
-
-	for (int i = 1; i < argc; i += 2)
-	{
-		try
-		{
-			_variables[argv[i]] = argv[i + 1];
-		}
-		catch (logic_error)
-		{}
 	}
 
 #if USE_SDL == ON
@@ -272,17 +295,20 @@ int Yarl::cleanup()
 	return 0;
 }
 
-string Yarl::usage()
+void Yarl::usage( ostream& out )
 {
-	return "Usage:\n"
-		   "yarl {<VAR NAME> <VAR VALUE>}\n";
+	out << "Usage: " << PROJECT_NAME << " {option}\n\n"
+		   "Options:\n"
+		   "\t-h, --help\tthis screen.\n"
+		   "\t-v, --version\tversion information.\n"
+		   "\t-c, --config <file name>\n\t\t\tconfiguration file to read from.\n";
 }
 
 int Yarl::exec(int argc, char* argv[])
 {
-	if (!init(argc, argv))
+	if ( !init( argc, argv ) )
 	{
-		return -1;
+		return 0;
 	}
 
 	bool finished = false;

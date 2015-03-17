@@ -24,6 +24,7 @@
 #include "variable.h"
 #include "statusbar.h"
 #include "command.h"
+#include <iostream>
 #include <string>
 #include <map>
 
@@ -42,19 +43,19 @@ private:
 	map<string, Variable> _variables;
 	map<char, Command> _bindings;
 
-	bool _moreMessages {false};
+	bool _moreMessages { false };
 
-	bool init(int argc, char* argv[]);
+	bool init( int argc, char* argv[] );
 
 	void render();
 	bool loop();
 
 	int cleanup();
 
-	string usage();
+	void usage( ostream& out = cout );
 
 public:
-	int exec(int argc, char* argv[]);
+	int exec( int argc, char* argv[] );
 };
 
 #endif

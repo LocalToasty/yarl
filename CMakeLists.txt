@@ -4,7 +4,7 @@ project (yarl)
 
 set (VERSION_MAJOR 0)
 set (VERSION_MINOR 0)
-set (BRANCH develop)
+set (VERSION_PATCH 0)
 
 option (USE_SDL "use SDL as backend of the IOManager" ON)
 
