@@ -60,8 +60,6 @@ World::World(int width, int height ) :
 
 	_player = new Character( hero, 42, 42, 5, 16, this );
 
-	new Entity( tree, 44, 42, 1, this );
-
 	new Dog( 52, 42, this );
 }
 

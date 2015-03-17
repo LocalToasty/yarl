@@ -2,6 +2,7 @@
 #include "world.h"
 #include "entity.h"
 #include "character.h"
+#include <cstdlib>
 
 Tile Dog::dog = { 'd', Color::red, "Dog", true, false };
 
@@ -15,14 +16,14 @@ void Dog::think()
 {
 	for( Entity* e : world()->entities( x() - visionRange(),
 										y() - visionRange(),
-										x() + visionRange(),
-										y() + visionRange() ) )
+										x() + visionRange() + 1,
+										y() + visionRange() + 1 ) )
 	{
 		Character* c = dynamic_cast<Character*>( e );
 		if( c != nullptr && c != this && los( e ) )
 		{
-			_waypointX = e->x();
-			_waypointY = e->y();
+			_waypointX = e->x() + ( rand() % 9 ) - 4;
+			_waypointY = e->y() + ( rand() % 9 ) - 4;
 			break;
 		}
 	}
@@ -30,8 +31,8 @@ void Dog::think()
 	Command cmd = world()->route( x(), y(),
 								  _waypointX, _waypointY, true ).front();
 
-	int dx;
-	int dy;
+	int dx = 0;
+	int dy = 0;
 
 	if( cmd == Command::west ||
 		cmd == Command::northWest ||
