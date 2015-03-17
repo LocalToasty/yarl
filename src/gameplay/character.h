@@ -30,8 +30,7 @@ private:
 
 public:
 	Character( const Tile& t, int x, int y, int hp, int visionRange,
-			   World* world,
-			   const list<Item*>& inventory = {});
+			   World* world, const list<Item*>& inventory = {} );
 
 	bool move( int dx, int dy );
 
@@ -40,6 +39,8 @@ public:
 
 	bool los( int x, int y, double factor = 1 ) const;
 	bool los( Entity* e );
+
+	int visionRange();
 };
 
 #endif

@@ -42,6 +42,8 @@ private:
 
 	Character* _player;
 
+	double _time;
+
 	static Tile grass;
 	static Tile mud;
 	static Tile tree;
@@ -55,7 +57,8 @@ public:
 	~World();
 
 	bool los(int x1, int y1, int x2, int y2, double range = -1 );
-	vector<Command> route( int x1, int y1, int x2, int y2 );
+	vector<Command> route( int x1, int y1, int x2, int y2,
+						   bool converge = false );
 
 	Sector* sector( int x, int y );
 	Character* player();
@@ -72,6 +75,10 @@ public:
 	vector<Entity*> entities( int x1, int y1, int x2, int y2 );
 	void addEntitiy( Entity* e );
 	void removeEntity( Entity* e );
+
+	double time();
+	void letTimePass( double time );
+	void think();
 
 	StatusBar& statusBar();
 };

@@ -53,8 +53,8 @@ public:
 
 	const list<Entity*>& entities() const;
 	vector<Entity*> entities( int x, int y ) const;
-	void addEntity(Entity* e);
-	void removeEntity(Entity* e);
+	void addEntity( Entity* e );
+	void removeEntity( Entity* e );
 
 	Tile* tile( int x, int y );
 	void setTile( int x, int y, Tile* tile );

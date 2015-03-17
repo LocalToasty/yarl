@@ -22,6 +22,7 @@
 #include "item.h"
 #include "character.h"
 #include "world.h"
+#include "npc.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
@@ -217,8 +218,9 @@ void Yarl::render()
 
 bool Yarl::loop()
 {
-	char input = _iom->getChar();
+	Character* player = _world->player();
 
+	char input = _iom->getChar();
 	Command cmd = _bindings[input];
 
 	if (cmd == Command::quit || input == 0)
@@ -232,27 +234,31 @@ bool Yarl::loop()
 		int dx = 0;
 		int dy = 0;
 
-		if (cmd == Command::west ||
+		if( cmd == Command::west ||
 			cmd == Command::northWest ||
-			cmd == Command::southWest)
+			cmd == Command::southWest )
 			dx = -1;
-		else if (cmd == Command::east ||
+		else if( cmd == Command::east ||
 				 cmd == Command::northEast ||
-				 cmd == Command::southEast)
+				 cmd == Command::southEast )
 			dx = 1;
 
-		if (cmd == Command::north ||
+		if( cmd == Command::north ||
 			cmd == Command::northWest ||
-			cmd == Command::northEast)
+			cmd == Command::northEast )
 			dy = -1;
-		else if (cmd == Command::south ||
+		else if( cmd == Command::south ||
 				 cmd == Command::southWest ||
-				 cmd == Command::southEast)
+				 cmd == Command::southEast )
 			dy = 1;
 
-		if (!_world->player()->move(dx, dy))
-			_world->player()->attack(dx, dy);
+		_world->letTimePass( ( abs( dx ) + abs( dy ) == 1 ) ? 1 : 1.5 );
+
+		if( !player->move( dx, dy ) )
+			player->attack( dx, dy );
 	}
+
+	_world->think();
 
 	// continue main loop
 	return false;

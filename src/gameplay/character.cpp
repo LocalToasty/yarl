@@ -64,3 +64,8 @@ bool Character::los(Entity* e)
 {
 	return los( e->x(), e->y() );
 }
+
+int Character::visionRange()
+{
+	return _visionRange;
+}
