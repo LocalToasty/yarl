@@ -24,7 +24,7 @@
 class CursesIOManager : public IOManager
 {
 private:
-	short cp(Color col);
+	short cp( Color col );
 
 public:
 	CursesIOManager(bool usecolor = true);
@@ -33,17 +33,16 @@ public:
 	int width();
 	int height();
 
-	int cursor(bool val);
+	int cursor( bool val );
 
-	void addChar(char c, Color col = Color::white, bool standout = false);
-	void addString(string s, Color col = Color::white, bool standout = false);
+	void addChar( char c, Color col = Color::white );
+	void addString( string s, Color col = Color::white );
 
 	void moveCursor(int x, int y);
 
 	char getChar();
 
 	void refreshScreen();
-	void close();
 };
 
 #endif

@@ -38,7 +38,7 @@ enum class Color
 class IOManager
 {
 public:
-//	Constructor(bool usecolor);
+	virtual ~IOManager();
 
 	// width of the terminal screen
 	virtual int width() = 0;
@@ -46,30 +46,26 @@ public:
 	virtual int height() = 0;
 
 	// turn the cursor on or off
-	virtual int cursor(bool val) = 0;
+	virtual int cursor( bool val ) = 0;
 
 	// replace the character at the current cursor location
-	virtual void addChar(char c, Color col = Color::white,
-					   bool standout = false) = 0;
+	virtual void addChar( char c, Color col = Color::white ) = 0;
 	// write a string of characters
-	virtual void addString(string s, Color col = Color::white,
-					  bool standout = false) = 0;
+	virtual void addString( string s, Color col = Color::white ) = 0;
 
 	// move the cursor to the given coordinates
-	virtual void moveCursor(int x, int y) = 0;
+	virtual void moveCursor( int x, int y ) = 0;
 
 	// combined functions
-	virtual void moveAddChar(int x, int y, char c, Color col = Color::white,
-						 bool standout = false);
-	virtual void moveAddString(int x, int y, string s, Color col = Color::white,
-						  bool standout = false);
+	virtual void moveAddChar( int x, int y, char c, Color col = Color::white );
+	virtual void moveAddString( int x, int y, string s,
+								Color col = Color::white );
 
 	// read one character from the keyboard
 	virtual char getChar() = 0;
 
 	// show all changes made to the streambuffer
 	virtual void refreshScreen() = 0;
-	virtual void close() = 0;
 };
 
 #endif

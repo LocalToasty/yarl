@@ -54,15 +54,21 @@ CursesIOManager::CursesIOManager(bool usecolor)
 	initscr();
 	cbreak();
 	noecho();
-	curs_set(0);	// no cursor
+	curs_set( 0 );	// no cursor
 
 	// initialize colors
-	if (has_colors() && usecolor)
+	if ( has_colors() && usecolor )
 	{
 		start_color();
-		for (int i = 1; i < 8; i++)
-			init_pair(i, i, COLOR_BLACK);
+
+		for ( int i = 1; i < 8; i++ )
+			init_pair( i, i, COLOR_BLACK );
 	}
+}
+
+CursesIOManager::~CursesIOManager()
+{
+	endwin();
 }
 
 int CursesIOManager::width()
@@ -72,42 +78,37 @@ int CursesIOManager::width()
 
 int CursesIOManager::height()
 {
-	return getmaxy(stdscr);
+	return getmaxy( stdscr );
 }
 
-int CursesIOManager::cursor(bool val)
+int CursesIOManager::cursor( bool val)
 {
 	curs_set(val);
 }
 
-void CursesIOManager::addChar(char c, Color col, bool standout)
+void CursesIOManager::addChar( char c, Color col )
 {
-	attrset(COLOR_PAIR(cp(col)) | (standout ? A_BOLD : A_NORMAL));
-	addch(c);
+	attrset( COLOR_PAIR( cp( col ) ) );
+	addch( c );
 }
 
-void CursesIOManager::addString(string s, Color col, bool standout)
+void CursesIOManager::addString( string s, Color col)
 {
-	attrset(COLOR_PAIR(cp(col)) | (standout ? A_BOLD : A_NORMAL));
+	attrset( COLOR_PAIR( cp( col ) ) );
 	addstr(s.c_str());
 }
 
-void CursesIOManager::moveCursor(int x, int y)
+void CursesIOManager::moveCursor( int x, int y )
 {
-	move(y, x);
+	move( y, x );
 }
 
 char CursesIOManager::getChar()
 {
-	return (char) getch();
+	return ( char ) getch();
 }
 
 void CursesIOManager::refreshScreen()
 {
 	refresh();
-}
-
-void CursesIOManager::close()
-{
-	endwin();
 }

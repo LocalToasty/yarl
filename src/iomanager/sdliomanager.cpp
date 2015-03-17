@@ -57,7 +57,7 @@ Uint32 SDLIOManager::color(Color col)
 	}
 }
 
-SDLIOManager::SDLIOManager(bool usecolor, const char* charset)
+SDLIOManager::SDLIOManager( bool usecolor, const char* charset )
 {
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
 	{
@@ -106,6 +106,14 @@ SDLIOManager::SDLIOManager(bool usecolor, const char* charset)
 	SDL_UpdateWindowSurface( _window );
 }
 
+SDLIOManager::~SDLIOManager()
+{
+	SDL_DestroyWindow( _window );
+	SDL_FreeSurface( _charset );
+
+	SDL_Quit();
+}
+
 int SDLIOManager::width()
 {
 	return _width;
@@ -116,12 +124,12 @@ int SDLIOManager::height()
 	return _height;
 }
 
-int SDLIOManager::cursor(bool val)
+int SDLIOManager::cursor( bool val )
 {
 	// TODO
 }
 
-void SDLIOManager::addChar( char c, Color col, bool standout )
+void SDLIOManager::addChar( char c, Color col )
 {	
 	SDL_Surface* screen = SDL_GetWindowSurface( _window );
 
@@ -149,10 +157,10 @@ void SDLIOManager::addChar( char c, Color col, bool standout )
 	}
 }
 
-void SDLIOManager::addString( string s, Color col, bool standout )
+void SDLIOManager::addString( string s, Color col )
 {
 	for ( char c : s )
-		addChar( c, col, standout );
+		addChar( c, col );
 }
 
 void SDLIOManager::moveCursor( int x, int y )
@@ -197,12 +205,4 @@ char SDLIOManager::getChar()
 void SDLIOManager::refreshScreen()
 {
 	SDL_UpdateWindowSurface( _window );
-}
-
-void SDLIOManager::close()
-{
-	SDL_DestroyWindow( _window );
-	SDL_FreeSurface( _charset );
-
-	SDL_Quit();
 }

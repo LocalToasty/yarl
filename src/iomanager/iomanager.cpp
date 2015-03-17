@@ -18,16 +18,19 @@
 
 #include "iomanager.h"
 
-void IOManager::moveAddChar(int x, int y, char c, Color col, bool standout)
+IOManager::~IOManager()
 {
-	moveCursor(x, y);
-	addChar(c, col, standout);
+}
+
+void IOManager::moveAddChar( int x, int y, char c, Color col )
+{
+	moveCursor( x, y );
+	addChar( c, col );
 }
 
 
-void IOManager::moveAddString(int x, int y, std::string s, Color col,
-							 bool standout)
+void IOManager::moveAddString( int x, int y, std::string s, Color col )
 {
-	moveCursor(x, y);
-	addString(s, col, standout);
+	moveCursor( x, y );
+	addString( s, col );
 }

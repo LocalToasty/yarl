@@ -43,7 +43,6 @@ bool Yarl::init(int argc, char* argv[])
 	_variables =
 	{
 		{"color",		{"1",	"enable / disable color."}},
-		{"visibleBold",	{"1",	"draw visible tiles bold."}},
 		{"showUnknown",	{"0",	"draw unexplored areas."}},
 		{"showUnseen",	{"1",	"draw explored, "
 								"but currently not seen areas."}}
@@ -153,9 +152,9 @@ bool Yarl::init(int argc, char* argv[])
 	}
 
 #if USE_SDL == ON
-	_iom = new SDLIOManager(_variables["color"].toInt());
+	_iom = new SDLIOManager( _variables["color"].toInt() );
 #else
-	_iom = new CursesIOManager(_variables["color"].toInt());
+	_iom = new CursesIOManager( _variables["color"].toInt() );
 #endif
 
 	// create test world
@@ -187,8 +186,7 @@ void Yarl::render()
 				// render tiles the character has a LOS to
 				_world->setExplored( col - offX, row - offY );
 
-				_iom->addChar( t->repr(), t->color(),
-							   _variables["visibleBold"].toInt() );
+				_iom->addChar( t->repr(), t->color() );
 			}
 			else if( t != nullptr &&
 					 ( _variables["showUnknown"].toInt() ||
@@ -217,8 +215,7 @@ void Yarl::render()
 			e->setLastKnownY();
 
 			_iom->moveAddChar( e->x() + offX, e->y() + offY,
-							   e->t().repr(), e->t().color(),
-							   _variables["visibleBold"].toInt() );
+							   e->t().repr(), e->t().color() );
 		}
 		else if( _variables["showUnknown"].toInt() ||
 				 ( _variables["showUnseen"].toInt() &&
@@ -232,7 +229,8 @@ void Yarl::render()
 	// render status bar
 	if (!_world->statusBar().empty())
 	{
-		_iom->moveAddString( 0, 0, _world->statusBar().getLine(width).c_str() );
+		_iom->moveAddString( 0, 0,
+							 _world->statusBar().getLine(width).c_str() );
 		_moreMessages = !_world->statusBar().empty();
 	}
 
@@ -289,7 +287,6 @@ bool Yarl::loop()
 
 int Yarl::cleanup()
 {
-	_iom->close();
 	delete _iom;
 
 	return 0;
