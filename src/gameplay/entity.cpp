@@ -34,7 +34,12 @@ Entity::Entity(const Tile& t, int x, int y, int hp, World* world,
 
 Entity::~Entity()
 {
-	_sector->removeEntity(this);
+	if( _sector != nullptr )
+		_sector->removeEntity(this);
+}
+
+void Entity::think()
+{
 }
 
 const Tile& Entity::t() const

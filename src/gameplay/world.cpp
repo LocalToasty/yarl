@@ -19,6 +19,7 @@
 #include "world.h"
 #include "sector.h"
 #include "character.h"
+#include "dog.h"
 #include "item.h"
 #include <cmath>
 #include <algorithm>
@@ -58,6 +59,10 @@ World::World(int width, int height ) :
 	}
 
 	_player = new Character( hero, 42, 42, 5, 16, this );
+
+	new Entity( tree, 44, 42, 1, this );
+
+	new Dog( 52, 42, this );
 }
 
 bool World::los( int x1, int y1, int x2, int y2, double range )
@@ -143,15 +148,17 @@ int max(int x, int y)
 	return (x > y) ? x : y;
 }
 
-int heuristic(int x1, int y1, int x2, int y2)
+int heuristic( int x1, int y1, int x2, int y2 )
 {
-	int dx = abs(x2 - x1);
-	int dy = abs(y2 - y1);
+	int dx = abs( x2 - x1 );
+	int dy = abs( y2 - y1 );
 
-	return max(dx, dy);
+	return min( dx, dy ) + 2 * max( dx, dy );
 }
 
-vector<Command> World::route( int x1, int y1, int x2, int y2 )
+// calculates a route from (x1, y2) to (x2, y2). If converge is true, the path
+// will only lead to a tile next to the destination.
+vector<Command> World::route( int x1, int y1, int x2, int y2 , bool converge )
 {
 	// A* search (see http://en.wikipedia.org/wiki/A*_search_algorithm)
 
@@ -165,7 +172,7 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 )
 	} Node;
 
 	// if the destination is not passable, there is no route to it.
-	if( !passable( x2, y2 ) )
+	if( !passable( x2, y2 ) && !converge )
 	{
 		return { Command::none };
 	}
@@ -173,7 +180,8 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 )
 	// frontier is a priority queue initialised with the starting point
 	list<Node*> frontier;
 
-	frontier.push_back( new Node { 0, 0, Command::none, nullptr, { x1, y1 } } );
+	frontier.push_back( new Node { 0, 0, Command::none,
+								   nullptr, { x1, y1 } } );
 
 	vector<Node*> explored;
 
@@ -224,40 +232,40 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 )
 
 		// north
 		int ty = y - 1;
-		if( passable( x, ty ) )
+		if( passable( x, ty ) || ( converge && x == x2 && ty == y2 ) )
 			passableNeighbours.push_back( { Command::north, { x, ty } } );
 
 		int tx = x - 1;
 		// north west
-		if( passable( tx, ty ) )
+		if( passable( tx, ty ) || ( converge && tx == x2 && ty == y2 ) )
 			passableNeighbours.push_back( { Command::northWest, { tx, ty } } );
 
 		// west
-		if ( passable( tx, y ) )
+		if ( passable( tx, y ) || ( converge && tx == x2 && y == y2 ) )
 			passableNeighbours.push_back( { Command::west, { tx, y } } );
 
 		ty = y + 1;
 		// south west
-		if( passable( tx, ty ) )
+		if( passable( tx, ty ) || ( converge && tx == x2 && ty == y2 ) )
 			passableNeighbours.push_back( { Command::southWest, { tx, ty } } );
 
 		// south
-		if( passable( x, ty ) )
+		if( passable( x, ty ) || ( converge && x == x2 && ty == y2 ) )
 			passableNeighbours.push_back( { Command::south, { x, ty } } );
 
 		tx = x + 1;
 		// south east
-		if( passable( tx, ty ) )
+		if( passable( tx, ty ) || ( converge && tx == x2 && ty == y2 ) )
 			passableNeighbours.push_back( { Command::southEast, { tx, ty } } );
 
 		// east
-		if ( passable( tx, y ) )
+		if ( passable( tx, y ) || ( converge && tx == x2 && y == y2 ) )
 			passableNeighbours.push_back( { Command::east, { tx, y } } );
 
 		ty = y - 1;
 		// north east
-		if (passable(tx, ty))
-			passableNeighbours.push_back({Command::northEast, { tx, ty } } );
+		if ( passable(tx, ty) || ( converge && tx == x2 && ty == y2 ) )
+			passableNeighbours.push_back({ Command::northEast, { tx, ty } } );
 
 		for ( pair<Command, pair<int, int>> neighbour : passableNeighbours )
 		{
@@ -272,7 +280,30 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 )
 				}
 			}
 
-			auto comp = [](const Node* l, const Node* r)
+			int movementCost = node->g;
+
+			switch( neighbour.first )
+			{
+			case Command::north:
+			case Command::south:
+			case Command::west:
+			case Command::east:
+				movementCost = 2;
+				break;
+
+			case Command::northWest:
+			case Command::northEast:
+			case Command::southWest:
+			case Command::southEast:
+				movementCost = 3;
+				break;
+			}
+
+			int h = heuristic( neighbour.second.first,
+							   neighbour.second.second, x2, y2 ) +
+					movementCost;
+
+			auto comp = []( const Node* l, const Node* r )
 			{
 				return l->h < r->h;
 			};
@@ -280,32 +311,27 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 )
 			bool inFrontier = false;
 			for (Node* n : frontier)
 			{
+
 				if (n->c == neighbour.second)
 				{
 					inFrontier = true;
 
 					// node was already found earlier, but the newly found path
 					// to node is shorter
-					if ( n->g >
-						 node->g + 1 + heuristic( neighbour.second.first,
-												  neighbour.second.second,
-												  x2, y2 ) )
+					if ( n->g > movementCost )
 					{
 						// replace the old node
 						delete n;
 						frontier.remove(n);
 
-						n = new Node {node->g + 1 +
-									  heuristic(neighbour.second.first,
-												neighbour.second.second,
-												x2, y2),
-									  node->g + 1, neighbour.first, node,
-									  neighbour.second};
+						n = new Node { h, movementCost, neighbour.first, node,
+									   neighbour.second };
 
-						auto pos = lower_bound(frontier.begin(), frontier.end(),
-											   n, comp);
+						auto pos = lower_bound( frontier.begin(),
+												frontier.end(),
+												n, comp);
 
-						frontier.insert(pos, n);
+						frontier.insert( pos, n );
 						break;
 					}
 				}
@@ -313,14 +339,10 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 )
 
 			// if the node is not yet in the frontier and nor has been found
 			// yet, add it to the frontier
-			if (!inExplored && !inFrontier)
+			if ( !inExplored && !inFrontier )
 			{
-				Node* n = new Node { node->g + 1 +
-									 heuristic( neighbour.second.first,
-												neighbour.second.second,
-												x2, y2 ),
-									 node->g + 1, neighbour.first,
-									 node, neighbour.second } ;
+				Node* n = new Node { h, movementCost, neighbour.first, node,
+									 neighbour.second } ;
 
 				auto pos = lower_bound(frontier.begin(), frontier.end(),
 										   n, comp);
@@ -432,6 +454,25 @@ void World::removeEntity( Entity* e )
 {
 	if( e->sector() != nullptr )
 		e->sector()->removeEntity( e );
+}
+
+double World::time()
+{
+	return _time;
+}
+
+void World::letTimePass(double time)
+{
+	_time += time;
+}
+
+void World::think()
+{
+	for( Entity* e : entities( _player->x() - Sector::size(),
+							   _player->y() - Sector::size(),
+							   _player->x() + Sector::size(),
+							   _player->y() + Sector::size() ) )
+		e->think();
 }
 
 StatusBar& World::statusBar()

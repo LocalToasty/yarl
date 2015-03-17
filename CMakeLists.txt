@@ -30,6 +30,7 @@ include_directories ("${PROJECT_BINARY_DIR}")
 
 include_directories ("src/"
 					 "src/gameplay/"
+					 "src/gameplay/npcs"
 					 "src/iomanager/")
 
 add_executable (yarl
@@ -44,6 +45,8 @@ add_executable (yarl
 				src/gameplay/character.cpp
 				src/gameplay/sector.cpp
 				src/gameplay/tile.cpp
+				src/gameplay/npcs/npc.cpp
+				src/gameplay/npcs/dog.cpp
 				src/iomanager/iomanager.cpp
 				${IOM_SOURCE})
 

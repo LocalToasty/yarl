@@ -51,7 +51,9 @@ private:
 public:
 	Entity(const Tile& t, int x, int y, int hp, World* world,
 		   const list<Item*>& inventory = {});
-	~Entity();
+	virtual ~Entity();
+
+	virtual void think();
 
 	const Tile&	t() const;
 
