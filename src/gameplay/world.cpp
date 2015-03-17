@@ -75,7 +75,7 @@ bool World::los( int x1, int y1, int x2, int y2, double range )
 	vector<Entity*> blocking;
 	for( Entity* e :
 		 entities( min( x1, x2 ), min( y1, y2 ),
-				   max( x1, x2 ), max( y1, y2 ) ) )
+				   max( x1, x2 ) + 1, max( y1, y2 ) + 1 ) )
 		if( !e->t().transparent() )
 			blocking.push_back( e );
 
