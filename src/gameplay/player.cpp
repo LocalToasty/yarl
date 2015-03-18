@@ -16,29 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DOG_H
-#define DOG_H
+#include "player.h"
+#include "character.h"
+#include "world.h"
 
-#include "npc.h"
-#include "bite.h"
-
-class World;
-
-class Dog : public NPC
+Player::Player( Tile& t, int x, int y, int hp, int visionRange,
+				int st, int dx, int in, int bab, Weapon* unarmed, World* world,
+				const list<Item*>& inventory ) :
+	Character( t, x, y, hp, visionRange, st, dx, in, bab, unarmed, world,
+			   inventory )
 {
-private:
-	static Bite bite;
+}
 
-	int _waypointX { -1 };
-	int _waypointY { -1 };
+string Player::attackMessage(Entity* target, bool hit)
+{
+	string msg = "You ";
+	if( hit )
+		msg += "hit";
+	else
+		msg += "miss";
 
-    static Tile dog;
-	static Tile corpse;
+	msg += " the " + target->t().description() + '.';
 
-public:
-	Dog( int x, int y, World* world );
+	return msg;
+}
 
-	void think();
-};
-
-#endif
+string Player::dieMessage()
+{
+	return "You die.";
+}

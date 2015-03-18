@@ -16,29 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DOG_H
-#define DOG_H
+#include "weapon.h"
 
-#include "npc.h"
-#include "bite.h"
-
-class World;
-
-class Dog : public NPC
+Weapon::Weapon( Tile& t, int x, int y, double range, World* world , int hp ) :
+	Item( t, x, y, hp, world ), _range( range )
 {
-private:
-	static Bite bite;
+}
 
-	int _waypointX { -1 };
-	int _waypointY { -1 };
-
-    static Tile dog;
-	static Tile corpse;
-
-public:
-	Dog( int x, int y, World* world );
-
-	void think();
-};
-
-#endif
+double Weapon::range()
+{
+	return _range;
+}

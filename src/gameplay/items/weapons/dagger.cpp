@@ -16,29 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DOG_H
-#define DOG_H
+#include "dagger.h"
 
-#include "npc.h"
-#include "bite.h"
+Tile Dagger::dagger = { ')', Color::white,	"dagger", true };
 
-class World;
-
-class Dog : public NPC
+Dagger::Dagger( int x, int y, World* world )
+	: Weapon( dagger, x, y, 1.5, world )
 {
-private:
-	static Bite bite;
+}
 
-	int _waypointX { -1 };
-	int _waypointY { -1 };
-
-    static Tile dog;
-	static Tile corpse;
-
-public:
-	Dog( int x, int y, World* world );
-
-	void think();
-};
-
-#endif
+int Dagger::damage()
+{
+	return rand() % 4 + 1;	// 1d4
+}

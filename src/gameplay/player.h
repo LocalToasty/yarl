@@ -16,29 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DOG_H
-#define DOG_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
-#include "npc.h"
-#include "bite.h"
+#include "character.h"
+#include <string>
 
-class World;
+using namespace std;
 
-class Dog : public NPC
+class Player : public Character
 {
-private:
-	static Bite bite;
-
-	int _waypointX { -1 };
-	int _waypointY { -1 };
-
-    static Tile dog;
-	static Tile corpse;
-
 public:
-	Dog( int x, int y, World* world );
+	Player( Tile& t, int x, int y, int hp, int visionRange,
+			int st, int dx, int in, int bab, Weapon* unarmed,
+			World* world, const list<Item*>& inventory = {} );
 
-	void think();
+	string attackMessage( Entity* target, bool hit );
+	string dieMessage();
 };
 
 #endif

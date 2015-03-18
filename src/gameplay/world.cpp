@@ -19,7 +19,10 @@
 #include "world.h"
 #include "sector.h"
 #include "character.h"
+#include "player.h"
 #include "dog.h"
+#include "dagger.h"
+#include "fists.h"
 #include "item.h"
 #include <cmath>
 #include <algorithm>
@@ -52,13 +55,15 @@ World::World(int width, int height ) :
 
 	for (int i = 0; i < noOfTrees; i++)
 	{
-		int x = rand() % (Sector::size() * _width);
-		int y = rand() % (Sector::size() * _height);
+		int x = rand() % ( Sector::size() * _width );
+		int y = rand() % ( Sector::size() * _height );
 		new Entity( tree, x, y, 1, this,
 					{ new Item( stump, -1, -1, 1, this ) } );
 	}
 
-	_player = new Character( hero, 42, 42, 5, 16, this );
+	_player = new Player( hero, 42, 42, 8, 16, 12, 12, 12, 1,
+						  new Fists, this );
+	_player->setWeapon( new Dagger( -1, -1, this ) );
 
 	new Dog( 52, 42, this );
 }
@@ -216,6 +221,9 @@ vector<Command> World::route( int x1, int y1, int x2, int y2 , bool converge )
 				delete n;
 			for ( Node* n : explored )
 				delete n;
+
+			if( directions.empty() )
+				return { Command::none };
 
 			return directions;
 		}

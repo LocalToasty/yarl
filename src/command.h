@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck
+ * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ enum class Command
 	southEast,
 	southWest,
 	MOVEMENT_END,
-
+	wait,
 	none,
 
 	quit

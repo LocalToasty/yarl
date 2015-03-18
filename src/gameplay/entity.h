@@ -53,7 +53,10 @@ public:
 		   const list<Item*>& inventory = {});
 	virtual ~Entity();
 
+	virtual int armorClass();
+
 	virtual void think();
+	virtual string dieMessage();
 
 	const Tile&	t() const;
 

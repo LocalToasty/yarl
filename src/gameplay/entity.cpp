@@ -38,8 +38,18 @@ Entity::~Entity()
 		_sector->removeEntity(this);
 }
 
+int Entity::armorClass()
+{
+	return 5;
+}
+
 void Entity::think()
 {
+}
+
+string Entity::dieMessage()
+{
+	return "The " + t().description() + " is destroyed.";
 }
 
 const Tile& Entity::t() const
@@ -70,6 +80,16 @@ Sector* Entity::sector() const
 bool Entity::seen() const
 {
 	return _seen;
+}
+
+int Entity::lastKnownX() const
+{
+	return _lastKnownX;
+}
+
+int Entity::lastKnownY() const
+{
+	return _lastKnownY;
 }
 
 int Entity::hp() const
@@ -124,8 +144,7 @@ void Entity::setHp(int hp)
 {
 	if (hp <= 0)
 	{
-		_world->statusBar().
-			addMessage("The " + _t.description() + " is destroyed.");
+		_world->statusBar().addMessage( dieMessage() );
 		// drop inventory
 		for (Item* e : _inventory)
 		{

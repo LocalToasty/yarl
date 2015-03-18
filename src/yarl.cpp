@@ -30,9 +30,9 @@
 #include <sstream>
 
 #if USE_SDL == ON
-#include "iomanager/sdliomanager.h"
+#include "sdliomanager.h"
 #else
-#include "iomanager/cursesiomanager.h"
+#include "cursesiomanager.h"
 #endif
 
 using namespace std;
@@ -59,6 +59,7 @@ bool Yarl::init(int argc, char* argv[])
 		{'u', Command::northEast},
 		{'b', Command::southWest},
 		{'n', Command::southEast},
+		{'.', Command::wait},
 
 		{'q', Command::quit}
 	};
@@ -199,9 +200,10 @@ void Yarl::render()
 		}
 		else if( _variables["showUnknown"].toInt() ||
 				 ( _variables["showUnseen"].toInt() &&
-				   e->seen() ) )
+				   e->seen() &&
+				   !player->los( e->lastKnownX(), e->lastKnownY() ) ) )
 		{
-			_iom->moveAddChar( e->x() + offX, e->y() + offY,
+			_iom->moveAddChar( e->lastKnownX() + offX, e->lastKnownY() + offY,
 							   e->t().repr());
 		}
 	}
@@ -223,13 +225,13 @@ bool Yarl::loop()
 	char input = _iom->getChar();
 	Command cmd = _bindings[input];
 
-	if (cmd == Command::quit || input == 0)
+	if ( cmd == Command::quit || input == 0 )
 		return true;
 
-	if (_moreMessages)
+	else if ( _moreMessages )
 		return false;
 
-	else if (cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END)
+	else if ( cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END )
 	{
 		int dx = 0;
 		int dy = 0;
@@ -252,11 +254,24 @@ bool Yarl::loop()
 				 cmd == Command::southEast )
 			dy = 1;
 
-		_world->letTimePass( ( abs( dx ) + abs( dy ) == 1 ) ? 1 : 1.5 );
+		// TODO
+//		_world->letTimePass( ( abs( dx ) + abs( dy ) == 1 ) ? 1 : 1.5 );
 
-		if( !player->move( dx, dy ) )
-			player->attack( dx, dy );
+		if( !player->move( dx, dy ) )	// an entity is blocking
+		{
+			auto ents = _world->entities( player->x() + dx, player->y() + dy );
+			if( !ents.empty() )
+				player->attack( ents.front() );
+		}
 	}
+
+	else if( cmd == Command::wait )
+	{
+		// do nothing
+	}
+
+	else	// if no correct command was given, don't let the world think
+		return false;
 
 	_world->think();
 
