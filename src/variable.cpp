@@ -17,23 +17,37 @@
  */
 
 #include "variable.h"
-
 #include <stdexcept>
 
-Variable::Variable(std::string def, std::string desc) :
-	_val(def), _def(def), _desc(desc)
+#ifdef __MINGW32__
+#include <sstream>
+#include <cstdlib>
+#endif
+
+using namespace std;
+
+Variable::Variable( std::string def, std::string desc ) :
+	_val( def ), _def( def ), _desc( desc )
 
 {
 }
 
-void Variable::operator=(string val)
+void Variable::operator=( string val )
 {
 	_val = val;
 }
 
-void Variable::operator=(int val)
+void Variable::operator=( int val )
 {
-	_val = to_string(val);
+#ifdef __MINGW32__
+	// to_string method doesn't work in current versions of MinGW
+	stringstream ss;
+	ss << val;
+	ss >> _val;
+
+#else
+	_val = to_string( val );
+#endif
 }
 
 // return variable as a string
@@ -45,19 +59,23 @@ string Variable::toString()
 // return variable as an integer if possible
 int Variable::toInt()
 {
+#ifdef __MINGW32__
+	return atoi( _val.c_str() );
+#else
 	try
 	{
-		return stoi(_val);
+		return stoi( _val );
 	}
-	catch (invalid_argument)	// _val is not an int
+	catch ( invalid_argument )	// _val is not an int
 	{
 		try
 		{
 			return stoi(_def);
 		}
-		catch (invalid_argument)	// _def is not an int
+		catch ( invalid_argument )	// _def is not an int
 		{
 			return 0;
 		}
 	}
+#endif
 }

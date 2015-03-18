@@ -30,9 +30,9 @@
 #include <sstream>
 
 #if USE_SDL == ON
-#include "iomanager/sdliomanager.h"
+#include "sdliomanager.h"
 #else
-#include "iomanager/cursesiomanager.h"
+#include "cursesiomanager.h"
 #endif
 
 using namespace std;
@@ -74,14 +74,15 @@ bool Yarl::init(int argc, char* argv[])
 	// directory.
 	if (configFilePath.empty())
 	{
-#if __unix || __unix__	// UNIXoids (i.e. Linux, MacOS, BSD and so forth)
+#if defined( __unix__ ) || defined ( __unix )
+		// UNIXoids (i.e. Linux, MacOS, BSD and so forth)
 		configFilePath = getenv("HOME");
 		configFilePath.append("/.yarlrc");
 
-#elif _WIN32 || _WIN64	// Windows
-		configFilePath = getenv("HOMEDRIVE");
-		configFilePath.append(getenv("HOMEPATH");
-		configFilePath.append("\.yarlrc");
+#elif defined( _WIN32 ) || defined( _WIN64 )	// Windows
+		configFilePath = getenv( "HOMEDRIVE" );
+		configFilePath.append( getenv( "HOMEPATH" ) );
+		configFilePath.append( "\\.yarlrc" );
 #endif
 	}
 
