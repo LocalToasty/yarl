@@ -20,15 +20,13 @@
 #define DOG_H
 
 #include "npc.h"
-#include "bite.h"
+#include "weapon.h"
 
 class World;
 
 class Dog : public NPC
 {
 private:
-	static Bite bite;
-
 	int _waypointX { -1 };
 	int _waypointY { -1 };
 
@@ -36,7 +34,7 @@ private:
 	static Tile corpse;
 
 public:
-	Dog( int x, int y, World* world );
+	Dog(int x, int y, World& world );
 
 	void think();
 };

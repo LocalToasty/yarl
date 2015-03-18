@@ -23,6 +23,10 @@
 #include "tile.h"
 #include "sector.h"
 #include "weapon.h"
+#include "armor.h"
+#include <array>
+
+using namespace std;
 
 class Character : public Entity
 {
@@ -31,7 +35,10 @@ public:
 	{
 		strength,
 		dexterity,
+		constitution,
 		intelligence,
+		wisdom,
+		charisma,
 		noOfAttributes
 	};
 
@@ -39,18 +46,20 @@ private:
 	int _visionRange;
 
 	Weapon* _weapon { nullptr };
-	Weapon* _unarmed;
+	Weapon* _unarmed;	// unarmed attack
 
-	int _attributes[noOfAttributes];
+	Armor* _armor { nullptr };
+
+	array<int, noOfAttributes> _attributes;
 
 	int _bab;	// base attack bonus
 
-	static int modifier( int base );
-
 public:
-	Character( const Tile& t, int x, int y, int hp, int visionRange,
-			   int st, int dx, int in, int bab, Weapon* unarmed, World* world,
-			   const list<Item*>& inventory = {} );
+	Character(const Tile& t, int x, int y, int hp, int visionRange,
+			   const array<int, noOfAttributes>& attributes,
+			   Weapon* unarmed, World& world,
+			   const list<Item*>& inventory = {}, int bab = 0,
+			   Size s = Size::medium, int naturalArmor = 0 );
 
 	bool los( int x, int y, double factor = 1 ) const;
 	bool los( Entity* e );
@@ -58,15 +67,20 @@ public:
 	bool move( int dx, int dy );
 
 	void attack( Entity* target );
+
 	virtual string attackMessage( Entity* target, bool hit );
-	string dieMessage();
+	virtual string dieMessage();
 
 	int armorClass();
 
 	Weapon* weapon();
 	void setWeapon( Weapon* weapon );
 
+	Armor* armor();
+	void setArmor( Armor* armor );
+
 	int attribute( Attribute attribute );
+	void setAttribute( Attribute attribute, int value );
 	int attributeMod( Attribute attribute );
 
 	int visionRange();

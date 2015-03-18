@@ -21,27 +21,26 @@
 #include "entity.h"
 #include "item.h"
 #include "character.h"
-#include "bite.h"
 #include <cstdlib>
 
 Tile Dog::dog = { 'd', Color::red, "dog", true, false };
 Tile Dog::corpse = { '%', Color::red, "dog corpse", true };
 
-Bite Dog::bite = {};
-
-Dog::Dog( int x, int y, World* world )
-	: NPC( dog, x, y, 6, 13, 13, 2, 0, &bite, 12, world,
-		   { new Item( corpse, -1, -1, 1, world ) } )
+Dog::Dog( int x, int y, World& world ) :
+	NPC( dog, x, y, rand() % 8 + 3, 12,
+		 array<int, 6> { 13, 13, 15, 2, 12, 6 },
+		 new Weapon( {}, [](){ return rand() % 4 + 2; }, world ), world,
+		 { new Item( Dog::corpse, world, -1, -1, 1, Size::small ) }, 0,
+		 Size::small, 1 )
 {
-
 }
 
 void Dog::think()
 {
-	for( Entity* e : world()->entities( x() - visionRange(),
-										y() - visionRange(),
-										x() + visionRange() + 1,
-										y() + visionRange() + 1 ) )
+	for( Entity* e : world().entities( x() - visionRange(),
+									   y() - visionRange(),
+									   x() + visionRange() + 1,
+									   y() + visionRange() + 1 ) )
 	{
 		Character* c = dynamic_cast<Character*>( e );
 		if( c != nullptr && c != this && los( e ) )
@@ -52,8 +51,7 @@ void Dog::think()
 		}
 	}
 
-	auto dir = world()->route( x(), y(),
-							   _waypointX, _waypointY, true );
+	auto dir = world().route( x(), y(), _waypointX, _waypointY, true );
 	Command cmd = dir.front();
 
 	int dx = 0;

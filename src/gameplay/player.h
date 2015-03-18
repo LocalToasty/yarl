@@ -20,6 +20,7 @@
 #define PLAYER_H
 
 #include "character.h"
+#include "weapon.h"
 #include <string>
 
 using namespace std;
@@ -27,9 +28,11 @@ using namespace std;
 class Player : public Character
 {
 public:
-	Player( Tile& t, int x, int y, int hp, int visionRange,
-			int st, int dx, int in, int bab, Weapon* unarmed,
-			World* world, const list<Item*>& inventory = {} );
+	Player(const Tile& t, int x, int y, int hp, int visionRange,
+			array<int, noOfAttributes>& attributes,
+			Weapon* unarmed, World& world,
+			const list<Item*>& inventory = {}, int bab = 0,
+			Size s = Size::medium, int naturalArmor = 0 );
 
 	string attackMessage( Entity* target, bool hit );
 	string dieMessage();

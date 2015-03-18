@@ -16,16 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dagger.h"
+#ifndef ARMOR_H
+#define ARMOR_H
 
-Tile Dagger::dagger = { ')', Color::white,	"dagger", true };
+#include "item.h"
 
-Dagger::Dagger( int x, int y, World* world )
-	: Weapon( dagger, x, y, 1.5, world )
+class Armor : public Item
 {
-}
+private:
+	int _ac;	// armor class bonus
+	int _maxDexBon;	// maximum dexterity bonus
 
-int Dagger::damage()
-{
-	return rand() % 4 + 1;	// 1d4
-}
+public:
+	Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
+		   Size s = Size::medium, int x = -1, int y = -1 );
+
+	int ac();
+	int maxDexBon();
+};
+
+#endif

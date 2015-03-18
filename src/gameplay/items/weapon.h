@@ -16,22 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FISTS_H
-#define FISTS_H
+#ifndef WEAPON_H
+#define WEAPON_H
 
-#include "weapon.h"
-#include "tile.h"
+#include "item.h"
 
-class Fists : public Weapon
+class Weapon : public Item
 {
 private:
-	static Tile fists;
+	double _range;
+	int ( *_damage )();	// damage function
 
 public:
-	Fists();
+	Weapon( const Tile& t, int ( *damage )(), World& world, double range = 1.5,
+			int x = -1, int y = -1, int hp = 1, Size s = Size::small );
 
 	int damage();
-
+	double range();
 };
 
 #endif

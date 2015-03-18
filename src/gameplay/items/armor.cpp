@@ -16,21 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BITE_H
-#define BITE_H
+#include "armor.h"
 
-#include "weapon.h"
-#include "tile.h"
-
-class Bite : public Weapon
+Armor::Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
+			  Size s, int x, int y )
+	: Item( t, world, x, y, hp, s ), _ac( ac ), _maxDexBon( maxDexBon )
 {
-private:
-	static Tile bite;
+}
 
-public:
-	Bite();
+int Armor::ac()
+{
+	return _ac;
+}
 
-	int damage();
-};
-
-#endif
+int Armor::maxDexBon()
+{
+	return _maxDexBon;
+}

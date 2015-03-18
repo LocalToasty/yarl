@@ -16,21 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DAGGER_H
-#define DAGGER_H
-
 #include "weapon.h"
-#include "tile.h"
 
-class Dagger : public Weapon
+Weapon::Weapon( const Tile& t, int (*damage)(), World& world , double range,
+				int x, int y, int hp , Size s ) :
+	Item( t, world, x, y, hp, s ), _range( range ), _damage( damage )
 {
-private:
-	static Tile dagger;
+}
 
-public:
-	Dagger( int x, int y, World* world );
+int Weapon::damage()
+{
+	return _damage();
+}
 
-	int damage();
-};
-
-#endif
+double Weapon::range()
+{
+	return _range;
+}

@@ -24,8 +24,8 @@
 class Item : public Entity
 {
 public:
-	Item(const Tile& t, int x, int y, int hp, World* world,
-		 list<Item*> inventory = {});
+	Item( const Tile& t, World& world, int x = -1, int y = -1, int hp = 1,
+		  Size s = Size::medium );
 };
 
 #endif

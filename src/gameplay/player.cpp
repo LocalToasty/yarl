@@ -20,11 +20,12 @@
 #include "character.h"
 #include "world.h"
 
-Player::Player( Tile& t, int x, int y, int hp, int visionRange,
-				int st, int dx, int in, int bab, Weapon* unarmed, World* world,
-				const list<Item*>& inventory ) :
-	Character( t, x, y, hp, visionRange, st, dx, in, bab, unarmed, world,
-			   inventory )
+Player::Player( const Tile& t, int x, int y, int hp, int visionRange,
+				array<int, noOfAttributes>& attributes, Weapon* unarmed,
+				World& world, const list<Item*>& inventory , int bab, Size s,
+				int naturalArmor) :
+	Character( t, x, y, hp, visionRange, attributes, unarmed, world, inventory,
+			   bab, s, naturalArmor )
 {
 }
 

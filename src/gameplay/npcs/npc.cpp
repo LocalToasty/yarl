@@ -19,10 +19,11 @@
 #include "npc.h"
 #include "character.h"
 
-NPC::NPC( const Tile& t, int x, int y, int hp, int st, int dx, int in, int bab,
-		  Weapon* unarmed, int visionRange, World* world,
-		  const list<Item*>& inventory ) :
-	Character( t, x, y, hp, visionRange, st, dx, in, bab, unarmed,
-			   world, inventory )
+NPC::NPC(const Tile& t, int x, int y, int hp, int visionRange,
+		  const array<int, noOfAttributes>& attributes, Weapon* unarmed,
+		  World& world, const list<Item*>& inventory, int bab, Size s,
+		  int naturalArmor ) :
+	Character( t, x, y, hp, visionRange, attributes, unarmed, world, inventory,
+			   bab, s, naturalArmor )
 {
 }

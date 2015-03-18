@@ -25,8 +25,10 @@
 class NPC : public Character
 {
 public:
-	NPC(const Tile& t, int x, int y, int hp, int st, int dx, int in, int bab, Weapon* unarmed,
-		 int visionRange, World* world, const list<Item*>& inventory = {} );
+	NPC( const Tile& t, int x, int y, int hp, int visionRange,
+		 const array<int, noOfAttributes>& attributes, Weapon* unarmed,
+		 World& world, const list<Item*>& inventory = {}, int bab = 0,
+		 Size s = Size::medium, int naturalArmor = 0 );
 
 	virtual void think() = 0;
 };

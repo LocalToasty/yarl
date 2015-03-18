@@ -21,8 +21,6 @@
 #include "character.h"
 #include "player.h"
 #include "dog.h"
-#include "dagger.h"
-#include "fists.h"
 #include "item.h"
 #include <cmath>
 #include <algorithm>
@@ -37,41 +35,41 @@ Tile World::bush	= {'o', Color::green,	"bush"};
 Tile World::stump	= {'o', Color::red,		"tree stump", true, false };
 Tile World::hero	= {'@', Color::yellow,	"you", true, false };
 
-
 World::World(int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
 {
 	for( Sector*& s : _sectors )
 	{
-		s = new Sector(&grass);
+		s = new Sector( &grass );
 
 		for( int x = 0; x < Sector::size(); x++ )
+		{
 			for( int y = 0; y < Sector::size(); y++ )
-				if ( rand() % 8 == 0 )
-					 s->setTile( x, y, &mud );
+			{
+				if( rand() % 16 == 0 )
+					s->setTile( x, y, &tree );
+				else if( rand() % 8 == 0 )
+					s->setTile( x, y, &mud );
+			}
+		}
 	}
 
-	int noOfTrees = Sector::size() * Sector::size() * _width * _height / 16;
+	array<int, 6> attr = { 12, 12, 12, 12, 12, 12 };
+	_player = new Player( hero, 42, 42, 9, 16, attr,
+						  new Weapon( {}, [](){ return rand() % 2 + 1; },
+									  *this ), *this, {}, 1 );
 
-	for (int i = 0; i < noOfTrees; i++)
-	{
-		int x = rand() % ( Sector::size() * _width );
-		int y = rand() % ( Sector::size() * _height );
-		new Entity( tree, x, y, 1, this,
-					{ new Item( stump, -1, -1, 1, this ) } );
-	}
+	new Dog( 48, 42, *this );
+}
 
-	_player = new Player( hero, 42, 42, 8, 16, 12, 12, 12, 1,
-						  new Fists, this );
-	_player->setWeapon( new Dagger( -1, -1, this ) );
-
-	new Dog( 52, 42, this );
+double World::distance(int x1, int y1, int x2, int y2)
+{
+	return sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
 }
 
 bool World::los( int x1, int y1, int x2, int y2, double range )
 {
-	if( range > 0 &&
-		sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) ) > range )
+	if( range > 0 && distance( x1, y1, x2, y2 ) > range )
 		return false;
 
 	const int dx = x2 - x1;
