@@ -100,12 +100,15 @@ bool Yarl::init(int argc, char* argv[])
 		else if( arg == "-v" || arg == "--version" )
 		{
 			cout << PROJECT_NAME
-				 << ", version " << VERSION_MAJOR << '.' << VERSION_MINOR
+				 << " version " << VERSION_MAJOR << '.' << VERSION_MINOR
 				 << '.' << VERSION_PATCH << " (" << BUILD_TYPE << ")\n"
-					"Copyright (C) 2015  Marko van Treeck "
-					"<markovantreeck@gmail.com>\n"
-					"License GPLv3+: GNU GPL version 3 or later "
-					"<http://gnu.org/licenses/>";
+				 "Copyright (C) 2015 Marko van Treeck "
+				 "<markovantreeck@gmail.com>\n\n"
+				 "This program comes with ABSOLUTELY NO WARRANTY. "
+				 "It is free software,\nand you are welcome to "
+				 "redistribute it under certain conditions.\n"
+				 "For further information consult the GNU GPL version 3 or "
+				 "later\n<http://gnu.org/licenses/>\n\n";
 			return false;
 		}
 
