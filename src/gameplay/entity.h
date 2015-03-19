@@ -30,6 +30,20 @@ using namespace std;
 
 class Entity
 {
+public:
+	enum Size
+	{
+		colossal = -8,
+		gargantuan = -4,
+		huge = -2,
+		large = -1,
+		medium = 0,
+		small = 1,
+		tiny = 2,
+		diminutive = 4,
+		fine = 8
+	};
+
 private:
 	const Tile& _t;
 
@@ -38,7 +52,11 @@ private:
 
 	int	_hp;	// hitpoints
 
-	World* _world;
+	int _naturalArmor;
+
+	Size _s;
+
+	World& _world;
 	Sector* _sector;
 
 	bool _seen {false};	// has the entity been seen yet?
@@ -49,17 +67,20 @@ private:
 	list<Item*>	_inventory;
 
 public:
-	Entity(const Tile& t, int x, int y, int hp, World* world,
-		   const list<Item*>& inventory = {});
+	Entity( const Tile& t, int x, int y, int hp, World& world,
+			Size s = Size::medium, int naturalArmor = 0,
+			const list<Item*>& inventory = {} );
 	virtual ~Entity();
 
+
 	virtual void think();
+	virtual string dieMessage();
 
 	const Tile&	t() const;
 
 	int x() const;
 	int y() const;
-	World* world() const;
+	World& world() const;
 	Sector* sector() const;
 
 	bool seen() const;
@@ -67,14 +88,17 @@ public:
 	int lastKnownY() const;
 
 	int hp() const;
+	Size size() const;
+	int naturalArmor() const;
+	virtual int armorClass() const;
 
 	list<Item*>& inventory();
 
-	void setX(int x);
-	void setY(int y);
-	void setSector(Sector* Sector);
+	void setX( int x );
+	void setY( int y );
+	void setSector( Sector* Sector );
 
-	void setSeen(bool seen = true);
+	void setSeen( bool seen = true );
 	void setLastKnownX();
 	void setLastKnownY();
 

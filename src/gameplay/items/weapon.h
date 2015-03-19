@@ -16,16 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_H
-#define ITEM_H
+#ifndef WEAPON_H
+#define WEAPON_H
 
-#include "entity.h"
+#include "item.h"
 
-class Item : public Entity
+class Weapon : public Item
 {
+private:
+	double _range;
+	int ( *_damage )();	// damage function
+
 public:
-	Item(const Tile& t, int x, int y, int hp, World* world,
-		 list<Item*> inventory = {});
+	Weapon( const Tile& t, int ( *damage )(), World& world, double range = 1.5,
+			int x = -1, int y = -1, int hp = 1, Size s = Size::small );
+
+	int damage();
+	double range();
 };
 
 #endif

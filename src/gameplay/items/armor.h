@@ -16,19 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARLCONFIG_H
-#define YARLCONFIG_H
+#ifndef ARMOR_H
+#define ARMOR_H
 
-#define PROJECT_NAME "@PROJECT_NAME@"
+#include "item.h"
 
-#define VERSION_MAJOR @VERSION_MAJOR@
-#define VERSION_MINOR @VERSION_MINOR@
-#define VERSION_PATCH @VERSION_PATCH@
+class Armor : public Item
+{
+private:
+	int _ac;	// armor class bonus
+	int _maxDexBon;	// maximum dexterity bonus
 
-#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+public:
+	Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
+		   Size s = Size::medium, int x = -1, int y = -1 );
 
-#define ON 1
-#define OFF 0
-#define USE_SDL @USE_SDL@
+	int ac();
+	int maxDexBon();
+};
 
 #endif

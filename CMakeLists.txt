@@ -30,7 +30,8 @@ include_directories ("${PROJECT_BINARY_DIR}")
 
 include_directories ("src/"
 					 "src/gameplay/"
-					 "src/gameplay/npcs"
+					 "src/gameplay/items/"
+					 "src/gameplay/npcs/"
 					 "src/iomanager/")
 
 add_executable (yarl
@@ -41,10 +42,13 @@ add_executable (yarl
 				src/statusbar.cpp
 				src/gameplay/world.cpp
 				src/gameplay/entity.cpp
-				src/gameplay/item.cpp
 				src/gameplay/character.cpp
 				src/gameplay/sector.cpp
 				src/gameplay/tile.cpp
+				src/gameplay/player.cpp
+				src/gameplay/items/item.cpp
+				src/gameplay/items/armor.cpp
+				src/gameplay/items/weapon.cpp
 				src/gameplay/npcs/npc.cpp
 				src/gameplay/npcs/dog.cpp
 				src/iomanager/iomanager.cpp

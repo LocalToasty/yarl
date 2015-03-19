@@ -22,11 +22,12 @@
 
 #include "item.h"
 
-Entity::Entity(const Tile& t, int x, int y, int hp, World* world,
-			   const list<Item*>& inventory) :
-	_t(t), _x(x), _y(y), _hp(hp), _world(world), _inventory(inventory)
+Entity::Entity( const Tile& t, int x, int y, int hp, World& world, Size s,
+				int naturalArmor, const list<Item*>& inventory ) :
+	_t( t ), _x( x ), _y( y ), _hp( hp ), _world( world ), _s( s ),
+	_naturalArmor( naturalArmor ), _inventory( inventory )
 {
-	_sector = world->sector( x, y );
+	_sector = world.sector( x, y );
 
 	if( _sector != nullptr)
 		_sector->addEntity( this );
@@ -38,8 +39,18 @@ Entity::~Entity()
 		_sector->removeEntity(this);
 }
 
+int Entity::armorClass() const
+{
+	return 5 + _s + _naturalArmor;
+}
+
 void Entity::think()
 {
+}
+
+string Entity::dieMessage()
+{
+	return "The " + t().description() + " is destroyed.";
 }
 
 const Tile& Entity::t() const
@@ -57,7 +68,7 @@ int Entity::y() const
 	return _y;
 }
 
-World* Entity::world() const
+World& Entity::world() const
 {
 	return _world;
 }
@@ -72,9 +83,29 @@ bool Entity::seen() const
 	return _seen;
 }
 
+int Entity::lastKnownX() const
+{
+	return _lastKnownX;
+}
+
+int Entity::lastKnownY() const
+{
+	return _lastKnownY;
+}
+
 int Entity::hp() const
 {
 	return _hp;
+}
+
+Entity::Size Entity::size() const
+{
+	return _s;
+}
+
+int Entity::naturalArmor() const
+{
+	return _naturalArmor;
 }
 
 list<Item*>& Entity::inventory()
@@ -85,13 +116,13 @@ list<Item*>& Entity::inventory()
 void Entity::setX( int x )
 {
 	_x = x;
-	setSector(_world->sector(_x, _y));
+	setSector(_world.sector(_x, _y));
 }
 
 void Entity::setY(int y)
 {
 	_y = y;
-	setSector(_world->sector(_x, _y));
+	setSector(_world.sector(_x, _y));
 }
 
 void Entity::setSector( Sector* sector )
@@ -124,8 +155,7 @@ void Entity::setHp(int hp)
 {
 	if (hp <= 0)
 	{
-		_world->statusBar().
-			addMessage("The " + _t.description() + " is destroyed.");
+		_world.statusBar().addMessage( dieMessage() );
 		// drop inventory
 		for (Item* e : _inventory)
 		{

@@ -16,11 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "item.h"
+#include "player.h"
+#include "character.h"
+#include "world.h"
 
-
-Item::Item( const Tile& t, int x, int y, int hp,
-			World* world, list<Item*> inventory ) :
-	Entity( t, x, y, hp, world, inventory )
+Player::Player( const Tile& t, int x, int y, int hp, int visionRange,
+				array<int, noOfAttributes>& attributes, Weapon* unarmed,
+				World& world, const list<Item*>& inventory , int bab, Size s,
+				int naturalArmor) :
+	Character( t, x, y, hp, visionRange, attributes, unarmed, world, inventory,
+			   bab, s, naturalArmor )
 {
+}
+
+string Player::attackMessage(Entity* target, bool hit)
+{
+	string msg = "You ";
+	if( hit )
+		msg += "hit";
+	else
+		msg += "miss";
+
+	msg += " the " + target->t().description() + '.';
+
+	return msg;
+}
+
+string Player::dieMessage()
+{
+	return "You die.";
 }

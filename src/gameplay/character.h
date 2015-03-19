@@ -22,23 +22,66 @@
 #include "entity.h"
 #include "tile.h"
 #include "sector.h"
+#include "weapon.h"
+#include "armor.h"
+#include <array>
+
+using namespace std;
 
 class Character : public Entity
 {
+public:
+	enum Attribute
+	{
+		strength,
+		dexterity,
+		constitution,
+		intelligence,
+		wisdom,
+		charisma,
+		noOfAttributes
+	};
+
 private:
 	int _visionRange;
 
+	Weapon* _weapon { nullptr };
+	Weapon* _unarmed;	// unarmed attack
+
+	Armor* _armor { nullptr };
+
+	array<int, noOfAttributes> _attributes;
+
+	int _bab;	// base attack bonus
+
 public:
-	Character( const Tile& t, int x, int y, int hp, int visionRange,
-			   World* world, const list<Item*>& inventory = {} );
-
-	bool move( int dx, int dy );
-
-	void attack( int dx, int dy );
-	void attack( Entity* target );
+	Character(const Tile& t, int x, int y, int hp, int visionRange,
+			   const array<int, noOfAttributes>& attributes,
+			   Weapon* unarmed, World& world,
+			   const list<Item*>& inventory = {}, int bab = 0,
+			   Size s = Size::medium, int naturalArmor = 0 );
 
 	bool los( int x, int y, double factor = 1 ) const;
 	bool los( Entity* e );
+
+	bool move( int dx, int dy );
+
+	void attack( Entity* target );
+
+	virtual string attackMessage( Entity* target, bool hit );
+	virtual string dieMessage();
+
+	int armorClass();
+
+	Weapon* weapon();
+	void setWeapon( Weapon* weapon );
+
+	Armor* armor();
+	void setArmor( Armor* armor );
+
+	int attribute( Attribute attribute );
+	void setAttribute( Attribute attribute, int value );
+	int attributeMod( Attribute attribute );
 
 	int visionRange();
 };

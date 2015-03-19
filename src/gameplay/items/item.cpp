@@ -16,19 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARLCONFIG_H
-#define YARLCONFIG_H
+#include "item.h"
 
-#define PROJECT_NAME "@PROJECT_NAME@"
-
-#define VERSION_MAJOR @VERSION_MAJOR@
-#define VERSION_MINOR @VERSION_MINOR@
-#define VERSION_PATCH @VERSION_PATCH@
-
-#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
-
-#define ON 1
-#define OFF 0
-#define USE_SDL @USE_SDL@
-
-#endif
+Item::Item( const Tile& t, World& world, int x, int y, int hp, Size s ) :
+	Entity( t, x, y, hp, world, s )
+{
+}

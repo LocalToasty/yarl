@@ -16,19 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARLCONFIG_H
-#define YARLCONFIG_H
+#ifndef ITEM_H
+#define ITEM_H
 
-#define PROJECT_NAME "@PROJECT_NAME@"
+#include "entity.h"
 
-#define VERSION_MAJOR @VERSION_MAJOR@
-#define VERSION_MINOR @VERSION_MINOR@
-#define VERSION_PATCH @VERSION_PATCH@
-
-#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
-
-#define ON 1
-#define OFF 0
-#define USE_SDL @USE_SDL@
+class Item : public Entity
+{
+public:
+	Item( const Tile& t, World& world, int x = -1, int y = -1, int hp = 1,
+		  Size s = Size::medium );
+};
 
 #endif

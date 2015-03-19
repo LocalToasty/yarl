@@ -16,19 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARLCONFIG_H
-#define YARLCONFIG_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
-#define PROJECT_NAME "@PROJECT_NAME@"
+#include "character.h"
+#include "weapon.h"
+#include <string>
 
-#define VERSION_MAJOR @VERSION_MAJOR@
-#define VERSION_MINOR @VERSION_MINOR@
-#define VERSION_PATCH @VERSION_PATCH@
+using namespace std;
 
-#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+class Player : public Character
+{
+public:
+	Player(const Tile& t, int x, int y, int hp, int visionRange,
+			array<int, noOfAttributes>& attributes,
+			Weapon* unarmed, World& world,
+			const list<Item*>& inventory = {}, int bab = 0,
+			Size s = Size::medium, int naturalArmor = 0 );
 
-#define ON 1
-#define OFF 0
-#define USE_SDL @USE_SDL@
+	string attackMessage( Entity* target, bool hit );
+	string dieMessage();
+};
 
 #endif

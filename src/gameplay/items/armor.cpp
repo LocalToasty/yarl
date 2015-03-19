@@ -16,19 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARLCONFIG_H
-#define YARLCONFIG_H
+#include "armor.h"
 
-#define PROJECT_NAME "@PROJECT_NAME@"
+Armor::Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
+			  Size s, int x, int y )
+	: Item( t, world, x, y, hp, s ), _ac( ac ), _maxDexBon( maxDexBon )
+{
+}
 
-#define VERSION_MAJOR @VERSION_MAJOR@
-#define VERSION_MINOR @VERSION_MINOR@
-#define VERSION_PATCH @VERSION_PATCH@
+int Armor::ac()
+{
+	return _ac;
+}
 
-#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
-
-#define ON 1
-#define OFF 0
-#define USE_SDL @USE_SDL@
-
-#endif
+int Armor::maxDexBon()
+{
+	return _maxDexBon;
+}

@@ -19,16 +19,22 @@
 #include "character.h"
 #include "world.h"
 #include "sector.h"
+#include "yarlconfig.h"
 
 Character::Character(const Tile& t, int x, int y, int hp, int visionRange,
-					 World* world, const list<Item*>& inventory) :
-	Entity(t, x, y, hp, world, inventory), _visionRange(visionRange)
+					  const array<int, noOfAttributes>& attributes,
+					  Weapon* unarmed, World& world,
+					  const list<Item*>& inventory, int bab,
+					  Character:: Size s, int naturalArmor ) :
+	Entity( t, x, y, hp, world, s, naturalArmor, inventory ),
+	_attributes( attributes ), _bab( bab ), _unarmed( unarmed ),
+	_visionRange( visionRange )
 {
 }
 
 bool Character::move( int dx, int dy )
 {
-	if ( world()->passable( x() + dx, y() + dy ) )
+	if ( world().passable( x() + dx, y() + dy ) )
 	{
 		setX( x() + dx );
 		setY( y() + dy );
@@ -38,31 +44,94 @@ bool Character::move( int dx, int dy )
 	return false;
 }
 
-void Character::attack(int dx, int dy)
+void Character::attack( Entity* target )
 {
-	vector<Entity*> targets = world()->entities( x() + dx, y() + dy );
-
-	for (Entity* e : targets)
+	// hit roll
+	int toHitMod = _bab + attributeMod( strength ) + size();
+	if( rand() % 20 + 1 + toHitMod >= target->armorClass() )
 	{
-		attack(e);
+		world().statusBar().addMessage( attackMessage( target, true ) );
+
+		int damage = ( _weapon == nullptr  ? _unarmed->damage()
+										   : _weapon->damage()) +
+					 attributeMod( strength );
+
+		if( damage <= 0 )	// hits inflict at least 1 hp damage
+			damage = 1;
+
+		target->setHp( target->hp() - damage );
+		return;
 	}
+	else	// don't do any damage on miss
+		world().statusBar().addMessage( attackMessage( target, false ) );
 }
 
-void Character::attack(Entity* target)
+string Character::attackMessage( Entity* target, bool hit )
 {
-	world()->statusBar().addMessage("You attack the " +
-									  target->t().description() + '.');
-	target->setHp(target->hp() - 1);
+	string msg = "The " + t().description();
+	if( hit )
+		msg += " hits";
+	else
+		msg += " misses";
+
+	msg += " the " + target->t().description() + '.';
+
+	return msg;
+}
+
+string Character::dieMessage()
+{
+	return "The " + t().description() + " dies.";
 }
 
 bool Character::los(int x, int y, double factor) const
 {
-	return world()->los( this->x(), this->y(), x, y, _visionRange * factor );
+	return world().los( this->x(), this->y(), x, y, _visionRange * factor );
 }
 
-bool Character::los(Entity* e)
+bool Character::los( Entity* e )
 {
 	return los( e->x(), e->y() );
+}
+
+int Character::armorClass()
+{
+	return 10 + attributeMod( dexterity ) + size() + naturalArmor() +
+		   ( _armor == nullptr ? 0 : _armor->ac() );
+}
+
+Weapon* Character::weapon()
+{
+	return _weapon;
+}
+
+void Character::setWeapon( Weapon* weapon )
+{
+	_weapon = weapon;
+}
+
+Armor*Character::armor()
+{
+	return _armor;
+}
+
+void Character::setArmor(Armor* armor)
+{
+	_armor = armor;
+}
+
+int Character::attribute(Character::Attribute attribute)
+{
+	return _attributes[attribute];
+}
+
+int Character::attributeMod(Character::Attribute attribute)
+{
+	if( attribute == dexterity && _armor != nullptr &&
+		( _attributes[dexterity] - 10 ) / 2 > _armor->maxDexBon() )
+		return _armor->maxDexBon();
+
+	return  ( _attributes[attribute] - 10 ) / 2;;
 }
 
 int Character::visionRange()

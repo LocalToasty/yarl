@@ -16,19 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YARLCONFIG_H
-#define YARLCONFIG_H
+#include "weapon.h"
 
-#define PROJECT_NAME "@PROJECT_NAME@"
+Weapon::Weapon( const Tile& t, int (*damage)(), World& world , double range,
+				int x, int y, int hp , Size s ) :
+	Item( t, world, x, y, hp, s ), _range( range ), _damage( damage )
+{
+}
 
-#define VERSION_MAJOR @VERSION_MAJOR@
-#define VERSION_MINOR @VERSION_MINOR@
-#define VERSION_PATCH @VERSION_PATCH@
+int Weapon::damage()
+{
+	return _damage();
+}
 
-#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
-
-#define ON 1
-#define OFF 0
-#define USE_SDL @USE_SDL@
-
-#endif
+double Weapon::range()
+{
+	return _range;
+}

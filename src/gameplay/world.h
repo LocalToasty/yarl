@@ -21,14 +21,17 @@
 
 #include "command.h"
 #include "statusbar.h"
+#include "tile.h"
+#include "weapon.h"
+#include "armor.h"
 #include <vector>
 
 using namespace std;
 
 class Sector;
 class Character;
-class Tile;
 class Entity;
+class Player;
 
 class World
 {
@@ -40,7 +43,7 @@ private:
 
 	StatusBar _statusBar;
 
-	Character* _player;
+	Player* _player;
 
 	double _time;
 
@@ -55,6 +58,8 @@ private:
 public:
 	World( int width, int height );
 	~World();
+
+	static double distance( int x1, int y1, int x2, int y2 );
 
 	bool los(int x1, int y1, int x2, int y2, double range = -1 );
 	vector<Command> route( int x1, int y1, int x2, int y2,
