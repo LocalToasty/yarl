@@ -25,6 +25,7 @@
 class Item;
 class World;
 class Sector;
+class Character;
 
 using namespace std;
 
@@ -66,6 +67,8 @@ private:
 
 	list<Item*>	_inventory;
 
+	Character* _lastAttacker;
+
 public:
 	Entity( const Tile& t, int x, int y, int hp, World& world,
 			Size s = Size::medium, int naturalArmor = 0,
@@ -103,5 +106,8 @@ public:
 	void setLastKnownY();
 
 	void setHp(int hp);
+
+	Character* lastAttacker() const;
+	void setLastAttacker( Character* lastAttacker );
 };
 #endif

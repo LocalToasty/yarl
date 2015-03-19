@@ -250,7 +250,7 @@ bool Yarl::loop()
 	char input = _iom->getChar();
 	Command cmd = _bindings[input];
 
-	if ( cmd == Command::quit || input == 0 )
+	if ( cmd == Command::quit || input == 0 || player->hp() <= 0 )
 		return true;
 
 	else if ( _moreMessages )
