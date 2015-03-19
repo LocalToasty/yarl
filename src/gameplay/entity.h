@@ -68,7 +68,7 @@ private:
 
 	list<Item*>	_inventory;
 
-	Character* _lastAttacker;
+	Character* _lastAttacker { nullptr };
 
 public:
 	Entity( const Tile& t, int x, int y, int hp, World& world,

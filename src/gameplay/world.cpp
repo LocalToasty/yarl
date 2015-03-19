@@ -498,7 +498,8 @@ void World::think()
 							   _player->y() - Sector::size(),
 							   _player->x() + Sector::size(),
 							   _player->y() + Sector::size() ) )
-		e->think();
+		if( e->hp() > 0 )	// only let living entities think
+			e->think();
 }
 
 StatusBar& World::statusBar()
