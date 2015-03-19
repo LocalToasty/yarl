@@ -32,10 +32,20 @@ void Entity::setLastAttacker(Character* lastAttacker)
 {
     _lastAttacker = lastAttacker;
 }
+
+int Entity::maxHp() const
+{
+	return _maxHp;
+}
+
+void Entity::setMaxHp(int maxHp)
+{
+	_maxHp = maxHp;
+}
 Entity::Entity( const Tile& t, int x, int y, int hp, World& world, Size s,
-                int naturalArmor, const list<Item*>& inventory ) :
-    _t( t ), _x( x ), _y( y ), _hp( hp ), _world( world ), _s( s ),
-	_naturalArmor( naturalArmor ), _inventory( inventory )
+				int naturalArmor, const list<Item*>& inventory ) :
+	_t( t ), _x( x ), _y( y ), _maxHp( hp ), _hp( hp ), _world( world ),
+	_s( s ), _naturalArmor( naturalArmor ), _inventory( inventory )
 {
 	_sector = world.sector( x, y );
 

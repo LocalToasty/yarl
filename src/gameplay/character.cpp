@@ -27,7 +27,7 @@ Entity* Character::lastTarget() const
 	return _lastTarget;
 }
 
-void Character::setLastTarget(Entity* lastTarget)
+void Character::setLastTarget( Entity* lastTarget )
 {
 	_lastTarget = lastTarget;
 }

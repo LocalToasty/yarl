@@ -52,6 +52,7 @@ private:
 	int _y;
 
 	int	_hp;	// hitpoints
+	int _maxHp;
 
 	int _naturalArmor;
 
@@ -109,5 +110,7 @@ public:
 
 	Character* lastAttacker() const;
 	void setLastAttacker( Character* lastAttacker );
+	int maxHp() const;
+	void setMaxHp(int maxHp);
 };
 #endif

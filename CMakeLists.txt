@@ -1,6 +1,6 @@
-cmake_minimum_required( VERSION 3.1)
+cmake_minimum_required( VERSION 3.1 )
 
-project( yarl)
+project( yarl )
 
 set( VERSION_MAJOR 0 )
 set( VERSION_MINOR 0 )

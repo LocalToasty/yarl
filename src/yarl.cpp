@@ -46,7 +46,7 @@ bool Yarl::init(int argc, char* argv[])
 		{ "showUnknown",	{ "0",	"draw unexplored areas."} },
 		{ "showUnseen",		{ "1",	"draw explored, but currently not seen "
 									"areas." } },
-		{ "name",			{ "Adventurer",	"Name of your character." } }
+		{ "name",			{ "Advent",	"Name of your character." } }
 	};
 
 	_bindings =
@@ -183,7 +183,7 @@ void Yarl::render()
 	int offY = height / 2 - player->y();
 
 	// render the room
-	for ( int row = 0; row < height; row++ )
+	for ( int row = 0; row < height - 1; row++ )
 	{
 		_iom->moveCursor( 0, row );
 		for ( int col = 0; col < width; col++ )
@@ -243,6 +243,27 @@ void Yarl::render()
 							 _world->statusBar().getLine(width).c_str() );
 		_moreMessages = !_world->statusBar().empty();
 	}
+
+	// character information
+	// name
+	_iom->moveAddString( 0, height - 1,
+						 _variables["name"].toString().substr( 0, 9 ) );
+
+	// hp
+	_iom->moveAddString( 10, height - 1, "HP: " );
+
+	Color hpCol = Color::green;
+	if( player->hp() < player->maxHp() / 4 )
+		hpCol = Color::red;
+	else if( player->hp() < player->maxHp() / 3 )
+		hpCol = Color::yellow;
+
+	_iom->addString( to_string( player->hp() ), hpCol );
+	_iom->addString( "/" + to_string( player->maxHp() ) );
+
+	// ac
+	_iom->moveAddString( 22, height - 1, "AC: " +
+						 to_string( player->armorClass() ) );
 
 	_iom->refreshScreen();
 }
