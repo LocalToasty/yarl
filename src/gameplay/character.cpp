@@ -20,7 +20,9 @@
 #include "world.h"
 #include "sector.h"
 #include "yarlconfig.h"
+#include <cstdlib>
 
+using namespace std;
 
 Entity* Character::lastTarget() const
 {

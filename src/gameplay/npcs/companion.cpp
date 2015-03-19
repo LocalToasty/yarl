@@ -18,6 +18,9 @@
 
 #include "companion.h"
 #include "world.h"
+#include <cstdlib>
+
+using namespace std;
 
 Companion::Companion( const Tile& t, Character* companion, int x, int y,
 					  int hp, int visionRange,

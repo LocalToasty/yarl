@@ -258,12 +258,35 @@ void Yarl::render()
 	else if( player->hp() < player->maxHp() / 3 )
 		hpCol = Color::yellow;
 
+#ifdef __MINGW32__
+	stringstream ss;
+
+	ss << player->hp();
+	string buf;
+	ss >> buf;
+	_iom->addString( buf, hpCol );
+
+	ss.str("");
+	ss.clear();
+	ss << player->maxHp();
+	ss >> buf;
+	_iom->addString( "/" + buf );
+#else
 	_iom->addString( to_string( player->hp() ), hpCol );
 	_iom->addString( "/" + to_string( player->maxHp() ) );
+#endif
 
 	// ac
+#ifdef __MINGW32__
+	ss.str("");
+	ss.clear();
+	ss << player->armorClass();
+	ss >> buf;
+	_iom->moveAddString( 22, height - 1, "AC: " + buf );
+#else
 	_iom->moveAddString( 22, height - 1, "AC: " +
 						 to_string( player->armorClass() ) );
+#endif
 
 	_iom->refreshScreen();
 }
