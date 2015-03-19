@@ -35,7 +35,7 @@ Tile World::bush	= {'o', Color::green,	"bush"};
 Tile World::stump	= {'o', Color::red,		"tree stump", true, false };
 Tile World::hero	= {'@', Color::yellow,	"you", true, false };
 
-World::World(int width, int height ) :
+World::World( int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
 {
 	for( Sector*& s : _sectors )

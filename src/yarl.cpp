@@ -42,25 +42,26 @@ bool Yarl::init(int argc, char* argv[])
 	// initialize variables
 	_variables =
 	{
-		{"color",		{"1",	"enable / disable color."}},
-		{"showUnknown",	{"0",	"draw unexplored areas."}},
-		{"showUnseen",	{"1",	"draw explored, "
-								"but currently not seen areas."}}
+		{ "color",			{ "1",	"enable / disable color."} },
+		{ "showUnknown",	{ "0",	"draw unexplored areas."} },
+		{ "showUnseen",		{ "1",	"draw explored, but currently not seen "
+									"areas." } },
+		{ "name",			{ "Adventurer",	"Name of your character." } }
 	};
 
 	_bindings =
 	{
-		{'h', Command::west},
-		{'l', Command::east},
-		{'k', Command::north},
-		{'j', Command::south},
-		{'y', Command::northWest},
-		{'u', Command::northEast},
-		{'b', Command::southWest},
-		{'n', Command::southEast},
-		{'.', Command::wait},
+		{ 'h', Command::west },
+		{ 'l', Command::east },
+		{ 'k', Command::north },
+		{ 'j', Command::south },
+		{ 'y', Command::northWest },
+		{ 'u', Command::northEast },
+		{ 'b', Command::southWest },
+		{ 'n', Command::southEast },
+		{ '.', Command::wait },
 
-		{'q', Command::quit}
+		{ 'q', Command::quit }
 	};
 
 	// get config file path
@@ -86,6 +87,9 @@ bool Yarl::init(int argc, char* argv[])
 		configFilePath.append( "\\.yarlrc" );
 #endif
 	}
+
+	// use user name as default character name
+	_variables["name"] = getenv( "USERNAME" );
 
 	for( int i = 0; i < argc; i++ )
 	{
