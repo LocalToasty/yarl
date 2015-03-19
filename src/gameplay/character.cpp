@@ -21,9 +21,19 @@
 #include "sector.h"
 #include "yarlconfig.h"
 
+
+Entity* Character::lastTarget() const
+{
+	return _lastTarget;
+}
+
+void Character::setLastTarget(Entity* lastTarget)
+{
+	_lastTarget = lastTarget;
+}
 Character::Character(const Tile& t, int x, int y, int hp, int visionRange,
-					  const array<int, noOfAttributes>& attributes,
-					  Weapon* unarmed, World& world,
+					 const array<int, noOfAttributes>& attributes,
+					 Weapon* unarmed, World& world,
 					  const list<Item*>& inventory, int bab,
 					  Character:: Size s, int naturalArmor ) :
 	Entity( t, x, y, hp, world, s, naturalArmor, inventory ),
@@ -46,6 +56,9 @@ bool Character::move( int dx, int dy )
 
 void Character::attack( Entity* target )
 {
+	_lastTarget = target;
+	target->setLastAttacker( this );
+
 	// hit roll
 	int toHitMod = _bab + attributeMod( strength ) + size();
 	if( rand() % 20 + 1 + toHitMod >= target->armorClass() )
@@ -94,6 +107,21 @@ bool Character::los( Entity* e )
 	return los( e->x(), e->y() );
 }
 
+// returns a vector with the entities currently seen by the character
+vector<Entity*> Character::seenEntities()
+{
+	vector<Entity*> ents;
+
+	for( Entity* e : world().entities( x() - visionRange(),
+									   y() - visionRange(),
+									   x() + visionRange() + 1,
+									   y() + visionRange() + 1 ) )
+	if( los( e ) )
+			ents.push_back( e );
+
+	return ents;
+}
+
 int Character::armorClass()
 {
 	return 10 + attributeMod( dexterity ) + size() + naturalArmor() +
@@ -102,7 +130,7 @@ int Character::armorClass()
 
 Weapon* Character::weapon()
 {
-	return _weapon;
+	return ( _weapon != nullptr ) ? _weapon : _unarmed;
 }
 
 void Character::setWeapon( Weapon* weapon )

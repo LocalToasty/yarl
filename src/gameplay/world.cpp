@@ -20,46 +20,68 @@
 #include "sector.h"
 #include "character.h"
 #include "player.h"
-#include "dog.h"
+#include "companion.h"
 #include "item.h"
 #include <cmath>
 #include <algorithm>
 
 using namespace std;
 
-Tile World::none	= {' ', Color::black,	"void"};
-Tile World::mud		= {'.', Color::red,		"mud", true};
-Tile World::grass	= {',', Color::green,	"patch of grass", true};
-Tile World::tree	= {'T', Color::green,	"tree"};
-Tile World::bush	= {'o', Color::green,	"bush"};
-Tile World::stump	= {'o', Color::red,		"tree stump", true, false };
-Tile World::hero	= {'@', Color::yellow,	"you", true, false };
+Tile World::_none	= {' ', Color::black,	"void"};
+Tile World::_mud	= {'.', Color::red,		"mud", true};
+Tile World::_grass	= {',', Color::green,	"patch of grass", true};
+Tile World::_tree	= {'T', Color::green,	"tree"};
+Tile World::_hero	= {'@', Color::yellow,	"you", true, false };
+Tile World::_goblin	= { 'g', Color::green,	"goblin", true, false };
+Tile World::_dog	= {'d', Color::red,		"dog", true, false };
+Tile World::_dogCorpse	= { '%', Color::red,	"dog corpse", true };
+Tile World::_shortSword	= { '(', Color::white,	"short sword", true };
+Tile World::_leatherArmor	= { '[', Color::red,	"leather armor", true };
 
 World::World( int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
 {
 	for( Sector*& s : _sectors )
 	{
-		s = new Sector( &grass );
+		s = new Sector( &_grass );
 
 		for( int x = 0; x < Sector::size(); x++ )
 		{
 			for( int y = 0; y < Sector::size(); y++ )
 			{
 				if( rand() % 16 == 0 )
-					s->setTile( x, y, &tree );
+					s->setTile( x, y, &_tree );
 				else if( rand() % 8 == 0 )
-					s->setTile( x, y, &mud );
+					s->setTile( x, y, &_mud );
 			}
 		}
 	}
 
 	array<int, 6> attr = { 12, 12, 12, 12, 12, 12 };
-	_player = new Player( hero, 42, 42, 9, 16, attr,
+	_player = new Player( _hero, 42, 42, 9 + rand() % 8 , 16, attr,
 						  new Weapon( {}, [](){ return rand() % 2 + 1; },
 									  *this ), *this, {}, 1 );
 
-	new Dog( 48, 42, *this );
+	Weapon* weap = new Weapon( _shortSword, [](){ return rand() % 6 + 1; },
+							   *this );
+	_player->inventory().push_back( weap );
+	_player->setWeapon( weap );
+
+	Armor* arm = new Armor( _leatherArmor, 2, 6, 4, *this );
+	_player->inventory().push_back( arm );
+	_player->setArmor( arm );
+
+	attr = { 13, 13, 15, 2, 12, 6 };
+	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, 12, attr,
+				   new Weapon( {}, [](){ return rand() % 4 + 2; }, *this),
+				   *this, { new Item( _dogCorpse, *this, -1, -1, 1,
+							Entity::Size::small ) },
+				   2, Entity::Size::small, 1 );
+
+	attr = { 11, 15, 12, 10, 9, 6 };
+	new Companion( _goblin, nullptr, 45, 45, rand() % 10 + 2, 12, attr,
+				   new Weapon( {}, [](){ return rand() % 2 + 1; }, *this ),
+				   *this );
 }
 
 double World::distance(int x1, int y1, int x2, int y2)

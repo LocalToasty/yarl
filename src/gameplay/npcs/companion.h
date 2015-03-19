@@ -16,25 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DOG_H
-#define DOG_H
+#ifndef COMPANION_H
+#define COMPANION_H
 
 #include "npc.h"
-#include "weapon.h"
 
-class World;
-
-class Dog : public NPC
+class Companion : public NPC
 {
 private:
+	Character* _companion;
+
 	int _waypointX { -1 };
 	int _waypointY { -1 };
 
-    static Tile dog;
-	static Tile corpse;
-
 public:
-	Dog(int x, int y, World& world );
+	Companion( const Tile& t, Character* companion, int x, int y, int hp,
+			   int visionRange, const array<int, noOfAttributes>& attributes,
+			   Weapon* unarmed, World& world,
+			   const list<Item*>& inventory = {}, int bab = 0,
+			   Size s = Size::medium, int naturalArmor = 0 );
 
 	void think();
 };

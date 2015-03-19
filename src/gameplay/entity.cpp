@@ -22,9 +22,19 @@
 
 #include "item.h"
 
+
+Character* Entity::lastAttacker() const
+{
+    return _lastAttacker;
+}
+
+void Entity::setLastAttacker(Character* lastAttacker)
+{
+    _lastAttacker = lastAttacker;
+}
 Entity::Entity( const Tile& t, int x, int y, int hp, World& world, Size s,
-				int naturalArmor, const list<Item*>& inventory ) :
-	_t( t ), _x( x ), _y( y ), _hp( hp ), _world( world ), _s( s ),
+                int naturalArmor, const list<Item*>& inventory ) :
+    _t( t ), _x( x ), _y( y ), _hp( hp ), _world( world ), _s( s ),
 	_naturalArmor( naturalArmor ), _inventory( inventory )
 {
 	_sector = world.sector( x, y );

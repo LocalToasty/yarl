@@ -47,13 +47,20 @@ private:
 
 	double _time;
 
-	static Tile grass;
-	static Tile mud;
-	static Tile tree;
-	static Tile none;
-	static Tile bush;
-	static Tile stump;
-	static Tile hero;
+	static Tile _grass;
+	static Tile _mud;
+	static Tile _tree;
+	static Tile _none;
+
+	static Tile _hero;
+
+	static Tile _goblin;
+
+	static Tile _dog;
+	static Tile _dogCorpse;
+
+	static Tile _shortSword;
+	static Tile _leatherArmor;
 
 public:
 	World( int width, int height );

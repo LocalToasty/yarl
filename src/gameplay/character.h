@@ -54,6 +54,8 @@ private:
 
 	int _bab;	// base attack bonus
 
+	Entity* _lastTarget { nullptr };
+
 public:
 	Character(const Tile& t, int x, int y, int hp, int visionRange,
 			   const array<int, noOfAttributes>& attributes,
@@ -63,6 +65,7 @@ public:
 
 	bool los( int x, int y, double factor = 1 ) const;
 	bool los( Entity* e );
+	vector<Entity*> seenEntities();
 
 	bool move( int dx, int dy );
 
@@ -84,6 +87,9 @@ public:
 	int attributeMod( Attribute attribute );
 
 	int visionRange();
+
+	Entity* lastTarget() const;
+	void setLastTarget(Entity* lastTarget);
 };
 
 #endif
