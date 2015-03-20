@@ -174,6 +174,9 @@ bool Yarl::init(int argc, char* argv[])
 	_iom = new CursesIOManager( _variables["color"].toInt() );
 #endif
 
+	// seed RNG
+	srand( time( 0 ) );
+
 	// create test world
 	_world = new World( 5, 5 );
 

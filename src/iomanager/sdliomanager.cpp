@@ -53,7 +53,7 @@ Uint32 SDLIOManager::color( Color col )
 		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
 
 	case Color::cyan:
-		return SDL_MapRGB( screen->format, 0xff, 0x00, 0x00 );
+		return SDL_MapRGB( screen->format, 0x00, 0xff, 0xff );
 
 	case Color::white:
 		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
