@@ -19,8 +19,11 @@
 #ifndef SDLIOManager_H
 #define SDLIOManager_H
 
-#include <SDL2/SDL.h>
 #include "iomanager.h"
+#include <SDL2/SDL.h>
+#include <vector>
+
+using namespace std;
 
 class SDLIOManager : public IOManager
 {
@@ -31,22 +34,28 @@ private:
 	SDL_Window* _window;
 	SDL_Surface* _charset;
 
+	vector<char> _characters;
+	vector<Color> _colors;
+
 	// character dimensions
 	int _charWidth;
 	int _charHeight;
 
+	bool _cursorOn;
+
 	// screen dimensions (in characters)
-	int _width {_defaultWidth};
-	int _height {_defaultHeight};
+	int _width { _defaultWidth };
+	int _height { _defaultHeight };
 
 	// cursor position
-	int _cursX {0};
-	int _cursY {0};
+	int _cursX { 0 };
+	int _cursY { 0 };
 
 	Uint32 color( Color col );
 
 public:
-	SDLIOManager( bool usecolor, const char* charset = "charset.bmp" );
+	SDLIOManager( bool usecolor, bool cursor = false,
+				  const char* charset = "charset.bmp" );
 	~SDLIOManager();
 
 	int width();
@@ -60,6 +69,8 @@ public:
 	void moveCursor( int x, int y );
 
 	char getChar();
+
+	void clear( int x = 0, int y = 0, int w = -1, int h = -1 );
 
 	void refreshScreen();
 };

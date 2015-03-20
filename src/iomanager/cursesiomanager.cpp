@@ -49,12 +49,12 @@ short CursesIOManager::cp(Color col)
 	}
 }
 
-CursesIOManager::CursesIOManager(bool usecolor)
+CursesIOManager::CursesIOManager( bool usecolor, bool cursor )
 {
 	initscr();
 	cbreak();
 	noecho();
-	curs_set( 0 );	// no cursor
+    curs_set( cursor );	// no cursor
 
 	// initialize colors
 	if ( has_colors() && usecolor )
@@ -105,7 +105,19 @@ void CursesIOManager::moveCursor( int x, int y )
 
 char CursesIOManager::getChar()
 {
-	return ( char ) getch();
+    return ( char ) getch();
+}
+
+void CursesIOManager::clear( int x, int y, int w, int h )
+{
+    for( int i = 0; i < w; i++ )
+    {
+        move( x, y );
+        for( int j = 0; j < h; h++ )
+        {
+            addch( ' ' );
+        }
+    }
 }
 
 void CursesIOManager::refreshScreen()
