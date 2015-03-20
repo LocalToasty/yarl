@@ -27,7 +27,7 @@ private:
 	short cp( Color col );
 
 public:
-	CursesIOManager(bool usecolor = true);
+    CursesIOManager( bool usecolor = true, bool cursor = false );
 	~CursesIOManager();
 
 	int width();
@@ -41,6 +41,8 @@ public:
 	void moveCursor(int x, int y);
 
 	char getChar();
+
+    void clear( int x, int y, int w, int h );
 
 	void refreshScreen();
 };

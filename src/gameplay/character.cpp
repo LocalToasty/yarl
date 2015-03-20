@@ -24,23 +24,14 @@
 
 using namespace std;
 
-Entity* Character::lastTarget() const
-{
-	return _lastTarget;
-}
-
-void Character::setLastTarget( Entity* lastTarget )
-{
-	_lastTarget = lastTarget;
-}
-Character::Character(const Tile& t, int x, int y, int hp, int visionRange,
-					 const array<int, noOfAttributes>& attributes,
-					 Weapon* unarmed, World& world,
-					  const list<Item*>& inventory, int bab,
-					  Character:: Size s, int naturalArmor ) :
+Character::Character( const Tile& t, int x, int y, int hp, int visionRange,
+					  const array<int, noOfAttributes>& attributes,
+					  World& world, int ( *unarmed )(),
+					  double unarmedRange, const list<Item*>& inventory,
+					  int bab, Character:: Size s, int naturalArmor ) :
 	Entity( t, x, y, hp, world, s, naturalArmor, inventory ),
 	_attributes( attributes ), _bab( bab ), _unarmed( unarmed ),
-	_visionRange( visionRange )
+	_unarmedRange( unarmedRange ), _visionRange( visionRange )
 {
 }
 
@@ -48,8 +39,7 @@ bool Character::move( int dx, int dy )
 {
 	if ( world().passable( x() + dx, y() + dy ) )
 	{
-		setX( x() + dx );
-		setY( y() + dy );
+		setXY( x() + dx, y() + dy );
 		return true;
 	}
 
@@ -67,8 +57,7 @@ void Character::attack( Entity* target )
 	{
 		world().statusBar().addMessage( attackMessage( target, true ) );
 
-		int damage = ( _weapon == nullptr  ? _unarmed->damage()
-										   : _weapon->damage()) +
+		int damage = ( _weapon ? _weapon->damage() : _unarmed() ) +
 					 attributeMod( strength );
 
 		if( damage <= 0 )	// hits inflict at least 1 hp damage
@@ -132,7 +121,7 @@ int Character::armorClass()
 
 Weapon* Character::weapon()
 {
-	return ( _weapon != nullptr ) ? _weapon : _unarmed;
+	return _weapon;
 }
 
 void Character::setWeapon( Weapon* weapon )
@@ -167,4 +156,24 @@ int Character::attributeMod(Character::Attribute attribute)
 int Character::visionRange()
 {
 	return _visionRange;
+}
+
+Entity* Character::lastTarget() const
+{
+	return _lastTarget;
+}
+
+void Character::setLastTarget( Entity* lastTarget )
+{
+	_lastTarget = lastTarget;
+}
+
+double Character::unarmedRange() const
+{
+	return _unarmedRange;
+}
+
+void Character::setUnarmedRange(double unarmedRange)
+{
+	_unarmedRange = unarmedRange;
 }

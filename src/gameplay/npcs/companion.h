@@ -30,9 +30,9 @@ private:
 	int _waypointY { -1 };
 
 public:
-	Companion( const Tile& t, Character* companion, int x, int y, int hp,
+	Companion(const Tile& t, Character* companion, int x, int y, int hp,
 			   int visionRange, const array<int, noOfAttributes>& attributes,
-			   Weapon* unarmed, World& world,
+			   World& world, int ( *unarmed )(), double unarmedRange = 1.5,
 			   const list<Item*>& inventory = {}, int bab = 0,
 			   Size s = Size::medium, int naturalArmor = 0 );
 

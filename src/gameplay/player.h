@@ -28,9 +28,9 @@ using namespace std;
 class Player : public Character
 {
 public:
-	Player(const Tile& t, int x, int y, int hp, int visionRange,
-			array<int, noOfAttributes>& attributes,
-			Weapon* unarmed, World& world,
+	Player( const Tile& t, int x, int y, int hp, int visionRange,
+			array<int, noOfAttributes>& attributes, World& world,
+			int ( *unarmed )(), double unarmedRange = 1.5,
 			const list<Item*>& inventory = {}, int bab = 0,
 			Size s = Size::medium, int naturalArmor = 0 );
 

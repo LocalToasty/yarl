@@ -61,7 +61,7 @@ private:
 	World& _world;
 	Sector* _sector;
 
-	bool _seen {false};	// has the entity been seen yet?
+	bool _seen { false };	// has the entity been seen yet?
 	// if yes, last known coordinates
 	int _lastKnownX;
 	int _lastKnownY;
@@ -100,6 +100,7 @@ public:
 
 	void setX( int x );
 	void setY( int y );
+	void setXY( int x, int y );
 	void setSector( Sector* Sector );
 
 	void setSeen( bool seen = true );

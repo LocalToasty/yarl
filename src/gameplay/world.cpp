@@ -36,7 +36,7 @@ Tile World::_goblin	= { 'g', Color::green,	"goblin", true, false };
 Tile World::_dog	= {'d', Color::red,		"dog", true, false };
 Tile World::_dogCorpse	= { '%', Color::red,	"dog corpse", true };
 Tile World::_shortSword	= { '(', Color::white,	"short sword", true };
-Tile World::_leatherArmor	= { '[', Color::red,	"leather armor", true };
+Tile World::_leatherArmor	= { '[', Color::yellow,	"leather armor", true };
 
 World::World( int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
@@ -58,9 +58,8 @@ World::World( int width, int height ) :
 	}
 
 	array<int, 6> attr = { 12, 12, 12, 12, 12, 12 };
-	_player = new Player( _hero, 42, 42, 9 + rand() % 8 , 16, attr,
-						  new Weapon( {}, [](){ return rand() % 2 + 1; },
-									  *this ), *this, {}, 1 );
+	_player = new Player( _hero, 42, 42, 9 + rand() % 8 , 12, attr, *this,
+						  [](){ return rand() % 2 + 1; }, 1.5, {}, 1 );
 
 	Weapon* weap = new Weapon( _shortSword, [](){ return rand() % 6 + 1; },
 							   *this );
@@ -72,16 +71,16 @@ World::World( int width, int height ) :
 	_player->setArmor( arm );
 
 	attr = { 13, 13, 15, 2, 12, 6 };
-	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, 12, attr,
-				   new Weapon( {}, [](){ return rand() % 4 + 2; }, *this),
-				   *this, { new Item( _dogCorpse, *this, -1, -1, 1,
-							Entity::Size::small ) },
+	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, 12, attr, *this,
+				   [](){ return rand() % 4 + 2; }, 1.5,
+				   { new Item( _dogCorpse, *this, -1, -1, 1,
+							   Entity::Size::small ) },
 				   2, Entity::Size::small, 1 );
 
 	attr = { 11, 15, 12, 10, 9, 6 };
-	new Companion( _goblin, nullptr, 45, 45, rand() % 10 + 2, 12, attr,
-				   new Weapon( {}, [](){ return rand() % 2 + 1; }, *this ),
-				   *this );
+	new Companion( _goblin, nullptr, 45, 45, rand() % 10 + 2, 12, attr, *this,
+				   [](){ return rand() % 2 + 1; }, 1.5, {}, 1,
+				   Entity::Size::small );
 }
 
 double World::distance(int x1, int y1, int x2, int y2)
@@ -459,7 +458,7 @@ vector<Entity*> World::entities( int x1, int y1, int x2, int y2 )
 		{
 			Sector* s = sector( x, y );
 
-			if( s != nullptr )
+			if( s )
 				for( Entity* e : s->entities() )
 					if( e->x() >= x1 && e->x() < x2 &&
 						e->y() >= y1 && e->y() < y2 )

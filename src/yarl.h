@@ -43,7 +43,18 @@ private:
 	map<string, Variable> _variables;
 	map<char, Command> _bindings;
 
-	bool _moreMessages { false };
+	enum class State
+	{
+		def,
+		moreMessages,
+		showInventory,
+		drop,
+		equip,
+		wear
+	};
+	State _state { State::def };
+
+	string _buf;
 
 	bool init( int argc, char* argv[] );
 

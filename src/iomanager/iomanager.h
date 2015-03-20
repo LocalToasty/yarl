@@ -64,6 +64,8 @@ public:
 	// read one character from the keyboard
 	virtual char getChar() = 0;
 
+	virtual void clear( int x = 0, int y = 0, int w = -1, int h = -1 ) = 0;
+
 	// show all changes made to the streambuffer
 	virtual void refreshScreen() = 0;
 };

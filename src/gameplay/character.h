@@ -46,7 +46,10 @@ private:
 	int _visionRange;
 
 	Weapon* _weapon { nullptr };
-	Weapon* _unarmed;	// unarmed attack
+
+	// unarmed attack
+	int ( *_unarmed )();
+	double _unarmedRange;
 
 	Armor* _armor { nullptr };
 
@@ -57,11 +60,11 @@ private:
 	Entity* _lastTarget { nullptr };
 
 public:
-	Character(const Tile& t, int x, int y, int hp, int visionRange,
-			   const array<int, noOfAttributes>& attributes,
-			   Weapon* unarmed, World& world,
-			   const list<Item*>& inventory = {}, int bab = 0,
-			   Size s = Size::medium, int naturalArmor = 0 );
+	Character( const Tile& t, int x, int y, int hp, int visionRange,
+			   const array<int, noOfAttributes>& attributes, World& world,
+			   int ( *unarmed )(), double unarmedRange = 1.5,
+			   const list<Item*>& inventory = {},
+			   int bab = 0, Size s = Size::medium, int naturalArmor = 0 );
 
 	bool los( int x, int y, double factor = 1 ) const;
 	bool los( Entity* e );
@@ -90,6 +93,8 @@ public:
 
 	Entity* lastTarget() const;
 	void setLastTarget(Entity* lastTarget);
+	double unarmedRange() const;
+	void setUnarmedRange(double unarmedRange);
 };
 
 #endif

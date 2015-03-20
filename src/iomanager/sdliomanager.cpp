@@ -61,9 +61,12 @@ Uint32 SDLIOManager::color( Color col )
 	}
 }
 
-SDLIOManager::SDLIOManager( bool usecolor, const char* charset ) :
-	_useColor( usecolor )
+SDLIOManager::SDLIOManager( bool usecolor, bool cursor, const char* charset ) :
+	_cursorOn( cursor ), _useColor( usecolor )
 {
+	_characters = vector<char>( _width * _height, ' ' );
+	_colors = vector<Color>( _width * _height, Color::white );
+
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
 	{
 		cerr << "Error while initializing SDL: " << SDL_GetError() << endl;
@@ -131,27 +134,13 @@ int SDLIOManager::height()
 
 void SDLIOManager::cursor( bool val )
 {
-	// TODO
+	_cursorOn = val;
 }
 
 void SDLIOManager::addChar( char c, Color col )
 {	
-	SDL_Surface* screen = SDL_GetWindowSurface( _window );
-
-	SDL_Rect ch;
-	ch.x = _charWidth * ( c & 0x0f );
-	ch.y = _charHeight * ( ( c & 0x70 ) >> 4 );
-	ch.w = _charWidth;
-	ch.h = _charHeight;
-
-	SDL_Rect pos;
-	pos.x = _charWidth * _cursX;
-	pos.y = _charHeight * _cursY;
-	pos.w = _charWidth;
-	pos.h = _charHeight;
-
-	SDL_FillRect( screen, &pos, color( col ) );
-	SDL_BlitSurface (_charset, &ch, screen, &pos );
+_characters.at( _cursX + _width * _cursY ) = c;
+	_colors.at( _cursX + _width * _cursY ) = col;
 
 	_cursX++;
 
@@ -199,7 +188,10 @@ char SDLIOManager::getChar()
 
 			else if( e.type == SDL_KEYDOWN )
 			{
-				return ( char ) e.key.keysym.sym;
+				if( e.key.keysym.sym == SDLK_RETURN )
+					return '\n';
+				else
+					return ( char ) e.key.keysym.sym;
 			}
 		}
 
@@ -207,7 +199,44 @@ char SDLIOManager::getChar()
 	}
 }
 
+void SDLIOManager::clear( int x, int y, int w, int h )
+{
+	for( int i = 0; i < w; i++ )
+	{
+		for( int j = 0; j < h; h++ )
+		{
+			_characters.at( x + i + ( y + j ) * _width ) = ' ';
+		}
+	}
+}
+
 void SDLIOManager::refreshScreen()
 {
+		SDL_Surface* screen = SDL_GetWindowSurface( _window );
+
+		for( int y = 0; y < _height; y++ )
+		{
+			for( int x = 0; x < _width; x++ )
+			{
+				char c = _characters.at( x + y * _width );
+				Color col = _colors.at( x + y * _width );
+
+				SDL_Rect ch;
+				ch.x = _charWidth * ( c & 0x0f );
+				ch.y = _charHeight * ( ( c & 0x70 ) >> 4 );
+				ch.w = _charWidth;
+				ch.h = _charHeight;
+
+				SDL_Rect pos;
+				pos.x = _charWidth * x;
+				pos.y = _charHeight * y;
+				pos.w = _charWidth;
+				pos.h = _charHeight;
+
+				SDL_FillRect( screen, &pos, color(col) );
+				SDL_BlitSurface (_charset, &ch, screen, &pos );
+			}
+		}
+
 	SDL_UpdateWindowSurface( _window );
 }
