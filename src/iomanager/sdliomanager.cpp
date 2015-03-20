@@ -55,6 +55,7 @@ Uint32 SDLIOManager::color( Color col )
 	case Color::cyan:
 		return SDL_MapRGB( screen->format, 0x00, 0xff, 0xff );
 
+	default:
 	case Color::white:
 		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
 	}
@@ -128,7 +129,7 @@ int SDLIOManager::height()
 	return _height;
 }
 
-int SDLIOManager::cursor( bool val )
+void SDLIOManager::cursor( bool val )
 {
 	// TODO
 }
@@ -170,16 +171,16 @@ void SDLIOManager::addString( string s, Color col )
 void SDLIOManager::moveCursor( int x, int y )
 {
 	if ( x >= _width )
-		_cursX == _width;
+		_cursX = _width;
 	else if ( x < 0 )
-		_cursX == 0;
+		_cursX = 0;
 	else
 		_cursX = x;
 
 	if ( y >= _height )
-		_cursY == _height;
+		_cursY = _height;
 	else if ( y < 0 )
-		_cursY == 0;
+		_cursY = 0;
 	else
 		_cursY = y;
 }

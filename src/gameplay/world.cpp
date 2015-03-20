@@ -397,8 +397,10 @@ Tile* World::tile( int x, int y )
 {
 	Sector* s = sector( x, y );
 
-	if( s != nullptr )
+	if( s )
 		return s->tile( x, y );
+	else
+		return nullptr;
 }
 
 void World::setTile(int x, int y, Tile* t)
@@ -413,18 +415,18 @@ bool World::explored(int x, int y)
 {
 	Sector* s = sector( x, y );
 
-	if( s != nullptr )
+	if( s )
 		return s->explored( x, y );
+	else
+		return nullptr;
 }
 
-bool World::setExplored( int x, int y, bool explored )
+void World::setExplored( int x, int y, bool explored )
 {
 	Sector* s = sector( x, y );
 
 	if( s != nullptr )
 		s->setExplored( x, y, explored );
-	else
-		return false;
 }
 
 bool World::passable(int x, int y)

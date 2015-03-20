@@ -81,7 +81,7 @@ int CursesIOManager::height()
 	return getmaxy( stdscr );
 }
 
-int CursesIOManager::cursor( bool val)
+void CursesIOManager::cursor( bool val )
 {
 	curs_set(val);
 }

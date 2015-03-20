@@ -72,8 +72,8 @@ void Sector::addEntity(Entity* e)
 	// top.
 	auto comp = [](Entity* l, Entity* r)
 	{
-		return l->t().passable() && !r->t().passable() ||
-			   l->t().transparent() && !r->t().transparent();
+		return ( l->t().passable() && !r->t().passable() ) ||
+			   ( l->t().transparent() && !r->t().transparent() );
 	};
 
 	auto pos = lower_bound(_entities.begin(), _entities.end(), e, comp);

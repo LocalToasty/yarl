@@ -22,7 +22,7 @@
 enum class Command
 {
 	MOVEMENT_BEGIN,
-	west,
+	west = Command::MOVEMENT_BEGIN,
 	south,
 	north,
 	east,
@@ -30,7 +30,8 @@ enum class Command
 	northWest,
 	southEast,
 	southWest,
-	MOVEMENT_END,
+	MOVEMENT_END = Command::southWest,
+
 	wait,
 	none,
 

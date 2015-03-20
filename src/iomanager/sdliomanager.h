@@ -54,7 +54,7 @@ public:
 	int width();
 	int height();
 
-	int cursor( bool val );
+	void cursor( bool val );
 
 	void addChar( char c, Color col = Color::white );
 	void addString( string s, Color col = Color::white );

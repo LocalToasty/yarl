@@ -57,4 +57,9 @@ add_executable( yarl
 
 set_property( TARGET yarl PROPERTY CXX_STANDARD 11 )
 
+#if( CMAKE_COMPILER_IS_GNUCC )
+#	set_property( TARGET yarl APPEND_STRING PROPERTY COMPILE_FLAGS -Wall )
+#endif( CMAKE_COMPILER_IS_GNUCC )
+
+
 target_link_libraries( yarl ${EXTRA_LIBS} )

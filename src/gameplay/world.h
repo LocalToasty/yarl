@@ -79,7 +79,7 @@ public:
 	void setTile( int x, int y, Tile* t );
 
 	bool explored( int x, int y );
-	bool setExplored( int x, int y, bool explored = true );
+	void setExplored( int x, int y, bool explored = true );
 
 	bool passable( int x, int y );
 

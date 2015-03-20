@@ -46,7 +46,7 @@ public:
 	virtual int height() = 0;
 
 	// turn the cursor on or off
-	virtual int cursor( bool val ) = 0;
+	virtual void cursor( bool val ) = 0;
 
 	// replace the character at the current cursor location
 	virtual void addChar( char c, Color col = Color::white ) = 0;

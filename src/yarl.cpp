@@ -315,7 +315,7 @@ bool Yarl::loop()
 	else if ( _moreMessages )
 		return false;
 
-	else if ( cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END )
+	else if ( cmd >= Command::MOVEMENT_BEGIN && cmd <= Command::MOVEMENT_END )
 	{
 		int dx = 0;
 		int dy = 0;

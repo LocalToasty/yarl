@@ -45,7 +45,8 @@ string StatusBar::getLine(int maxLen)
 			line.push_back(' ');
 			return line;
 		}
-		else if (line.length() + _messages.front().length() + addChars < maxLen)
+		else if( line.length() + _messages.front().length() + addChars <
+				 maxLen )
 		{
 			line.push_back(' ');
 			line.append(_messages.front());

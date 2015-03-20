@@ -44,7 +44,7 @@ void Entity::setMaxHp(int maxHp)
 }
 Entity::Entity( const Tile& t, int x, int y, int hp, World& world, Size s,
 				int naturalArmor, const list<Item*>& inventory ) :
-	_t( t ), _x( x ), _y( y ), _maxHp( hp ), _hp( hp ), _world( world ),
+	_t( t ), _x( x ), _y( y ), _hp( hp ), _maxHp( hp ), _world( world ),
 	_s( s ), _naturalArmor( naturalArmor ), _inventory( inventory )
 {
 	_sector = world.sector( x, y );
