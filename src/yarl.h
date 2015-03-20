@@ -43,15 +43,16 @@ private:
 	map<string, Variable> _variables;
 	map<char, Command> _bindings;
 
-	enum State
+	enum class State
 	{
 		def,
 		moreMessages,
 		showInventory,
 		drop,
-		wield
+		equip,
+		wear
 	};
-	State _state { def };
+	State _state { State::def };
 
 	string _buf;
 

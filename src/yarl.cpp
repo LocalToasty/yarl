@@ -63,7 +63,10 @@ bool Yarl::init(int argc, char* argv[])
 		{ '.', Command::wait },
 		{ ',', Command::pickup },
 
-		{ 'w', Command::wield },
+		{ 'e', Command::equip },
+		{ 'w', Command::wear },
+		{ 't', Command::takeOff },
+
 		{ 'd', Command::drop },
 		{ 'i', Command::inventory },
 
@@ -288,9 +291,11 @@ void Yarl::render()
 	}
 
 	// wield prompt
-	else if( _state == State::wield )
+	else if( _state == State::equip || _state == State::wear )
 	{
-		_iom->moveAddString( 0, 0, "Which weapon do you want to wield? " );
+		_iom->moveAddString( 0, 0, ( _state == State::equip ?
+									"Which weapon do you want to wield? " :
+									"What armor do you want to put on? " ) );
 		_iom->addString( _buf, Color::cyan );
 
 		if( !_buf.empty() )
@@ -303,13 +308,25 @@ void Yarl::render()
 				 it = getItemWithName( _buf, ++it,
 									   player->inventory().end() ) )
 			{
-				// check if item is weapon
-				Weapon* w = dynamic_cast<Weapon*>( *it );
-				if( w && w != player->weapon() )
+				if( _state == State::equip )
 				{
-					_iom->addString( w->t().description().
-									 substr( _buf.size() ) );
-					break;
+					// check if item is weapon
+
+					if( Weapon* w = dynamic_cast<Weapon*>( *it ) )
+					{
+						_iom->addString( w->t().description().
+										 substr( _buf.size() ) );
+						break;
+					}
+				}
+				else	//  state == State::wear
+				{
+					if( Armor* a = dynamic_cast<Armor*>( *it ) )
+					{
+						_iom->addString( a->t().description().
+										 substr( _buf.size() ) );
+						break;
+					}
 				}
 			}
 
@@ -481,7 +498,7 @@ bool Yarl::loop()
 			_buf.push_back( input );
 		}
 	}
-	else if( _state == wield )
+	else if( _state == State::equip || _state == State::wear )
 	{
 		if( input == '\b' )
 		{
@@ -496,7 +513,7 @@ bool Yarl::loop()
 			}
 			else
 			{
-				bool weaponFound = false;
+				bool itemFound = false;
 				for( auto it = getItemWithName( _buf,
 												player->inventory().begin(),
 												player->inventory().end() );
@@ -506,22 +523,52 @@ bool Yarl::loop()
 				{
 					// check if item is weapon and isn't the currently equipped
 					// one
-					Weapon* w = dynamic_cast<Weapon*>( *it );
-					if( w && w != player->weapon() )
+					if( _state == State::equip )
 					{
-						weaponFound = true;
-						player->setWeapon( w );
-						_world->statusBar().
-								addMessage( "You equip your " +
-											w->t().description() + '.');
-						break;
+						Weapon* w = dynamic_cast<Weapon*>( *it );
+						if( w && w != player->weapon() )
+						{
+							itemFound = true;
+							player->setWeapon( w );
+							_world->statusBar().
+									addMessage( "You equip your " +
+												w->t().description() + '.');
+							break;
+						}
+					}
+					else	// _state == State::wear
+					{
+						Armor* a = dynamic_cast<Armor*>( *it );
+						if( a && a != player->armor() )
+						{
+							itemFound = true;
+							player->setArmor( a );
+							_world->statusBar().
+									addMessage( "You don your " +
+												a->t().description() + '.');
+							break;
+						}
 					}
 				}
 
-				if( !weaponFound )
+				if( !itemFound )
 				{
-					_world->statusBar().
-							addMessage( "You have no such weapon." );
+					if( _state == State::equip )
+					{
+						if( player->weapon() )
+							_world->statusBar().
+									addMessage( "You already have that "
+												"weapon equipped." );
+						else
+							_world->statusBar().
+									addMessage( "You have no such weapon." );
+					}
+					else	// _state == State::wear
+					{
+						_world->statusBar().
+								addMessage( "You have no such armor." );
+
+					}
 				}
 			}
 
@@ -600,10 +647,37 @@ bool Yarl::loop()
 			}
 		}
 	}
-	else if( cmd == Command::wield )
+	else if( cmd == Command::equip )
 	{
 		_buf.clear();
-		_state = State::wield;
+		_state = State::equip;
+	}
+	else if( cmd == Command::wear )
+	{
+		if( player->armor() )
+		{
+			_world->statusBar().addMessage( "You are already wearing armor." );
+		}
+		else
+		{
+			_buf.clear();
+			_state = State::wear;
+		}
+	}
+	else if( cmd == Command::takeOff )
+	{
+		if( player->armor() )
+		{
+			_world->statusBar().addMessage( "You remove your " +
+											player->armor()->t().
+											description() + '.' );
+			player->setArmor( nullptr );
+		}
+		else	// no armor
+		{
+			_world->statusBar().addMessage( "You don't wear any armor to take "
+											"off." );
+		}
 	}
 	else if( cmd == Command::drop )
 	{
