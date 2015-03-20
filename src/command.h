@@ -33,6 +33,7 @@ enum class Command
 	MOVEMENT_END,
 
 	pickup,
+	drop,
 	inventory,
 
 	wait,

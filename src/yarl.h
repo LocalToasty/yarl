@@ -47,9 +47,12 @@ private:
 	{
 		def,
 		moreMessages,
-		showInventory
+		showInventory,
+		drop
 	};
 	State _state { def };
+
+	string _buf;
 
 	bool init( int argc, char* argv[] );
 

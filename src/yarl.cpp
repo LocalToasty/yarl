@@ -62,6 +62,7 @@ bool Yarl::init(int argc, char* argv[])
 
 		{ '.', Command::wait },
 		{ ',', Command::pickup },
+		{ 'd', Command::drop },
 		{ 'i', Command::inventory },
 
 		{ 'q', Command::quit }
@@ -248,16 +249,96 @@ void Yarl::render()
 			_state = State::moreMessages;
 	}
 
+	else if( _state == State::drop )
+	{
+		_iom->moveAddString( 0, 0, "What do you want to drop? " );
+		_iom->addString( _buf, Color::cyan );
+
+		if( !_buf.empty() )
+		{
+			// check if there is an item with a similar name in the inventory
+			for( Item* i : player->inventory() )
+			{
+				if( i->t().description().substr( 0, _buf.size() ) == _buf )
+				{
+					// if there is, suggest it
+					_iom->addString( i->t().description().
+									 substr( _buf.size() ) );
+					break;
+				}
+			}
+		}
+	}
+
 	// show inventory
 	if( _state == showInventory )
 	{
-		_iom->moveAddString( 1, 0, "Inventory", Color::yellow );
+		_iom->moveAddString( 0, 0, "Inventory", Color::yellow );
 
-		int row = 2;
+		vector<Weapon*> weapons;
+		vector<Armor*> armor;
+		vector<Item*> misc;
+
 		for( Item* i : player->inventory() )
 		{
-			_iom->moveAddString( 1, row, i->t().description() );
+			if( Weapon* w = dynamic_cast<Weapon*>( i ) )
+			{
+				weapons.push_back( w );
+			}
+			else if( Armor* a = dynamic_cast<Armor*>( i ) )
+			{
+				armor.push_back( a );
+			}
+			else
+			{
+				misc.push_back( i );
+			}
+		}
+
+		int row = 1;
+
+		if( !weapons.empty() )
+		{
+			_iom->moveAddString( 1, row, "Weapons", Color::cyan );
 			row++;
+
+			for( Weapon* w : weapons )
+			{
+				_iom->moveAddString( 2, row, w->t().description() );
+
+				if( player->weapon() == w )
+					_iom->addString( " (equipped)" );
+
+				row++;
+			}
+		}
+
+		if( !armor.empty() )
+		{
+			_iom->moveAddString( 1, row, "Armor", Color::cyan );
+			row++;
+
+			for( Armor* a : armor )
+			{
+				_iom->moveAddString( 2, row, a->t().description() );
+
+				if( player->armor() == a )
+					_iom->addString( " (worn)" );
+
+				row++;
+			}
+		}
+
+		if( !misc.empty() )
+		{
+			_iom->moveAddString( 1, row, "Miscellaneous", Color::cyan );
+			row++;
+
+			for( Item* i : misc )
+			{
+				_iom->moveAddString( 2, row, i->t().description() );
+				row++;
+			}
 		}
 	}
 
@@ -292,18 +373,76 @@ bool Yarl::loop()
 	char input = _iom->getChar();
 	Command cmd = _bindings[input];
 
-	if ( cmd == Command::quit || input == 0 || player->hp() <= 0 )
+	if( cmd == Command::quit || input == 0 || player->hp() <= 0 )
+	{
 		return true;
-
-	else if ( _state == State::moreMessages )
+	}
+	else if( _state == State::moreMessages )
+	{
 		return false;
-
-	else if ( _state == State::showInventory )
+	}
+	else if( _state == State::showInventory )
 	{
 		_state = State::def;
 		return false;
 	}
-	else if ( cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END )
+	else if( _state == State::drop )
+	{
+		if( input == '\b' )
+		{
+			if( !_buf.empty() )
+				_buf.pop_back();
+		}
+		else if( input == '\n' )
+		{
+			if( _buf.empty() )
+			{
+				_world->statusBar().addMessage( "Never mind." );
+			}
+			else
+			{
+				bool itemFound = false;
+				for( Item* i : player->inventory() )
+				{
+					if( i->t().description().substr( 0, _buf.size() ) == _buf )
+					{
+						itemFound = true;
+						if( player->armor() == i )
+						{
+							_world->statusBar().
+									addMessage( "Cannot drop worn armor." );
+						}
+						else
+						{
+							if( player->weapon() == i )
+							{
+								player->setWeapon( nullptr );
+							}
+							// drop item
+							_world->statusBar().
+									addMessage( "You dropped your " +
+												i->t().description() + '.');
+							player->inventory().remove( i );
+							i->setX( player->x() );
+							i->setY( player->y() );
+						}
+						break;
+					}
+				}
+
+				if( !itemFound )
+				{
+					_world->statusBar().addMessage( "You have no such item." );
+				}
+			}
+			_state = State::def;
+		}
+		else
+		{
+			_buf.push_back( input );
+		}
+	}
+	else if( cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END )
 	{
 		int dx = 0;
 		int dy = 0;
@@ -367,6 +506,12 @@ bool Yarl::loop()
 												e->t().description() + '.' );
 			}
 		}
+	}
+	else if( cmd == Command::drop )
+	{
+		_buf.clear();	// clear previous buffer
+		_state = State::drop;
+		return false;
 	}
 	else if( cmd == Command::inventory )
 	{
