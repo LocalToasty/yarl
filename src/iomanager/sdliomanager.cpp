@@ -25,9 +25,12 @@ using namespace std;
 const int SDLIOManager::_defaultWidth = 80;
 const int SDLIOManager::_defaultHeight = 50;
 
-Uint32 SDLIOManager::color(Color col)
+Uint32 SDLIOManager::color( Color col )
 {
 	SDL_Surface* screen = SDL_GetWindowSurface( _window );
+
+	if( !_useColor )
+		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
 
 	switch( col )
 	{
@@ -57,7 +60,8 @@ Uint32 SDLIOManager::color(Color col)
 	}
 }
 
-SDLIOManager::SDLIOManager( bool usecolor, const char* charset )
+SDLIOManager::SDLIOManager( bool usecolor, const char* charset ) :
+	_useColor( usecolor )
 {
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
 	{
@@ -145,7 +149,7 @@ void SDLIOManager::addChar( char c, Color col )
 	pos.w = _charWidth;
 	pos.h = _charHeight;
 
-	SDL_FillRect( screen, &pos, color(col) );
+	SDL_FillRect( screen, &pos, color( col ) );
 	SDL_BlitSurface (_charset, &ch, screen, &pos );
 
 	_cursX++;

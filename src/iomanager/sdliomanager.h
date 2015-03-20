@@ -36,12 +36,14 @@ private:
 	int _charHeight;
 
 	// screen dimensions (in characters)
-	int _width {_defaultWidth};
-	int _height {_defaultHeight};
+	int _width { _defaultWidth };
+	int _height { _defaultHeight };
 
 	// cursor position
-	int _cursX {0};
-	int _cursY {0};
+	int _cursX { 0 };
+	int _cursY { 0 };
+
+	bool _useColor;
 
 	Uint32 color( Color col );
 

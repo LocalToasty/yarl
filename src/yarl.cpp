@@ -89,7 +89,10 @@ bool Yarl::init(int argc, char* argv[])
 	}
 
 	// use user name as default character name
-	_variables["name"] = getenv( "USERNAME" );
+	stringstream ss( getenv( "USERNAME" ) );
+	string name;
+	ss >> name;	// only use first name
+	_variables["name"] = name;
 
 	for( int i = 0; i < argc; i++ )
 	{
@@ -105,7 +108,12 @@ bool Yarl::init(int argc, char* argv[])
 		{
 			cout << PROJECT_NAME
 				 << " version " << VERSION_MAJOR << '.' << VERSION_MINOR
-				 << '.' << VERSION_PATCH << " (" << BUILD_TYPE << ")\n"
+				 << '.' << VERSION_PATCH;
+
+			if( !string( VERSION_IDENTIFIER ).empty() )
+				cout << '-' << VERSION_IDENTIFIER;
+
+			cout << " (" << BUILD_TYPE << ")\n"
 				 "Copyright (C) 2015 Marko van Treeck "
 				 "<markovantreeck@gmail.com>\n\n"
 				 "This program comes with ABSOLUTELY NO WARRANTY. "
@@ -136,18 +144,18 @@ bool Yarl::init(int argc, char* argv[])
 	{
 		ifstream config(configFilePath);
 
-		if (config.is_open())
+		if( config.is_open() )
 		{
 			string var;
-			while (getline(config, var))
+			while( getline( config, var ) )
 			{
-				istringstream iss(var);
+				istringstream iss( var );
 
 				string name;
 				iss >> name;
 
 				string val;
-				if (!getline(iss, val))
+				if ( !( iss >> val ) )
 				{
 					cerr << "Error: " << configFilePath
 						 << ": expected variable value after \""
