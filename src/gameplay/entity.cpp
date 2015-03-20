@@ -136,13 +136,13 @@ list<Item*>& Entity::inventory()
 void Entity::setX( int x )
 {
 	_x = x;
-	setSector(_world.sector(_x, _y));
+	setSector( _world.sector( _x, _y ) );
 }
 
-void Entity::setY(int y)
+void Entity::setY( int y )
 {
 	_y = y;
-	setSector(_world.sector(_x, _y));
+	setSector( _world.sector( _x, _y ) );
 }
 
 void Entity::setSector( Sector* sector )

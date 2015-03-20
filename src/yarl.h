@@ -43,7 +43,13 @@ private:
 	map<string, Variable> _variables;
 	map<char, Command> _bindings;
 
-	bool _moreMessages { false };
+	enum State
+	{
+		def,
+		moreMessages,
+		showInventory
+	};
+	State _state { def };
 
 	bool init( int argc, char* argv[] );
 

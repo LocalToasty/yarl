@@ -31,6 +31,10 @@ enum class Command
 	southEast,
 	southWest,
 	MOVEMENT_END,
+
+	pickup,
+	inventory,
+
 	wait,
 	none,
 

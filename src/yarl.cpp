@@ -59,7 +59,10 @@ bool Yarl::init(int argc, char* argv[])
 		{ 'u', Command::northEast },
 		{ 'b', Command::southWest },
 		{ 'n', Command::southEast },
+
 		{ '.', Command::wait },
+		{ ',', Command::pickup },
+		{ 'i', Command::inventory },
 
 		{ 'q', Command::quit }
 	};
@@ -189,7 +192,7 @@ void Yarl::render()
 		for ( int col = 0; col < width; col++ )
 		{
 			Tile* t = _world->tile( col - offX, row - offY );
-			if (t != nullptr &&
+			if( t != nullptr &&
 				player->los( col - offX, row - offY ) )
 			{
 				// render tiles the character has a LOS to
@@ -215,7 +218,7 @@ void Yarl::render()
 	// render entities
 	for( Entity* e :
 		 _world->entities( player->x() - width / 2, player->y() - height / 2,
-						   player->x() + width / 2, player->y() + height / 2 ) )
+						   player->x() + width / 2, player->y() + height / 2 ))
 	{
 		if( player->los( e ))
 		{
@@ -237,11 +240,25 @@ void Yarl::render()
 	}
 
 	// render status bar
-	if (!_world->statusBar().empty())
+	if( !_world->statusBar().empty() )
 	{
 		_iom->moveAddString( 0, 0,
 							 _world->statusBar().getLine(width).c_str() );
-		_moreMessages = !_world->statusBar().empty();
+		if( !_world->statusBar().empty() )
+			_state = State::moreMessages;
+	}
+
+	// show inventory
+	if( _state == showInventory )
+	{
+		_iom->moveAddString( 1, 0, "Inventory", Color::yellow );
+
+		int row = 2;
+		for( Item* i : player->inventory() )
+		{
+			_iom->moveAddString( 1, row, i->t().description() );
+			row++;
+		}
 	}
 
 	// character information
@@ -278,9 +295,14 @@ bool Yarl::loop()
 	if ( cmd == Command::quit || input == 0 || player->hp() <= 0 )
 		return true;
 
-	else if ( _moreMessages )
+	else if ( _state == State::moreMessages )
 		return false;
 
+	else if ( _state == State::showInventory )
+	{
+		_state = State::def;
+		return false;
+	}
 	else if ( cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END )
 	{
 		int dx = 0;
@@ -313,8 +335,43 @@ bool Yarl::loop()
 			if( !ents.empty() )
 				player->attack( ents.front() );
 		}
-	}
+		else
+		{
+			auto ents = _world->entities( player->x(), player->y() );
 
+			// always at least 1 because player stands here
+			if( ents.size() > 1 )
+			{
+				for( Entity* e : ents )
+				{
+					if( e != player )
+						_world->statusBar().addMessage( "You see a " +
+														e->t().description() +
+														" here.");
+				}
+			}
+		}
+	}
+	else if( cmd == Command::pickup )
+	{
+		for( Entity* e : _world->entities( player->x(), player->y() ) )
+		{
+			if( dynamic_cast<Item*>( e ) != nullptr )
+			{
+				_world->removeEntity( e );
+				e->setX( -1 );
+				e->setY( -1 );
+				player->inventory().push_back( ( Item* ) e );
+
+				_world->statusBar().addMessage( "You pick up the " +
+												e->t().description() + '.' );
+			}
+		}
+	}
+	else if( cmd == Command::inventory )
+	{
+		_state = State::showInventory;
+	}
 	else if( cmd == Command::wait )
 	{
 		// do nothing
@@ -342,7 +399,8 @@ void Yarl::usage( ostream& out )
 		   "Options:\n"
 		   "\t-h, --help\tthis screen.\n"
 		   "\t-v, --version\tversion information.\n"
-		   "\t-c, --config <file name>\n\t\t\tconfiguration file to read from.\n";
+		   "\t-c, --config <file name>\n"
+		   "\t\t\tconfiguration file to read from.\n";
 }
 
 int Yarl::exec(int argc, char* argv[])
@@ -354,7 +412,7 @@ int Yarl::exec(int argc, char* argv[])
 
 	bool finished = false;
 
-	while (!finished)
+	while ( !finished )
 	{
 		render();
 		finished = loop();
