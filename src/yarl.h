@@ -48,7 +48,8 @@ private:
 		def,
 		moreMessages,
 		showInventory,
-		drop
+		drop,
+		wield
 	};
 	State _state { def };
 

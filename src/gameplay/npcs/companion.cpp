@@ -22,11 +22,11 @@
 Companion::Companion( const Tile& t, Character* companion, int x, int y,
 					  int hp, int visionRange,
 					  const array<int, Character::noOfAttributes>& attributes,
-					  Weapon* unarmed, World& world,
+					  World& world, int ( *unarmed )(), double unarmedRange,
 					  const list<Item*>& inventory, int bab, Entity::Size s,
 					  int naturalArmor ) :
-	NPC( t, x, y, hp, visionRange, attributes, unarmed, world, inventory, bab,
-		 s, naturalArmor ), _companion( companion )
+	NPC( t, x, y, hp, visionRange, attributes, world, unarmed, unarmedRange,
+		 inventory, bab, s, naturalArmor ), _companion( companion )
 {
 
 }
@@ -63,7 +63,7 @@ void Companion::think()
 	if( _waypointX >= 0 && _waypointY >= 0 )
 	{
 		if( World::distance( x(), y(), _waypointX, _waypointY ) >
-			weapon()->range() )
+			unarmedRange() )
 		{
 			auto dir = world().route( x(), y(), _waypointX, _waypointY, true );
 			Command cmd = dir.front();

@@ -21,15 +21,16 @@
 #include "world.h"
 
 Player::Player( const Tile& t, int x, int y, int hp, int visionRange,
-				array<int, noOfAttributes>& attributes, Weapon* unarmed,
-				World& world, const list<Item*>& inventory , int bab, Size s,
-				int naturalArmor) :
-	Character( t, x, y, hp, visionRange, attributes, unarmed, world, inventory,
-			   bab, s, naturalArmor )
+				array<int, noOfAttributes>& attributes, World& world,
+				int ( *unarmed )(), double unarmedRange,
+				const list<Item*>& inventory, int bab, Size s,
+				int naturalArmor ) :
+	Character( t, x, y, hp, visionRange, attributes, world, unarmed,
+			   unarmedRange, inventory, bab, s, naturalArmor )
 {
 }
 
-string Player::attackMessage(Entity* target, bool hit)
+string Player::attackMessage( Entity* target, bool hit )
 {
 	string msg = "You ";
 	if( hit )
@@ -37,7 +38,12 @@ string Player::attackMessage(Entity* target, bool hit)
 	else
 		msg += "miss";
 
-	msg += " the " + target->t().description() + '.';
+	msg += " the " + target->t().description();
+
+	if( weapon() )
+		msg += " with your " + weapon()->t().description();
+
+	msg += '.';
 
 	return msg;
 }

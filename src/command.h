@@ -32,6 +32,11 @@ enum class Command
 	southWest,
 	MOVEMENT_END,
 
+	wield,
+
+	wear,
+	takeOff,
+
 	pickup,
 	drop,
 	inventory,

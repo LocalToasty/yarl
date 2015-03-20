@@ -49,13 +49,13 @@ Entity::Entity( const Tile& t, int x, int y, int hp, World& world, Size s,
 {
 	_sector = world.sector( x, y );
 
-	if( _sector != nullptr)
+	if( _sector )
 		_sector->addEntity( this );
 }
 
 Entity::~Entity()
 {
-	if( _sector != nullptr )
+	if( _sector )
 		_sector->removeEntity(this);
 }
 
@@ -145,6 +145,13 @@ void Entity::setY( int y )
 	setSector( _world.sector( _x, _y ) );
 }
 
+void Entity::setXY(int x, int y)
+{
+	_x = x;
+	_y = y;
+	setSector( _world.sector( _x, _y ) );
+}
+
 void Entity::setSector( Sector* sector )
 {
 	if( _sector != nullptr )
@@ -179,9 +186,8 @@ void Entity::setHp(int hp)
 		// drop inventory
 		for (Item* e : _inventory)
 		{
-			e->setX(_x);
-			e->setY(_y);
-			e->setSeen(false);
+			e->setXY( _x, _y );
+			e->setSeen( false );
 		}
 
 		_sector->removeEntity(this);
