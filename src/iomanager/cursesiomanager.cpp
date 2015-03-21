@@ -113,7 +113,7 @@ void CursesIOManager::clear( int x, int y, int w, int h )
     for( int i = 0; i < w; i++ )
     {
         move( x, y );
-        for( int j = 0; j < h; h++ )
+        for( int j = 0; j < h; j++ )
         {
             addch( ' ' );
         }

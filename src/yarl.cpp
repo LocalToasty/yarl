@@ -431,6 +431,8 @@ void Yarl::render()
 	else if( player->hp() < player->maxHp() / 3 )
 		hpCol = Color::yellow;
 
+	_iom->clear( 14, height - 1, 7, 1 );
+
 #ifdef __MINGW32__
 	stringstream ss;
 

@@ -203,7 +203,7 @@ void SDLIOManager::clear( int x, int y, int w, int h )
 {
 	for( int i = 0; i < w; i++ )
 	{
-		for( int j = 0; j < h; h++ )
+		for( int j = 0; j < h; j++ )
 		{
 			_characters.at( x + i + ( y + j ) * _width ) = ' ';
 		}
