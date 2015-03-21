@@ -287,13 +287,13 @@ void Yarl::render()
 
 		if( !_buf.empty() )
 		{
+			auto it = getItemWithName( _buf, player->inventory().begin(),
+									   player->inventory().end() );
 			// check if there is an item with a similar name in the inventory
-			if( Item* i = *getItemWithName( _buf,
-											player->inventory().begin(),
-											player->inventory().end() ) )
+			if( it != player->inventory().end() )
 			{
 				// if there is, suggest it
-				_iom->addString( i->t().description().
+				_iom->addString( (*it)->t().description().
 								 substr( _buf.size() ) );
 			}
 
@@ -494,15 +494,15 @@ bool Yarl::loop()
 		}
 		else if( input == '\n' )
 		{
+			auto it = getItemWithName( _buf, player->inventory().begin(),
+									   player->inventory().end() );
 			if( _buf.empty() )
 			{
 				_world->statusBar().addMessage( "Never mind." );
 			}
-			else if( Item* i = *getItemWithName( _buf,
-												 player->inventory().begin(),
-												 player->inventory().end() ) )
+			else if( it != player->inventory().end() )
 			{
-				if( player->armor() == i )
+				if( player->armor() == *it )
 				{
 					// you have to take off armor before you can drop armor
 					_world->statusBar().
@@ -510,7 +510,7 @@ bool Yarl::loop()
 				}
 				else
 				{
-					if( player->weapon() == i )
+					if( player->weapon() == *it )
 					{
 						// unequip weapon
 						player->setWeapon( nullptr );
@@ -518,9 +518,9 @@ bool Yarl::loop()
 					// drop item
 					_world->statusBar().
 							addMessage( "You dropped your " +
-										i->t().description() + '.');
-					player->inventory().remove( i );
-					i->setXY( player->x(), player->y() );
+										(*it)->t().description() + '.');
+					player->inventory().remove( *it );
+					(*it)->setXY( player->x(), player->y() );
 				}
 			}
 			else
