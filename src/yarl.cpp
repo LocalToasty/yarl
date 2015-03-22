@@ -76,14 +76,14 @@ bool Yarl::init(int argc, char* argv[])
 	// get config file path
 
 	// config path can be supplied via an environment variable
-	const char* cfg = getenv("YARLCONF");
+	const char* cfg = getenv( "YARLCONF" );
 	string configFilePath;
-	if (cfg != nullptr)
+	if ( cfg != nullptr )
 		configFilePath = cfg;
 
 	// if nothing else is specified, the config file is stored in the home
 	// directory.
-	if (configFilePath.empty())
+	if ( configFilePath.empty() )
 	{
 #if defined( __unix__ ) || defined ( __unix )
 		// UNIXoids (i.e. Linux, MacOS, BSD and so forth)
@@ -149,30 +149,88 @@ bool Yarl::init(int argc, char* argv[])
 	}
 
 	// if there is a potential config file, try to load it
-	if (!configFilePath.empty())
+	if ( !configFilePath.empty() )
 	{
-		ifstream config(configFilePath);
+		ifstream config( configFilePath );
 
 		if( config.is_open() )
 		{
-			string var;
-			while( getline( config, var ) )
+			string line;
+			while( getline( config, line ) )
 			{
-				istringstream iss( var );
+				istringstream iss( line );
 
-				string name;
-				iss >> name;
+				string cmd;
+				iss >> cmd;
 
-				string val;
-				if ( !( iss >> val ) )
+				if( cmd == "set" )
+				{
+					string name;
+					if( !( iss >> name ) )
+					{
+						cerr << "Error: " << configFilePath
+							 << ": expected variable name.\n";
+						return false;
+					}
+
+					string val;
+					if ( !( iss >> val ) )
+					{
+						cerr << "Error: " << configFilePath
+							 << ": expected variable value after \""
+							 << name << "\"\n";
+						return false;
+					}
+
+					_variables[name] = val;
+				}
+				else if( cmd == "bind" )
+				{
+					map<string, Command> lut =
+					{
+						{ "west",	Command::west },
+						{ "south",	Command::south },
+						{ "north",	Command::north },
+						{ "east",	Command::east },
+						{ "northEast",	Command::northEast },
+						{ "northWest",	Command::northWest },
+						{ "southEast",	Command::southEast },
+						{ "southWest",	Command::southWest },
+						{ "equip",	Command::equip },
+						{ "wear",	Command::wear },
+						{ "takeOff",	Command::takeOff },
+						{ "pickup",	Command::pickup },
+						{ "drop",	Command::drop },
+						{ "inventory",	Command::inventory },
+						{ "wait",	Command::wait },
+						{ "quit",	Command::quit }
+					};
+
+					string keyS;
+					if( !( iss >> keyS ) )
+					{
+						cerr << "Error: " << configFilePath
+							 << ": expected key.\n";
+						return false;
+					}
+					char key = keyS.front();
+
+					string command;
+					if ( !( iss >> command ) )
+					{
+						cerr << "Error: " << configFilePath
+							 << ": expected command after \""
+							 << name << "\"\n";
+						return false;
+					}
+
+					_bindings[key] = lut[command];
+				}
+				else
 				{
 					cerr << "Error: " << configFilePath
-						 << ": expected variable value after \""
-						 << name << "\"\n";
-					return false;
+						 << ": unknown command: \"" << cmd << "\"\n";
 				}
-
-				_variables[name] = val;
 			}
 		}
 	}
@@ -703,7 +761,7 @@ bool Yarl::loop()
 	{
 		if( player->armor() )
 		{
-			_world->statusBar().addMessage( "You remove your " +
+			_world->statusBar().addMessage( "You take off your " +
 											player->armor()->t().
 											description() + '.' );
 			player->setArmor( nullptr );
