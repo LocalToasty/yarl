@@ -157,11 +157,27 @@ int Character::attribute( Character::Attribute attribute )
 
 int Character::attributeMod( Character::Attribute attribute )
 {
-	if( attribute == dexterity && _armor != nullptr &&
-		( _attributes[dexterity] - 10 ) / 2 > _armor->maxDexBon() )
-		return _armor->maxDexBon();
+	int bonus = ( _attributes[attribute] - 10 ) / 2;
 
-	return  ( _attributes[attribute] - 10 ) / 2;;
+	if( attribute == dexterity || attribute == strength )
+	{
+		if( _armor )
+			bonus += _armor->checkPenalty();
+
+		if( _shield )
+			bonus += _shield->checkPenalty();
+
+		if( attribute == dexterity )
+		{
+			if( _armor && bonus > _armor->maxDexBon() )
+				bonus = _armor->maxDexBon();
+
+			if( _shield && bonus > _shield->maxDexBon() )
+				bonus = _shield->maxDexBon();
+		}
+	}
+
+	return bonus;
 }
 
 int Character::visionRange()

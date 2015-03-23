@@ -18,24 +18,29 @@
 
 #include "armor.h"
 
-Armor::Armor( Tile& t, int ac, int maxDexBon, bool shield, World& world,
-			  int x, int y, int hp, Size s )
-	: Item( t, world, x, y, hp, s ), _ac( ac ), _maxDexBon( maxDexBon ),
-	  _shield( shield )
+Armor::Armor( Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+			  World& world, int x, int y, int hp, Size s ) :
+	Item( t, world, x, y, hp, s ), _ac( ac ), _maxDexBon( maxDexBon ),
+	_checkPenalty( checkPenalty ), _shield( shield )
 {
 }
 
-int Armor::ac()
+int Armor::ac() const
 {
 	return _ac;
 }
 
-int Armor::maxDexBon()
+int Armor::maxDexBon() const
 {
 	return _maxDexBon;
 }
 
-int Armor::shield() const
+int Armor::checkPenalty() const
+{
+	return _checkPenalty;
+}
+
+int Armor::isShield() const
 {
 	return _shield;
 }

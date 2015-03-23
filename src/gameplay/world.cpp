@@ -67,11 +67,11 @@ World::World( int width, int height ) :
 	_player->inventory().push_back( weap );
 	_player->setWeapon( weap );
 
-	Armor* arm = new Armor( _leatherArmor, 2, 6, false, *this );
+	Armor* arm = new Armor( _leatherArmor, 2, 6, 0, false, *this );
 	_player->inventory().push_back( arm );
 	_player->setArmor( arm );
 
-	new Armor( _buckler, 1, 999, true, *this, 43, 43 );
+	new Armor( _buckler, 1, 999, -1, true, *this, 43, 43 );
 
 	attr = { 13, 13, 15, 2, 12, 6 };
 	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, 12, attr, *this,

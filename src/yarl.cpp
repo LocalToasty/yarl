@@ -651,7 +651,7 @@ bool Yarl::loop()
 					}
 					else if( Armor* a = dynamic_cast<Armor*>( *it ) )
 					{
-						if( a->shield() )
+						if( a->isShield() )
 						{
 							if( player->shield() )
 							{
