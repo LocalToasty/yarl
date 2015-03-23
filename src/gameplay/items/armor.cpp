@@ -18,9 +18,10 @@
 
 #include "armor.h"
 
-Armor::Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
-			  Size s, int x, int y )
-	: Item( t, world, x, y, hp, s ), _ac( ac ), _maxDexBon( maxDexBon )
+Armor::Armor( Tile& t, int ac, int maxDexBon, bool shield, World& world,
+			  int x, int y, int hp, Size s )
+	: Item( t, world, x, y, hp, s ), _ac( ac ), _maxDexBon( maxDexBon ),
+	  _shield( shield )
 {
 }
 
@@ -32,4 +33,9 @@ int Armor::ac()
 int Armor::maxDexBon()
 {
 	return _maxDexBon;
+}
+
+int Armor::shield() const
+{
+	return _shield;
 }

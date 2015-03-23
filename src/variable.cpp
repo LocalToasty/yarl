@@ -70,7 +70,7 @@ int Variable::toInt()
 	{
 		try
 		{
-			return stoi(_def);
+			return stoi( _def );
 		}
 		catch ( invalid_argument )	// _def is not an int
 		{

@@ -27,12 +27,15 @@ private:
 	int _ac;	// armor class bonus
 	int _maxDexBon;	// maximum dexterity bonus
 
+	bool _shield;
+
 public:
-	Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
-		   Size s = Size::medium, int x = -1, int y = -1 );
+	Armor( Tile& t, int ac, int maxDexBon, bool shield, World& world,
+		   int x = -1, int y = -1, int hp = 1, Size s = Size::small );
 
 	int ac();
 	int maxDexBon();
+	int shield() const;
 };
 
 #endif
