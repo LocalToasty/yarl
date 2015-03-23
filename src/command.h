@@ -33,8 +33,7 @@ enum class Command
 	MOVEMENT_END,
 
 	equip,
-	wear,
-	takeOff,
+	unequip,
 
 	pickup,
 	drop,

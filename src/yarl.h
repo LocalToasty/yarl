@@ -50,7 +50,7 @@ private:
 		showInventory,
 		drop,
 		equip,
-		wear
+		unequip
 	};
 	State _state { State::def };
 

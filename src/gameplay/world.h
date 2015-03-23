@@ -61,6 +61,7 @@ private:
 
 	static Tile _shortSword;
 	static Tile _leatherArmor;
+	static Tile _buckler;
 
 public:
 	World( int width, int height );

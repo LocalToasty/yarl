@@ -25,7 +25,7 @@
 using namespace std;
 
 Character::Character( const Tile& t, int x, int y, int hp, int visionRange,
-					  const array<int, noOfAttributes>& attributes,
+                      const array<int, noOfAttributes>& attributes,
 					  World& world, int ( *unarmed )(),
 					  double unarmedRange, const list<Item*>& inventory,
 					  int bab, Character:: Size s, int naturalArmor ) :
@@ -116,7 +116,8 @@ vector<Entity*> Character::seenEntities()
 int Character::armorClass()
 {
 	return 10 + attributeMod( dexterity ) + size() + naturalArmor() +
-		   ( _armor == nullptr ? 0 : _armor->ac() );
+		   ( _armor == nullptr ? 0 : _armor->ac() ) +
+		   ( _shield == nullptr ? 0 : _shield->ac() );
 }
 
 Weapon* Character::weapon()
@@ -129,28 +130,54 @@ void Character::setWeapon( Weapon* weapon )
 	_weapon = weapon;
 }
 
-Armor*Character::armor()
+Armor* Character::armor()
 {
 	return _armor;
 }
 
-void Character::setArmor(Armor* armor)
+void Character::setArmor( Armor* armor )
 {
 	_armor = armor;
 }
 
-int Character::attribute(Character::Attribute attribute)
+Armor* Character::shield() const
+{
+	return _shield;
+}
+
+void Character::setShield( Armor* shield )
+{
+	_shield = shield;
+}
+
+int Character::attribute( Character::Attribute attribute )
 {
 	return _attributes[attribute];
 }
 
-int Character::attributeMod(Character::Attribute attribute)
+int Character::attributeMod( Character::Attribute attribute )
 {
-	if( attribute == dexterity && _armor != nullptr &&
-		( _attributes[dexterity] - 10 ) / 2 > _armor->maxDexBon() )
-		return _armor->maxDexBon();
+	int bonus = ( _attributes[attribute] - 10 ) / 2;
 
-	return  ( _attributes[attribute] - 10 ) / 2;;
+	if( attribute == dexterity || attribute == strength )
+	{
+		if( _armor )
+			bonus += _armor->checkPenalty();
+
+		if( _shield )
+			bonus += _shield->checkPenalty();
+
+		if( attribute == dexterity )
+		{
+			if( _armor && bonus > _armor->maxDexBon() )
+				bonus = _armor->maxDexBon();
+
+			if( _shield && bonus > _shield->maxDexBon() )
+				bonus = _shield->maxDexBon();
+		}
+	}
+
+	return bonus;
 }
 
 int Character::visionRange()
@@ -173,7 +200,7 @@ double Character::unarmedRange() const
 	return _unarmedRange;
 }
 
-void Character::setUnarmedRange(double unarmedRange)
+void Character::setUnarmedRange( double unarmedRange )
 {
 	_unarmedRange = unarmedRange;
 }

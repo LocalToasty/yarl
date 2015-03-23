@@ -52,6 +52,7 @@ private:
 	double _unarmedRange;
 
 	Armor* _armor { nullptr };
+	Armor* _shield { nullptr };
 
 	array<int, noOfAttributes> _attributes;
 
@@ -84,6 +85,9 @@ public:
 
 	Armor* armor();
 	void setArmor( Armor* armor );
+
+	Armor* shield() const;
+	void setShield(Armor* shield);
 
 	int attribute( Attribute attribute );
 	void setAttribute( Attribute attribute, int value );

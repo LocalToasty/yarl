@@ -37,6 +37,7 @@ Tile World::_dog	= {'d', Color::red,		"dog", true, false };
 Tile World::_dogCorpse	= { '%', Color::red,	"dog corpse", true };
 Tile World::_shortSword	= { '(', Color::white,	"short sword", true };
 Tile World::_leatherArmor	= { '[', Color::yellow,	"leather armor", true };
+Tile World::_buckler	= { '[', Color::red,	"buckler", true };
 
 World::World( int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
@@ -66,9 +67,11 @@ World::World( int width, int height ) :
 	_player->inventory().push_back( weap );
 	_player->setWeapon( weap );
 
-	Armor* arm = new Armor( _leatherArmor, 2, 6, 4, *this );
+	Armor* arm = new Armor( _leatherArmor, 2, 6, 0, false, *this );
 	_player->inventory().push_back( arm );
 	_player->setArmor( arm );
+
+	new Armor( _buckler, 1, 999, -1, true, *this, 43, 43 );
 
 	attr = { 13, 13, 15, 2, 12, 6 };
 	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, 12, attr, *this,

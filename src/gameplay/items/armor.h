@@ -26,13 +26,19 @@ class Armor : public Item
 private:
 	int _ac;	// armor class bonus
 	int _maxDexBon;	// maximum dexterity bonus
+	int _checkPenalty;	// penalty imposed onto str / dex checks
+
+	bool _shield;
 
 public:
-	Armor( Tile& t, int ac, int maxDexBon, int hp, World& world,
-		   Size s = Size::medium, int x = -1, int y = -1 );
+	Armor( Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+		   World& world, int x = -1, int y = -1, int hp = 1,
+		   Size s = Size::small );
 
-	int ac();
-	int maxDexBon();
+	int ac() const;
+	int maxDexBon() const;
+	int checkPenalty() const;
+	int isShield() const;
 };
 
 #endif
