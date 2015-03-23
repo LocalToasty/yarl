@@ -30,9 +30,9 @@ configure_file( "${PROJECT_SOURCE_DIR}/yarlconfig.h.in"
 include_directories( "${PROJECT_BINARY_DIR}" )
 
 include_directories( "src/"
-					 "src/gameplay/"
-					 "src/gameplay/items/"
-					 "src/gameplay/npcs/"
+					 "src/game/"
+					 "src/game/items/"
+					 "src/game/npcs/"
 					 "src/iomanager/" )
 
 add_executable( yarl
@@ -41,17 +41,17 @@ add_executable( yarl
 				src/command.h
 				src/variable.cpp
 				src/statusbar.cpp
-				src/gameplay/world.cpp
-				src/gameplay/entity.cpp
-				src/gameplay/character.cpp
-				src/gameplay/sector.cpp
-				src/gameplay/tile.cpp
-				src/gameplay/player.cpp
-				src/gameplay/items/item.cpp
-				src/gameplay/items/armor.cpp
-				src/gameplay/items/weapon.cpp
-				src/gameplay/npcs/npc.cpp
-				src/gameplay/npcs/companion.cpp
+				src/game/world.cpp
+				src/game/entity.cpp
+				src/game/character.cpp
+				src/game/sector.cpp
+				src/game/tile.cpp
+				src/game/player.cpp
+				src/game/items/item.cpp
+				src/game/items/armor.cpp
+				src/game/items/weapon.cpp
+				src/game/npcs/npc.cpp
+				src/game/npcs/companion.cpp
 				src/iomanager/iomanager.cpp
 				${IOM_SOURCE} )
 
