@@ -24,12 +24,13 @@
 
 using namespace std;
 
-Character::Character( const Tile& t, int x, int y, int hp, int visionRange,
+Character::Character( const Tile& t, int x, int y, int hp, double speed,
+					  int visionRange,
                       const array<int, noOfAttributes>& attributes,
 					  World& world, int ( *unarmed )(),
 					  double unarmedRange, const list<Item*>& inventory,
 					  int bab, Character:: Size s, int naturalArmor ) :
-	Entity( t, x, y, hp, world, s, naturalArmor, inventory ),
+	Entity( t, x, y, hp, world, s, naturalArmor, inventory ), _speed( speed ),
 	_attributes( attributes ), _bab( bab ), _unarmed( unarmed ),
 	_unarmedRange( unarmedRange ), _visionRange( visionRange )
 {
@@ -183,6 +184,11 @@ int Character::attributeMod( Character::Attribute attribute )
 int Character::visionRange()
 {
 	return _visionRange;
+}
+
+double Character::speed()
+{
+	return _speed;
 }
 
 Entity* Character::lastTarget() const

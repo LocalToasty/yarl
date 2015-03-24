@@ -37,7 +37,7 @@ Tile World::_dog	= {'d', Color::red,		"dog", true, false };
 Tile World::_dogCorpse	= { '%', Color::red,	"dog corpse", true };
 Tile World::_shortSword	= { '(', Color::white,	"short sword", true };
 Tile World::_leatherArmor	= { '[', Color::yellow,	"leather armor", true };
-Tile World::_buckler	= { '[', Color::red,	"buckler", true };
+Tile World::_buckler	= { '[', Color::red,	"light wooden shield", true };
 
 World::World( int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
@@ -59,7 +59,7 @@ World::World( int width, int height ) :
 	}
 
 	array<int, 6> attr = { 12, 12, 12, 12, 12, 12 };
-	_player = new Player( _hero, 42, 42, 9 + rand() % 8 , 12, attr, *this,
+	_player = new Player( _hero, 42, 42, 9 + rand() % 8, 1, 12, attr, *this,
 						  [](){ return rand() % 2 + 1; }, 1.5, {}, 1 );
 
 	Weapon* weap = new Weapon( _shortSword, [](){ return rand() % 6 + 1; },
@@ -74,19 +74,19 @@ World::World( int width, int height ) :
 	new Armor( _buckler, 1, 999, -1, true, *this, 43, 43 );
 
 	attr = { 13, 13, 15, 2, 12, 6 };
-	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, 12, attr, *this,
-				   [](){ return rand() % 4 + 2; }, 1.5,
+	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, ( double ) 3/4, 12,
+				   attr, *this, [](){ return rand() % 4 + 2; }, 1.5,
 				   { new Item( _dogCorpse, *this, -1, -1, 1,
 							   Entity::Size::small ) },
 				   2, Entity::Size::small, 1 );
 
 	attr = { 11, 15, 12, 10, 9, 6 };
-	new Companion( _goblin, nullptr, 45, 45, rand() % 10 + 2, 12, attr, *this,
-				   [](){ return rand() % 2 + 1; }, 1.5, {}, 1,
+	new Companion( _goblin, nullptr, 45, 45, rand() % 10 + 2, 1, 12, attr,
+				   *this, [](){ return rand() % 2 + 1; }, 1.5, {}, 1,
 				   Entity::Size::small );
 }
 
-double World::distance(int x1, int y1, int x2, int y2)
+double World::distance( int x1, int y1, int x2, int y2 )
 {
 	return sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
 }
@@ -390,7 +390,7 @@ Sector* World::sector( int x, int y )
 		return nullptr;
 }
 
-Character* World::player()
+Player* World::player()
 {
 	return _player;
 }
@@ -491,7 +491,7 @@ double World::time()
 	return _time;
 }
 
-void World::letTimePass(double time)
+void World::letTimePass( double time )
 {
 	_time += time;
 }
@@ -502,8 +502,19 @@ void World::think()
 							   _player->y() - Sector::size(),
 							   _player->x() + Sector::size(),
 							   _player->y() + Sector::size() ) )
-		if( e->hp() > 0 )	// only let living entities think
-			e->think();
+	{
+		if( NPC* n = dynamic_cast<NPC*>( e ) )
+		{
+			double lastAction;
+			do
+			{
+				lastAction = n->lastAction();
+				if( n->hp() > 0 && lastAction < _time )
+					n->think();
+			}
+			while( lastAction != n->lastAction() );
+		}
+	}
 }
 
 StatusBar& World::statusBar()

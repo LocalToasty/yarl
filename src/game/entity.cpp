@@ -64,10 +64,6 @@ int Entity::armorClass() const
 	return 5 + _s + _naturalArmor;
 }
 
-void Entity::think()
-{
-}
-
 string Entity::dieMessage()
 {
 	return "The " + t().description() + " is destroyed.";

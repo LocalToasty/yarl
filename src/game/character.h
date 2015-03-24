@@ -54,6 +54,8 @@ private:
 	Armor* _armor { nullptr };
 	Armor* _shield { nullptr };
 
+	double _speed;
+
 	array<int, noOfAttributes> _attributes;
 
 	int _bab;	// base attack bonus
@@ -61,9 +63,9 @@ private:
 	Entity* _lastTarget { nullptr };
 
 public:
-	Character( const Tile& t, int x, int y, int hp, int visionRange,
-			   const array<int, noOfAttributes>& attributes, World& world,
-			   int ( *unarmed )(), double unarmedRange = 1.5,
+	Character( const Tile& t, int x, int y, int hp, double speed,
+			   int visionRange, const array<int, noOfAttributes>& attributes,
+			   World& world, int ( *unarmed )(), double unarmedRange = 1.5,
 			   const list<Item*>& inventory = {},
 			   int bab = 0, Size s = Size::medium, int naturalArmor = 0 );
 
@@ -94,6 +96,7 @@ public:
 	int attributeMod( Attribute attribute );
 
 	int visionRange();
+	double speed();
 
 	Entity* lastTarget() const;
 	void setLastTarget(Entity* lastTarget);

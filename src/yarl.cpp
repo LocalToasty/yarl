@@ -21,6 +21,7 @@
 #include "yarlconfig.h"
 #include "item.h"
 #include "character.h"
+#include "player.h"
 #include "world.h"
 #include "npc.h"
 #include <stdexcept>
@@ -538,7 +539,7 @@ void Yarl::render()
 // game logic is handled here
 bool Yarl::loop()
 {
-	Character* player = _world->player();
+	Player* player = _world->player();
 
 	char input = _iom->getChar();
 	Command cmd = _bindings[input];
@@ -547,12 +548,10 @@ bool Yarl::loop()
 	if( _state == State::moreMessages )
 	{
 		_state = State::def;
-		return false;
 	}
 	else if( _state == State::showInventory )
 	{
 		_state = State::def;
-		return false;
 	}
 	else if( _state == State::drop )
 	{
@@ -593,8 +592,11 @@ bool Yarl::loop()
 					_world->statusBar().
 							addMessage( "You dropped your " +
 										(*it)->t().description() + '.');
+
 					player->inventory().remove( *it );
 					(*it)->setXY( player->x(), player->y() );
+
+					_world->letTimePass( 1 );
 				}
 			}
 			else
@@ -646,6 +648,7 @@ bool Yarl::loop()
 							_world->statusBar().
 								addMessage( "You equip your " +
 											w->t().description() + '.');
+							_world->letTimePass( 6 );
 						}
 						break;
 					}
@@ -666,6 +669,7 @@ bool Yarl::loop()
 									addMessage( "You equip your " +
 												a->t().description() +
 												'.');
+								_world->letTimePass( 6 );
 							}
 							break;
 						}
@@ -683,6 +687,7 @@ bool Yarl::loop()
 									addMessage( "You equip your " +
 												a->t().description() +
 												'.');
+								_world->letTimePass( 12 );
 							}
 							break;
 						}
@@ -760,17 +765,19 @@ bool Yarl::loop()
 				 cmd == Command::southEast )
 			dy = 1;
 
-		// TODO
-//		_world->letTimePass( ( abs( dx ) + abs( dy ) == 1 ) ? 1 : 1.5 );
-
 		if( !player->move( dx, dy ) )	// an entity is blocking
 		{
 			auto ents = _world->entities( player->x() + dx, player->y() + dy );
 			if( !ents.empty() )
+			{
+				_world->letTimePass( 2 );
 				player->attack( ents.front() );
+			}
 		}
-		else
+		else	// movement success
 		{
+			_world->letTimePass( ( abs( dx ) + abs( dy ) == 1 ) ?
+								 player->speed() : 1.5 * player->speed() );
 			auto ents = _world->entities( player->x(), player->y() );
 
 			// always at least 1 because player stands here
@@ -798,6 +805,7 @@ bool Yarl::loop()
 
 				_world->statusBar().addMessage( "You pick up the " +
 												e->t().description() + '.' );
+				_world->letTimePass( 2 );
 			}
 		}
 	}
@@ -823,10 +831,8 @@ bool Yarl::loop()
 	else if( cmd == Command::wait )
 	{
 		// do nothing
+		_world->letTimePass( 1 );
 	}
-
-	else	// if no correct command was given, don't let the world think
-		return false;
 
 	_world->think();
 

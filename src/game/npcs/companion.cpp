@@ -23,15 +23,15 @@
 using namespace std;
 
 Companion::Companion( const Tile& t, Character* companion, int x, int y,
-					  int hp, int visionRange,
+					  int hp, double speed, int visionRange,
 					  const array<int, Character::noOfAttributes>& attributes,
 					  World& world, int ( *unarmed )(), double unarmedRange,
 					  const list<Item*>& inventory, int bab, Entity::Size s,
 					  int naturalArmor ) :
-	NPC( t, x, y, hp, visionRange, attributes, world, unarmed, unarmedRange,
-		 inventory, bab, s, naturalArmor ), _companion( companion )
+	NPC( t, x, y, hp, speed, visionRange, attributes, world, unarmed,
+		 unarmedRange, inventory, bab, s, naturalArmor ),
+	_companion( companion )
 {
-
 }
 
 void Companion::think()
@@ -93,10 +93,18 @@ void Companion::think()
 				dy = 1;
 
 			move( dx, dy );
+			setLastAction( lastAction() +
+						   ( abs( dx ) + abs( dy ) == 1 ? speed()
+														: 1.5 * speed() ) );
 		}
 		else if( lastTarget() != nullptr && lastTarget()->hp() > 0 )
 		{
 			attack( lastTarget() );
+			setLastAction( lastAction() + 2 );
 		}
+	}
+	else
+	{
+		setLastAction( world().time() );
 	}
 }

@@ -45,7 +45,7 @@ private:
 
 	Player* _player;
 
-	double _time;
+	double _time { 0 };
 
 	static Tile _grass;
 	static Tile _mud;
@@ -74,7 +74,7 @@ public:
 						   bool converge = false );
 
 	Sector* sector( int x, int y );
-	Character* player();
+	Player* player();
 
 	Tile* tile( int x, int y );
 	void setTile( int x, int y, Tile* t );

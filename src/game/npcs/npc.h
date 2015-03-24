@@ -24,14 +24,20 @@
 
 class NPC : public Character
 {
+private:
+	double _lastAction { 0 };
+
 public:
-	NPC( const Tile& t, int x, int y, int hp, int visionRange,
+	NPC( const Tile& t, int x, int y, int hp, double speed, int visionRange,
 		 const array<int, noOfAttributes>& attributes, World& world,
 		 int ( *unarmed )(), double unarmedRange = 1.5,
 		 const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,
 		 int naturalArmor = 0 );
 
 	virtual void think() = 0;
+
+	double lastAction() const;
+	void setLastAction( double lastAction );
 };
 
 #endif
