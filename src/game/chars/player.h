@@ -16,41 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tile.h"
+#ifndef PLAYER_H
+#define PLAYER_H
 
-Tile::Tile(char repr, Color color, string description, bool transparent) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(transparent)
-{}
+#include "humanoid.h"
+#include "weapon.h"
+#include <string>
 
-Tile::Tile(char repr, Color color, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(passable)
+using namespace std;
+
+class Player : public Humanoid
 {
-}
+public:
+	Player( const Tile& t, int x, int y, int hp, double speed, int visionRange,
+			array<int, noOfAttributes>& attributes, World& world,
+			Attack* unarmed,
+			const list<Item*>& inventory = {}, int bab = 0,
+			Size s = Size::medium, int naturalArmor = 0 );
 
-bool Tile::transparent() const
-{
-	return _transparent;
-}
+	string attackMessage( Entity* target, bool hit , Weapon* w = nullptr );
+	string dieMessage();
+};
 
-char Tile::repr() const
-{
-	return _repr;
-}
-
-Color Tile::color() const
-{
-	return _color;
-}
-
-string Tile::desc() const
-{
-	return _description;
-}
-
-bool Tile::passable() const
-{
-	return _passable;
-}
+#endif

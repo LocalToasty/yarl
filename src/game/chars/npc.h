@@ -16,41 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tile.h"
+#ifndef NPC_H
+#define NPC_H
 
-Tile::Tile(char repr, Color color, string description, bool transparent) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(transparent)
-{}
+#include "character.h"
+#include "command.h"
 
-Tile::Tile(char repr, Color color, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(passable)
+class NPC : public Character
 {
-}
+private:
+	double _lastAction { 0 };
 
-bool Tile::transparent() const
-{
-	return _transparent;
-}
+public:
+	NPC( const Tile& t, int x, int y, int hp, double speed, int visionRange,
+		 const array<int, noOfAttributes>& attributes, World& world,
+		 Attack* unarmed,
+		 const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,
+		 int naturalArmor = 0 );
 
-char Tile::repr() const
-{
-	return _repr;
-}
+	virtual void think() = 0;
 
-Color Tile::color() const
-{
-	return _color;
-}
+	double lastAction() const;
+	void setLastAction( double lastAction );
+};
 
-string Tile::desc() const
-{
-	return _description;
-}
-
-bool Tile::passable() const
-{
-	return _passable;
-}
+#endif

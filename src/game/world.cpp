@@ -62,7 +62,7 @@ World::World( int width, int height ) :
 	_player = new Player( _hero, 42, 42, 9 + rand() % 8, 1, 12, attr, *this,
 						  [](){ return rand() % 2 + 1; }, 1.5, {}, 1 );
 
-	Weapon* weap = new Weapon( _shortSword, [](){ return rand() % 6 + 1; },
+	Weapon* weap = new Weapon( _shortSword, { [](){ return rand() % 6 + 1; } },
 							   *this );
 	_player->inventory().push_back( weap );
 	_player->setWeapon( weap );

@@ -20,19 +20,13 @@
 #define WEAPON_H
 
 #include "item.h"
+#include "attack.h"
 
-class Weapon : public Item
+class Weapon : public Item, public Attack
 {
-private:
-	double _range;
-	int ( *_damage )();	// damage function
-
 public:
-	Weapon( const Tile& t, int ( *damage )(), World& world, double range = 1.5,
-			int x = -1, int y = -1, int hp = 1, Size s = Size::small );
-
-	int damage();
-	double range();
+	Weapon( const Tile& t, Attack a, World& world, int x = -1, int y = -1,
+			int hp = 1, Size s = Size::small );
 };
 
 #endif

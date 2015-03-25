@@ -16,41 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tile.h"
+#include "player.h"
+#include "character.h"
+#include "world.h"
 
-Tile::Tile(char repr, Color color, string description, bool transparent) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(transparent)
-{}
-
-Tile::Tile(char repr, Color color, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(passable)
+Player::Player( const Tile& t, int x, int y, int hp, double speed,
+				int visionRange, array<int, noOfAttributes>& attributes,
+				World& world, Attack* unarmed,
+				const list<Item*>& inventory, int bab, Size s,
+				int naturalArmor ) :
+	Humanoid( t, x, y, hp, speed, visionRange, attributes, world, unarmed,
+			  inventory, bab, s, naturalArmor )
 {
 }
 
-bool Tile::transparent() const
+string Player::attackMessage( Entity* target, bool hit, Weapon* w )
 {
-	return _transparent;
+	string msg = "You ";
+	if( hit )
+		msg += "hit";
+	else
+		msg += "miss";
+
+	msg += " the " + target->desc();
+
+	if( w )
+		msg += " with your " + w->desc();
+
+	msg += '.';
+
+	return msg;
 }
 
-char Tile::repr() const
+string Player::dieMessage()
 {
-	return _repr;
-}
-
-Color Tile::color() const
-{
-	return _color;
-}
-
-string Tile::desc() const
-{
-	return _description;
-}
-
-bool Tile::passable() const
-{
-	return _passable;
+	return "You die.";
 }

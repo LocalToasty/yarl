@@ -253,7 +253,7 @@ list<Item*>::iterator getItemWithName( string name, list<Item*>::iterator it,
 {
 	while( it != end )
 	{
-		if( ( *it )->t().description().substr( 0, name.size() ) == name )
+		if( ( *it )->desc().substr( 0, name.size() ) == name )
 			return it;
 		it++;
 	}
@@ -349,7 +349,7 @@ void Yarl::render()
 			if( it != player->inventory().end() )
 			{
 				// if there is, suggest it
-				_iom->addString( (*it)->t().description().
+				_iom->addString( (*it)->desc().
 								 substr( _buf.size() ) );
 			}
 
@@ -376,7 +376,7 @@ void Yarl::render()
 				if( dynamic_cast<Weapon*>( *it ) ||
 					dynamic_cast<Armor*>( *it ) )
 				{
-					_iom->addString( (*it)->t().description().
+					_iom->addString( (*it)->desc().
 									 substr( _buf.size() ) );
 					break;
 				}
@@ -405,7 +405,7 @@ void Yarl::render()
 					*it == player->armor() ||
 					*it == player->shield() )
 				{
-					_iom->addString( (*it)->t().description().
+					_iom->addString( (*it)->desc().
 									 substr( _buf.size() ) );
 					break;
 				}
@@ -449,7 +449,7 @@ void Yarl::render()
 
 			for( Weapon* w : weapons )
 			{
-				_iom->moveAddString( 2, row, w->t().description() );
+				_iom->moveAddString( 2, row, w->desc() );
 
 				if( player->weapon() == w )
 					_iom->addString( " (equipped)" );
@@ -465,7 +465,7 @@ void Yarl::render()
 
 			for( Armor* a : armor )
 			{
-				_iom->moveAddString( 2, row, a->t().description() );
+				_iom->moveAddString( 2, row, a->desc() );
 
 				if( player->armor() == a || player->shield() == a )
 					_iom->addString( " (worn)" );
@@ -481,7 +481,7 @@ void Yarl::render()
 
 			for( Item* i : misc )
 			{
-				_iom->moveAddString( 2, row, i->t().description() );
+				_iom->moveAddString( 2, row, i->desc() );
 				row++;
 			}
 		}
@@ -591,7 +591,7 @@ bool Yarl::loop()
 					// drop item
 					_world->statusBar().
 							addMessage( "You dropped your " +
-										(*it)->t().description() + '.');
+										(*it)->desc() + '.');
 
 					player->inventory().remove( *it );
 					(*it)->setXY( player->x(), player->y() );
@@ -647,7 +647,7 @@ bool Yarl::loop()
 							player->setWeapon( w );
 							_world->statusBar().
 								addMessage( "You equip your " +
-											w->t().description() + '.');
+											w->desc() + '.');
 							_world->letTimePass( 6 );
 						}
 						break;
@@ -667,7 +667,7 @@ bool Yarl::loop()
 								player->setShield( a );
 								_world->statusBar().
 									addMessage( "You equip your " +
-												a->t().description() +
+												a->desc() +
 												'.');
 								_world->letTimePass( 6 );
 							}
@@ -685,7 +685,7 @@ bool Yarl::loop()
 								player->setArmor( a );
 								_world->statusBar().
 									addMessage( "You equip your " +
-												a->t().description() +
+												a->desc() +
 												'.');
 								_world->letTimePass( 12 );
 							}
@@ -787,7 +787,7 @@ bool Yarl::loop()
 				{
 					if( e != player )
 						_world->statusBar().addMessage( "You see a " +
-														e->t().description() +
+														e->desc() +
 														" here.");
 				}
 			}
@@ -804,7 +804,7 @@ bool Yarl::loop()
 				player->inventory().push_back( ( Item* ) e );
 
 				_world->statusBar().addMessage( "You pick up the " +
-												e->t().description() + '.' );
+												e->desc() + '.' );
 				_world->letTimePass( 2 );
 			}
 		}

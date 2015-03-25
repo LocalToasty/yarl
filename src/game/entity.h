@@ -89,6 +89,11 @@ public:
 	int lastKnownX() const;
 	int lastKnownY() const;
 
+	string desc();
+
+	int maxHp() const;
+	Character* lastAttacker() const;
+
 	int hp() const;
 	Size size() const;
 	int naturalArmor() const;
@@ -107,9 +112,7 @@ public:
 
 	void setHp(int hp);
 
-	Character* lastAttacker() const;
 	void setLastAttacker( Character* lastAttacker );
-	int maxHp() const;
 	void setMaxHp(int maxHp);
 };
 #endif

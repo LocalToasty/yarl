@@ -38,10 +38,10 @@ string Player::attackMessage( Entity* target, bool hit )
 	else
 		msg += "miss";
 
-	msg += " the " + target->t().description();
+	msg += " the " + target->desc();
 
 	if( weapon() )
-		msg += " with your " + weapon()->t().description();
+		msg += " with your " + weapon()->desc();
 
 	msg += '.';
 

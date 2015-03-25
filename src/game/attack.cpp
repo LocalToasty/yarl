@@ -16,41 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tile.h"
+#include "attack.h"
 
-Tile::Tile(char repr, Color color, string description, bool transparent) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(transparent)
-{}
-
-Tile::Tile(char repr, Color color, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(passable)
+Attack::Attack( int ( *damage )(), double range ) :
+	_damage( damage ), _range( range )
 {
 }
 
-bool Tile::transparent() const
+double Attack::range() const
 {
-	return _transparent;
+	return _range;
 }
 
-char Tile::repr() const
+int Attack::damage() const
 {
-	return _repr;
-}
-
-Color Tile::color() const
-{
-	return _color;
-}
-
-string Tile::desc() const
-{
-	return _description;
-}
-
-bool Tile::passable() const
-{
-	return _passable;
+	return _damage();
 }

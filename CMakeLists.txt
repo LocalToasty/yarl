@@ -47,6 +47,7 @@ add_executable( yarl
 				src/game/sector.cpp
 				src/game/tile.cpp
 				src/game/player.cpp
+				src/game/attack.cpp
 				src/game/items/item.cpp
 				src/game/items/armor.cpp
 				src/game/items/weapon.cpp

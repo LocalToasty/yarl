@@ -18,18 +18,8 @@
 
 #include "weapon.h"
 
-Weapon::Weapon( const Tile& t, int (*damage)(), World& world , double range,
-				int x, int y, int hp , Size s ) :
-	Item( t, world, x, y, hp, s ), _range( range ), _damage( damage )
+Weapon::Weapon( const Tile& t, Attack a, World& world, int x, int y, int hp,
+				Size s ) :
+	Item( t, world, x, y, hp, s ), Attack( a )
 {
-}
-
-int Weapon::damage()
-{
-	return _damage();
-}
-
-double Weapon::range()
-{
-	return _range;
 }

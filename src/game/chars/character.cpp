@@ -27,12 +27,12 @@ using namespace std;
 Character::Character( const Tile& t, int x, int y, int hp, double speed,
 					  int visionRange,
                       const array<int, noOfAttributes>& attributes,
-					  World& world, int ( *unarmed )(),
-					  double unarmedRange, const list<Item*>& inventory,
+					  World& world, Attack* unarmed,
+					  const list<Item*>& inventory,
 					  int bab, Character:: Size s, int naturalArmor ) :
 	Entity( t, x, y, hp, world, s, naturalArmor, inventory ), _speed( speed ),
 	_attributes( attributes ), _bab( bab ), _unarmed( unarmed ),
-	_unarmedRange( unarmedRange ), _visionRange( visionRange )
+	_visionRange( visionRange )
 {
 }
 
@@ -54,12 +54,13 @@ void Character::attack( Entity* target )
 
 	// hit roll
 	int toHitMod = _bab + attributeMod( strength ) + size();
-	if( rand() % 20 + 1 + toHitMod >= target->armorClass() )
+	if( World::distance( x(), y(), target->x(), target->y() ) <=
+		_unarmed->range() &&
+		rand() % 20 + 1 + toHitMod >= target->armorClass() )
 	{
 		world().statusBar().addMessage( attackMessage( target, true ) );
 
-		int damage = ( _weapon ? _weapon->damage() : _unarmed() ) +
-					 attributeMod( strength );
+		int damage = _unarmed->damage() + attributeMod( strength );
 
 		if( damage <= 0 )	// hits inflict at least 1 hp damage
 			damage = 1;
@@ -71,7 +72,7 @@ void Character::attack( Entity* target )
 		world().statusBar().addMessage( attackMessage( target, false ) );
 }
 
-string Character::attackMessage( Entity* target, bool hit )
+string Character::attackMessage( Entity* target, bool hit, Weapon* w )
 {
 	string msg = "The " + desc();
 	if( hit )
@@ -117,18 +118,12 @@ vector<Entity*> Character::seenEntities()
 int Character::armorClass()
 {
 	return 10 + attributeMod( dexterity ) + size() + naturalArmor() +
-		   ( _armor == nullptr ? 0 : _armor->ac() ) +
-		   ( _shield == nullptr ? 0 : _shield->ac() );
+			( _armor == nullptr ? 0 : _armor->ac() );
 }
 
-Weapon* Character::weapon()
+Attack* Character::unarmed()
 {
-	return _weapon;
-}
-
-void Character::setWeapon( Weapon* weapon )
-{
-	_weapon = weapon;
+	return _unarmed;
 }
 
 Armor* Character::armor()
@@ -141,16 +136,6 @@ void Character::setArmor( Armor* armor )
 	_armor = armor;
 }
 
-Armor* Character::shield() const
-{
-	return _shield;
-}
-
-void Character::setShield( Armor* shield )
-{
-	_shield = shield;
-}
-
 int Character::attribute( Character::Attribute attribute )
 {
 	return _attributes[attribute];
@@ -160,22 +145,12 @@ int Character::attributeMod( Character::Attribute attribute )
 {
 	int bonus = ( _attributes[attribute] - 10 ) / 2;
 
-	if( attribute == dexterity || attribute == strength )
+	if( _armor )
 	{
-		if( _armor )
+		if( ( attribute == dexterity || attribute == strength ) )
 			bonus += _armor->checkPenalty();
-
-		if( _shield )
-			bonus += _shield->checkPenalty();
-
-		if( attribute == dexterity )
-		{
-			if( _armor && bonus > _armor->maxDexBon() )
-				bonus = _armor->maxDexBon();
-
-			if( _shield && bonus > _shield->maxDexBon() )
-				bonus = _shield->maxDexBon();
-		}
+		if( attribute == dexterity && bonus > _armor->maxDexBon() )
+			bonus = _armor->maxDexBon();
 	}
 
 	return bonus;
@@ -201,12 +176,7 @@ void Character::setLastTarget( Entity* lastTarget )
 	_lastTarget = lastTarget;
 }
 
-double Character::unarmedRange() const
+int Character::bab()
 {
-	return _unarmedRange;
-}
-
-void Character::setUnarmedRange( double unarmedRange )
-{
-	_unarmedRange = unarmedRange;
+	return _bab;
 }

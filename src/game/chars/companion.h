@@ -16,41 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tile.h"
+#ifndef COMPANION_H
+#define COMPANION_H
 
-Tile::Tile(char repr, Color color, string description, bool transparent) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(transparent)
-{}
+#include "npc.h"
 
-Tile::Tile(char repr, Color color, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(passable)
+class Companion : public NPC
 {
-}
+private:
+	Character* _companion;
 
-bool Tile::transparent() const
-{
-	return _transparent;
-}
+	int _waypointX { -1 };
+	int _waypointY { -1 };
 
-char Tile::repr() const
-{
-	return _repr;
-}
+public:
+	Companion( const Tile& t, Character* companion, int x, int y, int hp,
+			   double speed, int visionRange,
+			   const array<int, noOfAttributes>& attributes, World& world,
+			   Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+			   Size s = Size::medium, int naturalArmor = 0 );
 
-Color Tile::color() const
-{
-	return _color;
-}
+	void think();
+};
 
-string Tile::desc() const
-{
-	return _description;
-}
-
-bool Tile::passable() const
-{
-	return _passable;
-}
+#endif

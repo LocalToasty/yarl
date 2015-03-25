@@ -42,15 +42,9 @@ public:
 
 	char repr() const;
 	Color color() const;
-	string description() const;
+	string desc() const;
 	bool passable() const;
 	bool transparent() const;
-
-	void setRepr(char repr);
-	void setColor(Color color);
-	void setDescription(string description);
-	void setPassable(bool passable);
-	void setTransparent(bool transparent);
 };
 
 #endif

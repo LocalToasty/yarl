@@ -66,7 +66,7 @@ int Entity::armorClass() const
 
 string Entity::dieMessage()
 {
-	return "The " + t().description() + " is destroyed.";
+	return "The " + desc() + " is destroyed.";
 }
 
 const Tile& Entity::t() const
@@ -107,6 +107,11 @@ int Entity::lastKnownX() const
 int Entity::lastKnownY() const
 {
 	return _lastKnownY;
+}
+
+string Entity::desc()
+{
+	return _t.desc();
 }
 
 int Entity::hp() const

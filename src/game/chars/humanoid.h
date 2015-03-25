@@ -16,41 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tile.h"
+#ifndef HUMANOID_H
+#define HUMANOID_H
 
-Tile::Tile(char repr, Color color, string description, bool transparent) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(transparent)
-{}
+#include "character.h"
 
-Tile::Tile(char repr, Color color, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _description(description),
-	_transparent(transparent), _passable(passable)
+class Item;
+
+class Humanoid : public Character
 {
-}
+private:
+	Item* _mainHand { nullptr };
+	Item* _offHand { nullptr };
 
-bool Tile::transparent() const
-{
-	return _transparent;
-}
+public:
+	Humanoid( const Tile& t, int x, int y, int hp, double speed,
+			  int visionRange, const array<int, noOfAttributes>& attributes,
+			  World& world, Attack* unarmed,
+			  const list<Item*>& inventory = {},
+			  int bab = 0, Size s = Size::medium, int naturalArmor = 0 );
 
-char Tile::repr() const
-{
-	return _repr;
-}
+	void attack( Entity* target );
+	int armorClass();
+	int attributeMod( Attribute attribute );
 
-Color Tile::color() const
-{
-	return _color;
-}
+	Item* mainHand();
+	Item* offHand();
 
-string Tile::desc() const
-{
-	return _description;
-}
+	void setMainHand( Item* i );
+	void setOffHand( Item* i );
+};
 
-bool Tile::passable() const
-{
-	return _passable;
-}
+#endif
