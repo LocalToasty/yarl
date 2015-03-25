@@ -110,9 +110,10 @@ public:
 	void setLastKnownX();
 	void setLastKnownY();
 
-	void setHp(int hp);
+	void setHp( int hp );
+	void doDamage( int dmg );
 
 	void setLastAttacker( Character* lastAttacker );
-	void setMaxHp(int maxHp);
+	void setMaxHp( int maxHp );
 };
 #endif

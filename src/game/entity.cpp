@@ -195,3 +195,8 @@ void Entity::setHp(int hp)
 	}
 	_hp = hp;
 }
+
+void Entity::doDamage( int dmg )
+{
+	setHp( _hp - dmg );
+}

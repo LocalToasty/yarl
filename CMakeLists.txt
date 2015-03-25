@@ -32,7 +32,7 @@ include_directories( "${PROJECT_BINARY_DIR}" )
 include_directories( "src/"
 					 "src/game/"
 					 "src/game/items/"
-					 "src/game/npcs/"
+					 "src/game/chars/"
 					 "src/iomanager/" )
 
 add_executable( yarl
@@ -43,16 +43,17 @@ add_executable( yarl
 				src/statusbar.cpp
 				src/game/world.cpp
 				src/game/entity.cpp
-				src/game/character.cpp
 				src/game/sector.cpp
 				src/game/tile.cpp
-				src/game/player.cpp
 				src/game/attack.cpp
 				src/game/items/item.cpp
 				src/game/items/armor.cpp
 				src/game/items/weapon.cpp
-				src/game/npcs/npc.cpp
-				src/game/npcs/companion.cpp
+				src/game/chars/character.cpp
+				src/game/chars/humanoid.cpp
+				src/game/chars/player.cpp
+				src/game/chars/npc.cpp
+				src/game/chars/companion.cpp
 				src/iomanager/iomanager.cpp
 				${IOM_SOURCE} )
 

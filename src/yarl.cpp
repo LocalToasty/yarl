@@ -269,7 +269,7 @@ list<Item*>::iterator getItemWithName( string name, list<Item*>::iterator it,
 
 void Yarl::render()
 {
-	Character* player = _world->player();
+	Player* player = _world->player();
 
 	// get window proportions
 	int width = _iom->width();
@@ -363,7 +363,7 @@ void Yarl::render()
 		}
 	}
 
-	// wield prompt
+	// equip prompt
 	else if( _state == State::equip )
 	{
 		_iom->moveAddString( 0, 0, "What do you want to equip? " );
@@ -372,24 +372,27 @@ void Yarl::render()
 		if( !_buf.empty() )
 		{
 			// check if there is an item with a similar name in the inventory
-			for( auto it = getItemWithName( _buf,
-											player->inventory().begin(),
+			for( auto it = getItemWithName( _buf, player->inventory().begin(),
 											player->inventory().end() );
 				 it != player->inventory().end();
 				 it = getItemWithName( _buf, ++it,
 									   player->inventory().end() ) )
 			{
-				if( dynamic_cast<Weapon*>( *it ) ||
-					dynamic_cast<Armor*>( *it ) )
+				if( dynamic_cast<Armor*>( *it ) ||
+					dynamic_cast<Weapon*>( *it ) )
 				{
-					_iom->addString( (*it)->desc().
-									 substr( _buf.size() ) );
+					_iom->addString( (*it)->desc().substr( _buf.size() ) );
 					break;
 				}
 			}
 
 			_iom->addChar( ' ' );
 		}
+	}
+
+	else if( _state == State::equip_selectHand )
+	{
+		_iom->moveAddString( 0, 0, "In which hand? [main/off/both] " );
 	}
 
 	else if( _state == State::unequip )
@@ -407,9 +410,9 @@ void Yarl::render()
 				 it = getItemWithName( _buf, ++it,
 									   player->inventory().end() ) )
 			{
-				if( *it == player->weapon() ||
-					*it == player->armor() ||
-					*it == player->shield() )
+				if( *it == player->mainHand() ||
+					*it == player->offHand() ||
+					*it == player->armor() )
 				{
 					_iom->addString( (*it)->desc().
 									 substr( _buf.size() ) );
@@ -457,8 +460,15 @@ void Yarl::render()
 			{
 				_iom->moveAddString( 2, row, w->desc() );
 
-				if( player->weapon() == w )
-					_iom->addString( " (equipped)" );
+				if( player->mainHand() == w )
+				{
+					if( player->offHand() == w )
+						_iom->addString( " (in both hands)" );
+					else
+						_iom->addString( " (in main hand)" );
+				}
+				else if( player->offHand() == w )
+					_iom->addString( " (in off hand)" );
 
 				row++;
 			}
@@ -473,8 +483,18 @@ void Yarl::render()
 			{
 				_iom->moveAddString( 2, row, a->desc() );
 
-				if( player->armor() == a || player->shield() == a )
+				if( player->armor() == a )
 					_iom->addString( " (worn)" );
+				else if( player->mainHand() == a )
+				{
+					if( player->offHand() == a )
+						_iom->addString( " (in both hands)" );
+					else
+						_iom->addString( " (in main hand)" );
+				}
+				else if( player->offHand() == a )
+					_iom->addString( " (in off hand)" );
+
 
 				row++;
 			}
@@ -584,14 +604,14 @@ bool Yarl::loop()
 				}
 				else
 				{
-					if( player->weapon() == *it )
+					if( player->mainHand() == *it )
 					{
 						// unequip weapon
-						player->setWeapon( nullptr );
+						player->setMainHand( nullptr );
 					}
-					else if( player->shield() == *it )
+					else if( player->offHand() == *it )
 					{
-						player->setShield( nullptr );
+						player->setOffHand( nullptr );
 					}
 
 					// drop item
@@ -628,85 +648,129 @@ bool Yarl::loop()
 			if( _buf.empty() )
 			{
 				_world->statusBar().addMessage( "Never mind." );
+				_state = State::def;
 			}
 			else
 			{
-				for( auto it = getItemWithName( _buf,
-												player->inventory().begin(),
-												player->inventory().end() );
-					 it != player->inventory().end();
-					 it = getItemWithName( _buf, ++it,
-										   player->inventory().end() ) )
+				auto it = getItemWithName( _buf, player->inventory().begin(),
+										   player->inventory().end() );
+				if( it != player->inventory().end() )
 				{
-					// check if item is weapon and isn't the currently equipped
-					// one
-					if( Weapon* w = dynamic_cast<Weapon*>( *it ) )
+					Armor* a = dynamic_cast<Armor*>( *it );
+					if( a && !a->isShield() )
 					{
-						if( player->weapon() )
+						if( player->armor() )
 						{
 							_world->statusBar().
-								addMessage( "You already have a weapon "
-											"equipped." );
+								addMessage( "You are already wearing armor." );
 						}
 						else
 						{
-							player->setWeapon( w );
-							_world->statusBar().
-								addMessage( "You equip your " +
-											w->desc() + '.');
-							_world->letTimePass( 6 );
+							player->setArmor( a );
 						}
-						break;
+						_state = State::def;
 					}
-					else if( Armor* a = dynamic_cast<Armor*>( *it ) )
+					else if( a || dynamic_cast<Weapon*>( *it ) )
+						_state = State::equip_selectHand;
+					else	// item not equippable
 					{
-						if( a->isShield() )
-						{
-							if( player->shield() )
-							{
-								_world->statusBar().
-									addMessage( "You already have a shield "
-												"equipped." );
-							}
-							else
-							{
-								player->setShield( a );
-								_world->statusBar().
-									addMessage( "You equip your " +
-												a->desc() +
-												'.');
-								_world->letTimePass( 6 );
-							}
-							break;
-						}
-						else	// armor
-						{
-							if( player->armor() )
-							{
-								_world->statusBar().
-									addMessage( "You already wear armor." );
-							}
-							else
-							{
-								player->setArmor( a );
-								_world->statusBar().
-									addMessage( "You equip your " +
-												a->desc() +
-												'.');
-								_world->letTimePass( 12 );
-							}
-							break;
-						}
+						_world->statusBar().
+							addMessage( "You have no such item." );
+						_state = State::def;
 					}
 				}
+				else
+				{
+					_world->statusBar().
+						addMessage( "You have no such item." );
+					_state = State::def;
+				}
 			}
-
-			_state = State::def;
 		}
 		else
 		{
 			_buf.push_back( input );
 		}
+	}
+	else if( _state == State::equip_selectHand )
+	{
+		auto it = getItemWithName( _buf, player->inventory().begin(),
+								   player->inventory().end() );
+
+		if( it != player->inventory().end() )
+		{
+			if( input == 'm' )	// main hand
+			{
+				if( player->mainHand() && player->mainHand() != *it &&
+					player->mainHand() != player->offHand() )
+				{
+					_world->statusBar().
+						addMessage( "You have to unequip your " +
+									player->mainHand()->desc() + " first." );
+				}
+				else
+				{
+					player->setMainHand( *it );
+					_world->statusBar().
+						addMessage( "You now hold the " + (*it)->desc() +
+									" in your main hand.");
+				}
+			}
+			else if( input == 'o' )	// off hand
+			{
+				if( player->offHand() &&
+					player->offHand() != player->mainHand() )
+				{
+					_world->statusBar().
+						addMessage( "You have to unequip your " +
+									player->offHand()->desc() + " first." );
+				}
+				else
+				{
+					player->setOffHand( *it );
+					_world->statusBar().
+						addMessage( "You now hold the " + (*it)->desc() +
+									" in your off hand.");
+				}
+			}
+			else if( input == 'b' )
+			{
+				if( player->mainHand() || player->offHand() )
+				{
+					string items;
+
+					if( player->mainHand() )
+						items += player->mainHand()->desc();
+
+					if( player->offHand() &&
+						player->offHand() != player->mainHand() )
+					{
+						if( !items.empty() )
+							items += " and your ";
+
+						items += player->offHand()->desc();
+					}
+
+					_world->statusBar().
+						addMessage( "You have to unequip your " + items +
+									" first.");
+				}
+				else
+				{
+					player->setMainHand( *it );
+					player->setOffHand( *it );
+					_world->statusBar().
+						addMessage( "You now hold the " + (*it)->desc() +
+									" in both hands.");
+				}
+			}
+			else
+			{
+				_world->statusBar().addMessage( "Never mind." );
+			}
+		}
+
+		_state = State::def;
 	}
 	else if( _state == State::unequip )
 	{
@@ -730,8 +794,12 @@ bool Yarl::loop()
 					 it = getItemWithName( _buf, ++it,
 										   player->inventory().end() ) )
 				{
-					if( player->weapon() == *it )
-						player->setWeapon( nullptr );
+					if( player->mainHand() == *it )
+						player->setMainHand( nullptr );
+
+					if( player->offHand() == *it )
+						player->setOffHand( nullptr );
+
 					if( player->armor() == *it )
 						player->setArmor( nullptr );
 				}
