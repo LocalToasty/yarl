@@ -78,7 +78,7 @@ bool Yarl::init(int argc, char* argv[])
 	// config path can be supplied via an environment variable
 	const char* cfg = getenv( "YARLCONF" );
 	string configFilePath;
-	if ( cfg != nullptr )
+	if ( cfg )
 		configFilePath = cfg;
 
 	// if nothing else is specified, the config file is stored in the home
@@ -87,8 +87,11 @@ bool Yarl::init(int argc, char* argv[])
 	{
 #if defined( __unix__ ) || defined ( __unix )
 		// UNIXoids (i.e. Linux, MacOS, BSD and so forth)
-		configFilePath = getenv("HOME");
-		configFilePath.append("/.yarlrc");
+		if( cfg = getenv( "HOME" ) )
+		{
+			configFilePath = cfg;
+			configFilePath.append( "/.yarlrc" );
+		}
 
 #elif defined( _WIN32 ) || defined( _WIN64 )	// Windows
 		configFilePath = getenv( "HOMEDRIVE" );
@@ -98,10 +101,13 @@ bool Yarl::init(int argc, char* argv[])
 	}
 
 	// use user name as default character name
-	stringstream ss( getenv( "USERNAME" ) );
-	string name;
-	ss >> name;	// only use first name
-	_variables["name"] = name;
+	if( const char* username = getenv( "USERNAME" ) )
+	{
+		stringstream ss( username );
+		string name;
+		ss >> name;	// only use first name
+		_variables["name"] = name;
+	}
 
 	for( int i = 0; i < argc; i++ )
 	{
@@ -218,7 +224,7 @@ bool Yarl::init(int argc, char* argv[])
 					{
 						cerr << "Error: " << configFilePath
 							 << ": expected command after \""
-							 << name << "\"\n";
+							 << cmd << "\"\n";
 						return false;
 					}
 
