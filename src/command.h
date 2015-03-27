@@ -39,6 +39,8 @@ enum class Command
 	drop,
 	inventory,
 
+	examine,
+
 	wait,
 	none,
 

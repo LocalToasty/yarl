@@ -51,11 +51,14 @@ private:
 		drop,
 		equip,
 		equip_selectHand,
+		examine,
 		unequip
 	};
 	State _state { State::def };
 
+	// some buffer variables
 	string _buf;
+	int _x, _y;
 
 	bool init( int argc, char* argv[] );
 

@@ -27,17 +27,22 @@
 
 using namespace std;
 
-Tile World::_none	= {' ', Color::black,	"void"};
-Tile World::_mud	= {'.', Color::red,		"mud", true};
-Tile World::_grass	= {',', Color::green,	"patch of grass", true};
-Tile World::_tree	= {'T', Color::green,	"tree"};
-Tile World::_hero	= {'@', Color::yellow,	"you", true, false };
-Tile World::_goblin	= { 'g', Color::green,	"goblin", true, false };
-Tile World::_dog	= {'d', Color::red,		"dog", true, false };
-Tile World::_dogCorpse	= { '%', Color::red,	"dog corpse", true };
-Tile World::_shortSword	= { '(', Color::white,	"short sword", true };
-Tile World::_leatherArmor	= { '[', Color::yellow,	"leather armor", true };
-Tile World::_buckler	= { '[', Color::red,	"light wooden shield", true };
+Tile World::_none	= {' ', Color::black,	"", "void"};
+Tile World::_mud	= {'.', Color::red,		"", "mud", true, true };
+Tile World::_grass	= {',', Color::green,	"a ", "patch of grass",
+					   true, true };
+Tile World::_tree	= { 'T', Color::green,	"a ", "tree" };
+Tile World::_hero	= { '@', Color::yellow,	"", "you", true, false };
+Tile World::_goblin	= { 'g', Color::green,	"a ", "goblin", true, false };
+Tile World::_dog	= { 'd', Color::red,		"a ", "dog", true, false };
+Tile World::_dogCorpse	= { '%', Color::red,	"a ", "dog corpse",
+							true, true };
+Tile World::_shortSword	= { '(', Color::white,	"a ", "short sword",
+							true, true };
+Tile World::_leatherArmor	= { '[', Color::yellow,	"a ", "leather armor",
+								true, true };
+Tile World::_buckler	= { '[', Color::red,	"a ", "light wooden shield",
+							true, true };
 
 World::World( int width, int height ) :
 	_width( width ), _height( height ), _sectors( width * height )
