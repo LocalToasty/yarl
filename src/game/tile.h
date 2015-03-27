@@ -29,19 +29,21 @@ class Tile
 private:
 	char _repr;
 	Color _color;
+
+	string _prefix;
 	string _description;
+
 	bool _transparent;
 	bool _passable;
 
 public:
-	Tile(char repr = ' ', Color color = Color::black,
-		 string description = "", bool transparent = false);
-
-	Tile(char repr, Color color, string description, bool transparent,
-		 bool passable);
+	Tile( char repr = ' ', Color color = Color::black, string pref = "a",
+		  string description = "", bool transparent = false,
+		  bool passable = false );
 
 	char repr() const;
 	Color color() const;
+	string prefix() const;
 	string desc() const;
 	bool passable() const;
 	bool transparent() const;

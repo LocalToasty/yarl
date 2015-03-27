@@ -460,7 +460,7 @@ void Yarl::render()
 
 			for( Weapon* w : weapons )
 			{
-				_iom->moveAddString( 2, row, w->desc() );
+				_iom->moveAddString( 2, row, w->t().prefix() + w->desc() );
 
 				if( player->mainHand() == w )
 				{
@@ -483,7 +483,7 @@ void Yarl::render()
 
 			for( Armor* a : armor )
 			{
-				_iom->moveAddString( 2, row, a->desc() );
+				_iom->moveAddString( 2, row, a->t().prefix() + a->desc() );
 
 				if( player->armor() == a )
 					_iom->addString( " (worn)" );
@@ -509,7 +509,7 @@ void Yarl::render()
 
 			for( Item* i : misc )
 			{
-				_iom->moveAddString( 2, row, i->desc() );
+				_iom->moveAddString( 2, row, i->t().prefix() + i->desc() );
 				row++;
 			}
 		}
@@ -881,7 +881,8 @@ bool Yarl::loop()
 					t = _world->tile( _x + offX, _y + offY );
 
 				_world->statusBar().
-					addMessage( string() + t->repr() + ' ' + t->desc() );
+					addMessage( string() + t->repr() + " - " + t->prefix() +
+								t->desc() );
 			}
 			else
 			{
