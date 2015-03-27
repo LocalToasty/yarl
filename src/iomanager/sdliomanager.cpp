@@ -104,14 +104,6 @@ SDLIOManager::SDLIOManager( bool usecolor, bool cursor, const char* charset ) :
 	// optimise charset format
 	_charset = SDL_ConvertSurface( tmpCharset, screen->format, 0 );
 	SDL_FreeSurface( tmpCharset );
-
-	// set color key
-	SDL_SetColorKey( _charset, SDL_TRUE,
-					 SDL_MapRGB( screen->format, 0xff, 0xff, 0xff ) );
-
-	// clear screen;
-	SDL_FillRect( screen, nullptr, SDL_MapRGB( screen->format, 0, 0, 0 ) );
-	SDL_UpdateWindowSurface( _window );
 }
 
 SDLIOManager::~SDLIOManager()
@@ -233,7 +225,21 @@ void SDLIOManager::refreshScreen()
 				pos.w = _charWidth;
 				pos.h = _charHeight;
 
-				SDL_FillRect( screen, &pos, color(col) );
+				if( _cursorOn && _cursX == x && _cursY == y )
+				{
+					SDL_SetColorKey( _charset, SDL_TRUE,
+									 SDL_MapRGB( screen->format, 0, 0, 0 ) );
+					SDL_FillRect( screen, &pos,
+								  SDL_MapRGB( screen->format,
+											  0x80, 0x80, 0x80 ) );
+				}
+				else
+				{
+					SDL_SetColorKey( _charset, SDL_TRUE,
+									 SDL_MapRGB( screen->format,
+												 0xff, 0xff,0xff ) );
+					SDL_FillRect( screen, &pos, color( col ) );
+				}
 				SDL_BlitSurface (_charset, &ch, screen, &pos );
 			}
 		}
