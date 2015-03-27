@@ -70,6 +70,8 @@ bool Yarl::init(int argc, char* argv[])
 		{ 'd', Command::drop },
 		{ 'i', Command::inventory },
 
+		{ '/', Command::examine },
+
 		{ 'q', Command::quit }
 	};
 
@@ -559,6 +561,9 @@ void Yarl::render()
 						 to_string( player->armorClass() ) );
 #endif
 
+	if( _state == State::examine )
+		_iom->moveCursor( _x, _y );
+
 	_iom->refreshScreen();
 }
 
@@ -812,6 +817,87 @@ bool Yarl::loop()
 			_buf.push_back( input );
 		}
 	}
+	else if( _state == State::examine )
+	{
+		if( cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END )
+		{
+			int dx = 0;
+			int dy = 0;
+
+			if( cmd == Command::west ||
+				cmd == Command::northWest ||
+				cmd == Command::southWest )
+				dx = -1;
+			else if( cmd == Command::east ||
+					 cmd == Command::northEast ||
+					 cmd == Command::southEast )
+				dx = 1;
+
+			if( cmd == Command::north ||
+				cmd == Command::northWest ||
+				cmd == Command::northEast )
+				dy = -1;
+			else if( cmd == Command::south ||
+					 cmd == Command::southWest ||
+					 cmd == Command::southEast )
+				dy = 1;
+
+			_x += dx;
+			if( _x > _iom->width() - 1 )
+				_x = _iom->width();
+			else if( _x < 0 )
+				_x = 0;
+
+			_y += dy;
+			if( _y > _iom->height() - 2 )
+				_y = _iom->height() - 2;
+			else if( _y < 0 )
+				_y = 0;
+
+		}
+		else if( cmd == Command::wait || input == '\n' )	// confirm
+		{
+			_iom->cursor( false );
+
+			int offX = player->x() - _iom->width() / 2;
+			int offY = player->y() - _iom->height() / 2;
+
+			if( _world->explored( _x + offX, _y + offY ) )
+			{
+				Tile* t = nullptr;
+
+				for( Entity* e : _world->entities( _x + offX, _y + offY ) )
+				{
+					if( e->seen() )
+					{
+						t = ( Tile* ) &( _world->
+										 entities( _x + offX, _y + offY ).
+										 front()->t() );
+						break;
+					}
+				}
+
+				if( !t )	// no entity found
+					t = _world->tile( _x + offX, _y + offY );
+
+				_world->statusBar().
+					addMessage( string() + t->repr() + ' ' + t->desc() );
+			}
+			else
+			{
+				_world->statusBar().
+					addMessage( "Never mind." );
+			}
+			_state = State::def;
+		}
+		else
+		{
+			_iom->cursor( false );
+			_world->statusBar().
+				addMessage( "Never mind." );
+			_state = State::def;
+		}
+	}
 	else if( cmd == Command::quit || input == 0 || player->hp() <= 0 )
 	{
 		return true;
@@ -901,6 +987,13 @@ bool Yarl::loop()
 	else if( cmd == Command::inventory )
 	{
 		_state = State::showInventory;
+	}
+	else if( cmd == Command::examine )
+	{
+		_x = _iom->width() / 2;
+		_y = _iom->height() / 2;
+		_iom->cursor( true );
+		_state = State::examine;
 	}
 	else if( cmd == Command::wait )
 	{

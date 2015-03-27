@@ -48,6 +48,10 @@ public:
 	// turn the cursor on or off
 	virtual void cursor( bool val ) = 0;
 
+	// cursor coordinates
+	virtual int cursorX() = 0;
+	virtual int cursorY() = 0;
+
 	// replace the character at the current cursor location
 	virtual void addChar( char c, Color col = Color::white ) = 0;
 	// write a string of characters

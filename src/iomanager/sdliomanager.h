@@ -64,6 +64,8 @@ public:
 	int height();
 
 	void cursor( bool val );
+	int cursorX();
+	int cursorY();
 
 	void addChar( char c, Color col = Color::white );
 	void addString( string s, Color col = Color::white );

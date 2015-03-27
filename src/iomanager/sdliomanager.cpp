@@ -129,6 +129,16 @@ void SDLIOManager::cursor( bool val )
 	_cursorOn = val;
 }
 
+int SDLIOManager::cursorX()
+{
+	return _cursX;
+}
+
+int SDLIOManager::cursorY()
+{
+	return _cursY;
+}
+
 void SDLIOManager::addChar( char c, Color col )
 {	
 _characters.at( _cursX + _width * _cursY ) = c;
