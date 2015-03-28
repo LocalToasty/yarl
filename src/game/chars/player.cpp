@@ -20,12 +20,12 @@
 #include "character.h"
 #include "world.h"
 
-Player::Player( const Tile& t, int x, int y, int hp, double speed,
+Player::Player( const Tile& t, int hp, int x, int y, double speed,
 				int visionRange, array<int, noOfAttributes>& attributes,
 				World& world, Attack* unarmed,
 				const list<Item*>& inventory, int bab, Size s,
 				int naturalArmor ) :
-	Humanoid( t, x, y, hp, speed, visionRange, attributes, world, unarmed,
+	Humanoid( t, hp, x, y, speed, visionRange, attributes, world, unarmed,
 			  inventory, bab, s, naturalArmor )
 {
 }

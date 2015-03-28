@@ -64,30 +64,32 @@ World::World( int width, int height ) :
 	}
 
 	array<int, 6> attr = { 12, 12, 12, 12, 12, 12 };
-	_player = new Player( _hero, 42, 42, 9 + rand() % 8, 1, 12, attr, *this,
+	_player = new Player( _hero, 9 + rand() % 8, 42, 42, 1, 12, attr, *this,
 						  new Attack( [](){ return rand() % 2 + 1; } ), {}, 1 );
 
 	Weapon* weap = new Weapon( _shortSword, { [](){ return rand() % 6 + 1; } },
-							   *this );
+							   2, *this, 5 );
 	_player->inventory().push_back( weap );
 	_player->setMainHand( weap );
 	_player->setOffHand( weap );
 
-	Armor* arm = new Armor( _leatherArmor, 2, 6, 0, false, *this );
+	Armor* arm = new Armor( _leatherArmor, 2, 6, 0, false, 15, *this );
 	_player->inventory().push_back( arm );
 	_player->setArmor( arm );
 
-	new Armor( _buckler, 1, 999, -1, true, *this, 43, 43 );
+	new Armor( _buckler, 1, 999, -1, true, 100, *this, 43, 43 );
+	new Weapon( _shortSword, { [](){ return rand() % 6 + 1; } }, 2, *this,
+				5, 42, 43 );
 
 	attr = { 13, 13, 15, 2, 12, 6 };
-	new Companion( _dog, _player, 45, 46, rand() % 8 + 3, ( double ) 3/4, 12,
+	new Companion( _dog, _player, rand() % 8 + 3, 45, 46, ( double ) 3/4, 12,
 				   attr, *this, new Attack( [](){ return rand() % 4 + 2; } ),
-				   { new Item( _dogCorpse, *this, -1, -1, 1,
+				   { new Item( _dogCorpse, 40, *this, -1, -1, 1,
 							   Entity::Size::small ) },
 				   2, Entity::Size::small, 1 );
 
 	attr = { 11, 15, 12, 10, 9, 6 };
-	new Companion( _goblin, nullptr, 45, 45, rand() % 10 + 2, 1, 12, attr,
+	new Companion( _goblin, nullptr, rand() % 10 + 2, 45, 45, 1, 12, attr,
 				   *this, new Attack( [](){ return rand() % 2 + 1; } ), {}, 1,
 				   Entity::Size::small );
 }

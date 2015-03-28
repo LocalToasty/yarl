@@ -71,7 +71,7 @@ private:
 	Character* _lastAttacker { nullptr };
 
 public:
-	Entity( const Tile& t, int x, int y, int hp, World& world,
+	Entity( const Tile& t, int hp, int x, int y, World& world,
 			Size s = Size::medium, int naturalArmor = 0,
 			const list<Item*>& inventory = {} );
 	virtual ~Entity();

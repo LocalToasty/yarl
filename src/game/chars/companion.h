@@ -30,7 +30,7 @@ private:
 	int _waypointY { -1 };
 
 public:
-	Companion( const Tile& t, Character* companion, int x, int y, int hp,
+	Companion( const Tile& t, Character* companion, int hp, int x, int y,
 			   double speed, int visionRange,
 			   const array<int, noOfAttributes>& attributes, World& world,
 			   Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,

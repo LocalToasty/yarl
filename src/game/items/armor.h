@@ -32,7 +32,7 @@ private:
 
 public:
 	Armor( Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-		   World& world, int x = -1, int y = -1, int hp = 1,
+		   double weight, World& world, int x = -1, int y = -1,
 		   Size s = Size::small );
 
 	int ac() const;

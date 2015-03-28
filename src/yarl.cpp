@@ -550,6 +550,8 @@ void Yarl::render()
 #endif
 
 	// ac
+	_iom->clear( 26, height - 1, 2, 1 );
+
 #ifdef __MINGW32__
 	ss.str("");
 	ss.clear();

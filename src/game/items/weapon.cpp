@@ -18,8 +18,8 @@
 
 #include "weapon.h"
 
-Weapon::Weapon( const Tile& t, Attack a, World& world, int x, int y, int hp,
-				Size s ) :
-	Item( t, world, x, y, hp, s ), Attack( a )
+Weapon::Weapon( const Tile& t, Attack a, double weight, World& world, int hp,
+				int x, int y, Size s ) :
+	Item( t, weight, world, hp, x, y, s ), Attack( a )
 {
 }

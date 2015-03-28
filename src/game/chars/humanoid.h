@@ -30,7 +30,7 @@ private:
 	Item* _offHand { nullptr };
 
 public:
-	Humanoid( const Tile& t, int x, int y, int hp, double speed,
+	Humanoid( const Tile& t, int hp, int x, int y, double speed,
 			  int visionRange, const array<int, noOfAttributes>& attributes,
 			  World& world, Attack* unarmed,
 			  const list<Item*>& inventory = {},

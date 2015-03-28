@@ -28,7 +28,7 @@ private:
 	double _lastAction { 0 };
 
 public:
-	NPC( const Tile& t, int x, int y, int hp, double speed, int visionRange,
+	NPC( const Tile& t, int hp, int x, int y, double speed, int visionRange,
 		 const array<int, noOfAttributes>& attributes, World& world,
 		 Attack* unarmed,
 		 const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,

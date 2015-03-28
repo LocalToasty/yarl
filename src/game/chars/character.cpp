@@ -21,16 +21,17 @@
 #include "sector.h"
 #include "yarlconfig.h"
 #include <cstdlib>
+#include <cmath>	// for pow
 
 using namespace std;
 
-Character::Character( const Tile& t, int x, int y, int hp, double speed,
+Character::Character( const Tile& t, int hp, int x, int y, double speed,
 					  int visionRange,
                       const array<int, noOfAttributes>& attributes,
 					  World& world, Attack* unarmed,
 					  const list<Item*>& inventory,
 					  int bab, Character:: Size s, int naturalArmor ) :
-	Entity( t, x, y, hp, world, s, naturalArmor, inventory ), _speed( speed ),
+	Entity( t, hp, x, y, world, s, naturalArmor, inventory ), _speed( speed ),
 	_attributes( attributes ), _bab( bab ), _unarmed( unarmed ),
 	_visionRange( visionRange )
 {
@@ -148,22 +149,82 @@ int Character::attributeMod( Character::Attribute attribute )
 	if( _armor )
 	{
 		if( ( attribute == dexterity || attribute == strength ) )
-			bonus += _armor->checkPenalty();
-		if( attribute == dexterity && bonus > _armor->maxDexBon() )
-			bonus = _armor->maxDexBon();
+		{
+			if( _armor )
+				bonus += _armor->checkPenalty();
+
+			bonus += loadCheckPenalty();
+		}
+		if( attribute == dexterity )
+		{
+			if( bonus > _armor->maxDexBon() )
+				bonus = _armor->maxDexBon();
+			if( bonus > loadMaxDexBon() )
+				bonus = loadMaxDexBon();
+		}
 	}
 
 	return bonus;
 }
 
-int Character::visionRange()
+int Character::visionRange() const
 {
 	return _visionRange;
 }
 
-double Character::speed()
+double Character::speed() const
 {
 	return _speed;
+}
+
+double Character::inventoryWeight()
+{
+	double weight = 0;
+
+	for( Item* i : inventory() )
+	{
+		weight += i->weight();
+	}
+
+	return weight;
+}
+
+double Character::lightLoad()
+{
+	return heavyLoad() / 3;
+}
+
+double Character::mediumLoad()
+{
+	return heavyLoad() * 2 / 3;
+}
+
+double Character::heavyLoad()
+{
+	if( attribute( strength ) <= 10 )
+		return 10 * attribute( strength );
+	else
+		return 25 * pow( 2, attribute( strength ) / 5 );
+}
+
+int Character::loadMaxDexBon()
+{
+	if( inventoryWeight() > mediumLoad() )
+		return 1;
+	else if( inventoryWeight() > lightLoad() )
+		return 3;
+	else
+		return 999;	// no dex bonus restriction
+}
+
+int Character::loadCheckPenalty()
+{
+	if( inventoryWeight() > mediumLoad() )	// heavy load
+		return -6;
+	else if( inventoryWeight() > lightLoad() )	// medium load
+		return -3;
+	else
+		return 0;	// no penalty
 }
 
 Entity* Character::lastTarget() const
