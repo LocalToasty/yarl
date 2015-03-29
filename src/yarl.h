@@ -31,6 +31,7 @@
 using namespace std;
 
 class World;
+class Player;
 class IOManager;
 
 class Yarl
@@ -60,10 +61,26 @@ private:
 	string _buf;
 	int _x, _y;
 
+	void world_render( Player* player, int width, int height );
+	void inventory_render();
+	void drop_render( Player* player );
+	void equip_render( Player* player );
+	void unequip_render( Player* player );
+	void examine_render();
+	void charInfo_render( Player* player, int width, int height );
+
+	void drop_logic( char input, Player* player );
+	void equip_logic( char input, Player* player );
+	void equip_selectHand_logic( char input, Player* player );
+	void unequip_logic( char input, Player* player );
+	void examine_logic( char input, Command cmd, Player* player );
+	void move_logic( char input, Command cmd, Player* player );
+	void pickup_logic( Player* player );
+
 	bool init( int argc, char* argv[] );
 
 	void render();
-	bool loop();
+	bool logic();
 
 	int cleanup();
 
