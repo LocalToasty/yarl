@@ -42,6 +42,14 @@ public:
 		noOfAttributes
 	};
 
+	enum class Load
+	{
+		light,
+		medium,
+		heavy,
+		overloaded
+	};
+
 private:
 	int _visionRange;
 
@@ -58,7 +66,7 @@ protected:
 	array<int, noOfAttributes> _attributes;
 
 public:
-	Character( const Tile& t, int x, int y, int hp, double speed,
+	Character( const Tile& t, int hp, int x, int y, double speed,
 			   int visionRange, const array<int, noOfAttributes>& attributes,
 			   World& world, Attack* unarmed,
 			   const list<Item*>& inventory = {},
@@ -87,8 +95,19 @@ public:
 	void setAttribute( Attribute attribute, int value );
 	virtual int attributeMod( Attribute attribute );
 
-	int visionRange();
-	double speed();
+	int visionRange() const;
+	double speed() const;
+
+	double inventoryWeight();
+
+	double lightLoad();
+	double mediumLoad();
+	double heavyLoad();
+
+	Load load();
+
+	int loadMaxDexBon();
+	int loadCheckPenalty();
 
 	Entity* lastTarget() const;
 	void setLastTarget( Entity* lastTarget );

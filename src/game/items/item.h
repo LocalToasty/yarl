@@ -23,9 +23,15 @@
 
 class Item : public Entity
 {
+private:
+	double _weight;
+
 public:
-	Item( const Tile& t, World& world, int x = -1, int y = -1, int hp = 1,
-		  Size s = Size::medium );
+	Item( const Tile& t, double weight, World& world, int hp,
+		  int x = -1, int y = -1, Size s = Size::medium );
+
+
+	double weight() const;
 };
 
 #endif

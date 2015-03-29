@@ -42,7 +42,7 @@ void Entity::setMaxHp(int maxHp)
 {
 	_maxHp = maxHp;
 }
-Entity::Entity( const Tile& t, int x, int y, int hp, World& world, Size s,
+Entity::Entity( const Tile& t, int hp, int x, int y, World& world, Size s,
 				int naturalArmor, const list<Item*>& inventory ) :
 	_t( t ), _x( x ), _y( y ), _hp( hp ), _maxHp( hp ), _world( world ),
 	_s( s ), _naturalArmor( naturalArmor ), _inventory( inventory )

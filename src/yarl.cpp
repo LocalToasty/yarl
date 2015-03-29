@@ -520,6 +520,8 @@ void Yarl::render()
 	_iom->moveAddString( 0, height - 1,
 						 _variables["name"].toString().substr( 0, 9 ) );
 
+	_iom->clear( 14, height - 1, width - 15, 1 );
+
 	// hp
 	_iom->moveAddString( 10, height - 1, "HP: " );
 
@@ -528,8 +530,6 @@ void Yarl::render()
 		hpCol = Color::red;
 	else if( player->hp() < player->maxHp() / 3 )
 		hpCol = Color::yellow;
-
-	_iom->clear( 14, height - 1, 7, 1 );
 
 #ifdef __MINGW32__
 	stringstream ss;
@@ -560,6 +560,15 @@ void Yarl::render()
 	_iom->moveAddString( 22, height - 1, "AC: " +
 						 to_string( player->armorClass() ) );
 #endif
+
+	// load
+	Character::Load l = player->load();
+	if( l == Character::Load::medium )
+		_iom->moveAddString( 29, height - 1, "encumbered" );
+	else if( l == Character::Load::heavy )
+		_iom->moveAddString( 29, height - 1, "burdened" );
+	else if( l == Character::Load::overloaded )
+		_iom->moveAddString( 29, height - 1, "overloaded" );
 
 	if( _state == State::examine )
 		_iom->moveCursor( _x, _y );
@@ -609,9 +618,9 @@ bool Yarl::loop()
 				}
 				else
 				{
+					// unequip item if it's being held
 					if( player->mainHand() == *it )
 					{
-						// unequip weapon
 						player->setMainHand( nullptr );
 					}
 					else if( player->offHand() == *it )
@@ -624,8 +633,26 @@ bool Yarl::loop()
 							addMessage( "You dropped your " +
 										(*it)->desc() + '.');
 
+					Character::Load before = player->load();
+
 					player->inventory().remove( *it );
 					(*it)->setXY( player->x(), player->y() );
+
+					Character::Load after = player->load();
+					if( after != before )
+					{
+						// TODO: think of better status messages
+						if( after == Character::Load::light )
+							_world->statusBar().
+								addMessage( "Your are now unencumbered." );
+						if( after == Character::Load::medium )
+							_world->statusBar().
+								addMessage( "Your movements are now "
+											"encumbered." );
+						else if( after == Character::Load::heavy )
+							_world->statusBar().
+								addMessage( "You are burdened by your load." );
+					}
 
 					_world->letTimePass( 1 );
 				}
@@ -956,6 +983,8 @@ bool Yarl::loop()
 	}
 	else if( cmd == Command::pickup )
 	{
+		Character::Load before = player->load();
+
 		for( Entity* e : _world->entities( player->x(), player->y() ) )
 		{
 			if( dynamic_cast<Item*>( e ) != nullptr )
@@ -968,6 +997,21 @@ bool Yarl::loop()
 												e->desc() + '.' );
 				_world->letTimePass( 2 );
 			}
+		}
+
+		Character::Load after = player->load();
+		if( after != before )
+		{
+			// TODO: think of better status messages
+			if( after == Character::Load::medium )
+				_world->statusBar().
+					addMessage( "Your movements are now encumbered." );
+			else if( after == Character::Load::heavy )
+				_world->statusBar().
+					addMessage( "You are burdened by your load." );
+			else if( after == Character::Load::overloaded )
+				_world->statusBar().
+					addMessage( "You are severly overloaded." );
 		}
 	}
 	else if( cmd == Command::equip )

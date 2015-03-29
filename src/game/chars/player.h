@@ -28,10 +28,9 @@ using namespace std;
 class Player : public Humanoid
 {
 public:
-	Player( const Tile& t, int x, int y, int hp, double speed, int visionRange,
+	Player( const Tile& t, int hp, int x, int y, double speed, int visionRange,
 			array<int, noOfAttributes>& attributes, World& world,
-			Attack* unarmed,
-			const list<Item*>& inventory = {}, int bab = 0,
+			Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
 			Size s = Size::medium, int naturalArmor = 0 );
 
 	string attackMessage( Entity* target, bool hit , Weapon* w = nullptr );

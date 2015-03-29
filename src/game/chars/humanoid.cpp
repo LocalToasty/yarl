@@ -20,12 +20,12 @@
 #include "armor.h"
 #include "world.h"
 
-Humanoid::Humanoid( const Tile& t, int x, int y, int hp, double speed,
+Humanoid::Humanoid( const Tile& t, int hp, int x, int y, double speed,
 					int visionRange,
 					const array<int, noOfAttributes>& attributes, World& world,
 					Attack* unarmed, const list<Item*>& inventory, int bab,
 					Size s, int naturalArmor ) :
-	Character( t, x, y, hp, speed, visionRange, attributes, world, unarmed,
+	Character( t, hp, x, y, speed, visionRange, attributes, world, unarmed,
 			   inventory, bab, s, naturalArmor )
 {
 
@@ -137,6 +137,8 @@ int Humanoid::attributeMod( Character::Attribute attribute )
 		if( s2 && s1 != s2 && s2->isShield() )
 			bonus += s2->checkPenalty();
 
+		bonus += loadCheckPenalty();
+
 
 		if( attribute == dexterity )
 		{
@@ -147,6 +149,9 @@ int Humanoid::attributeMod( Character::Attribute attribute )
 				bonus = s1->maxDexBon();
 			if( s2 && s2->isShield() && bonus > s2->maxDexBon() )
 				bonus = s2->maxDexBon();
+
+			if( bonus > loadMaxDexBon() )
+				bonus = loadMaxDexBon();
 		}
 	}
 
