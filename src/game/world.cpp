@@ -77,7 +77,7 @@ World::World( int width, int height ) :
 	_player->inventory().push_back( arm );
 	_player->setArmor( arm );
 
-	new Armor( _buckler, 1, 999, -1, true, 100, *this, 43, 43 );
+	new Armor( _buckler, 1, 999, -1, true, 5, *this, 43, 43 );
 	new Weapon( _shortSword, { [](){ return rand() % 6 + 1; } }, 2, *this,
 				5, 42, 43 );
 

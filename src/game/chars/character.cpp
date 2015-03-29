@@ -207,24 +207,52 @@ double Character::heavyLoad()
 		return 25 * pow( 2, attribute( strength ) / 5 );
 }
 
+Character::Load Character::load()
+{
+	double weight = inventoryWeight();
+
+	if( weight > heavyLoad() )
+		return Load::overloaded;
+	else if( weight > mediumLoad() )
+		return Load::heavy;
+	else if( weight > lightLoad() )
+		return Load::medium;
+	else
+		return Load::light;
+}
+
 int Character::loadMaxDexBon()
 {
-	if( inventoryWeight() > mediumLoad() )
-		return 1;
-	else if( inventoryWeight() > lightLoad() )
+	switch( load() )
+	{
+	case Load::light:
+		return 999;	// no dex restriction
+
+	case Load::medium:
 		return 3;
-	else
-		return 999;	// no dex bonus restriction
+
+	case Load::heavy:
+		return 1;
+
+	case Load::overloaded:
+		return 0;
+	}
 }
 
 int Character::loadCheckPenalty()
 {
-	if( inventoryWeight() > mediumLoad() )	// heavy load
-		return -6;
-	else if( inventoryWeight() > lightLoad() )	// medium load
+	switch( load() )
+	{
+	case Load::light:
+		return 0;
+
+	case Load::medium:
 		return -3;
-	else
-		return 0;	// no penalty
+
+	case Load::heavy:
+	case Load::overloaded:
+		return -6;
+	}
 }
 
 Entity* Character::lastTarget() const

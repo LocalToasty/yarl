@@ -42,6 +42,14 @@ public:
 		noOfAttributes
 	};
 
+	enum class Load
+	{
+		light,
+		medium,
+		heavy,
+		overloaded
+	};
+
 private:
 	int _visionRange;
 
@@ -96,9 +104,10 @@ public:
 	double mediumLoad();
 	double heavyLoad();
 
+	Load load();
+
 	int loadMaxDexBon();
 	int loadCheckPenalty();
-
 
 	Entity* lastTarget() const;
 	void setLastTarget( Entity* lastTarget );
