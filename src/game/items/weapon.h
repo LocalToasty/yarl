@@ -25,8 +25,8 @@
 class Weapon : public Item, public Attack
 {
 public:
-	Weapon( const Tile& t, Attack a, double weight, World& world, int hp,
-			int x = -1, int y = -1, Size s = Size::small );
+	Weapon(const Tile& t, Attack a, double weight, World& world, int hp,
+		   int x = -1, int y = -1, Size s = Size::small);
 };
 
 #endif

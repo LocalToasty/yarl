@@ -45,7 +45,7 @@ private:
 
 	Player* _player;
 
-	double _time { 0 };
+	double _time {0};
 
 	static Tile _grass;
 	static Tile _mud;
@@ -64,33 +64,33 @@ private:
 	static Tile _buckler;
 
 public:
-	World( int width, int height );
+	World(int width, int height);
 	~World();
 
-	static double distance( int x1, int y1, int x2, int y2 );
+	static double distance(int x1, int y1, int x2, int y2);
 
-	bool los(int x1, int y1, int x2, int y2, double range = -1 );
-	vector<Command> route( int x1, int y1, int x2, int y2,
-						   bool converge = false );
+	bool los(int x1, int y1, int x2, int y2, double range = -1);
+	vector<Command> route(int x1, int y1, int x2, int y2,
+						  bool converge = false);
 
-	Sector* sector( int x, int y );
+	Sector* sector(int x, int y);
 	Player* player();
 
-	Tile* tile( int x, int y );
-	void setTile( int x, int y, Tile* t );
+	Tile* tile(int x, int y);
+	void setTile(int x, int y, Tile* t);
 
-	bool explored( int x, int y );
-	void setExplored( int x, int y, bool explored = true );
+	bool explored(int x, int y);
+	void setExplored(int x, int y, bool explored = true);
 
-	bool passable( int x, int y );
+	bool passable(int x, int y);
 
-	vector<Entity*> entities( int x, int y );
-	vector<Entity*> entities( int x1, int y1, int x2, int y2 );
-	void addEntitiy( Entity* e );
-	void removeEntity( Entity* e );
+	vector<Entity*> entities(int x, int y);
+	vector<Entity*> entities(int x1, int y1, int x2, int y2);
+	void addEntitiy(Entity* e);
+	void removeEntity(Entity* e);
 
 	double time();
-	void letTimePass( double time );
+	void letTimePass(double time);
 	void think();
 
 	StatusBar& statusBar();

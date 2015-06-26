@@ -18,10 +18,10 @@
 
 #include "armor.h"
 
-Armor::Armor( Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-			  double weight, World& world, int x, int y, Size s ) :
-	Item( t, weight, world, ac * 5 , x, y, s ), _ac( ac ),
-	_maxDexBon( maxDexBon ), _checkPenalty( checkPenalty ), _shield( shield )
+Armor::Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+			  double weight, World& world, int x, int y, Size s) :
+	Item(t, weight, world, ac * 5 , x, y, s), _ac(ac),
+	_maxDexBon(maxDexBon), _checkPenalty(checkPenalty), _shield(shield)
 {
 }
 

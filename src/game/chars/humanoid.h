@@ -26,25 +26,25 @@ class Item;
 class Humanoid : public Character
 {
 private:
-	Item* _mainHand { nullptr };
-	Item* _offHand { nullptr };
+	Item* _mainHand {nullptr};
+	Item* _offHand {nullptr};
 
 public:
-	Humanoid( const Tile& t, int hp, int x, int y, double speed,
-			  int visionRange, const array<int, noOfAttributes>& attributes,
-			  World& world, Attack* unarmed,
-			  const list<Item*>& inventory = {},
-			  int bab = 0, Size s = Size::medium, int naturalArmor = 0 );
+	Humanoid(const Tile& t, int hp, int x, int y, double speed,
+			 int visionRange, const array<int, noOfAttributes>& attributes,
+			 World& world, Attack* unarmed,
+			 const list<Item*>& inventory = {},
+			 int bab = 0, Size s = Size::medium, int naturalArmor = 0);
 
-	void attack( Entity* target );
+	void attack(Entity* target);
 	int armorClass();
-	int attributeMod( Attribute attribute );
+	int attributeMod(Attribute attribute);
 
 	Item* mainHand();
 	Item* offHand();
 
-	void setMainHand( Item* i );
-	void setOffHand( Item* i );
+	void setMainHand(Item* i);
+	void setOffHand(Item* i);
 };
 
 #endif

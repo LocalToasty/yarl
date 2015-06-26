@@ -25,58 +25,58 @@
 
 using namespace std;
 
-Character::Character( const Tile& t, int hp, int x, int y, double speed,
-					  int visionRange,
-                      const array<int, noOfAttributes>& attributes,
-					  World& world, Attack* unarmed,
-					  const list<Item*>& inventory,
-					  int bab, Character:: Size s, int naturalArmor ) :
-	Entity( t, hp, x, y, world, s, naturalArmor, inventory ), _speed( speed ),
-	_attributes( attributes ), _bab( bab ), _unarmed( unarmed ),
-	_visionRange( visionRange )
+Character::Character(const Tile& t, int hp, int x, int y, double speed,
+					 int visionRange,
+                     const array<int, noOfAttributes>& attributes,
+					 World& world, Attack* unarmed,
+					 const list<Item*>& inventory,
+					 int bab, Character:: Size s, int naturalArmor) :
+	Entity(t, hp, x, y, world, s, naturalArmor, inventory), _speed(speed),
+	_attributes(attributes), _bab(bab), _unarmed(unarmed),
+	_visionRange(visionRange)
 {
 }
 
-bool Character::move( int dx, int dy )
+bool Character::move(int dx, int dy)
 {
-	if ( world().passable( x() + dx, y() + dy ) )
+	if (world().passable(x() + dx, y() + dy))
 	{
-		setXY( x() + dx, y() + dy );
+		setXY(x() + dx, y() + dy);
 		return true;
 	}
 
 	return false;
 }
 
-void Character::attack( Entity* target )
+void Character::attack(Entity* target)
 {
 	_lastTarget = target;
-	target->setLastAttacker( this );
+	target->setLastAttacker(this);
 
 	// hit roll
-	int toHitMod = _bab + attributeMod( strength ) + size();
-	if( World::distance( x(), y(), target->x(), target->y() ) <=
+	int toHitMod = _bab + attributeMod(strength) + size();
+	if(World::distance(x(), y(), target->x(), target->y()) <=
 		_unarmed->range() &&
-		rand() % 20 + 1 + toHitMod >= target->armorClass() )
+		rand() % 20 + 1 + toHitMod >= target->armorClass())
 	{
-		world().statusBar().addMessage( attackMessage( target, true ) );
+		world().statusBar().addMessage(attackMessage(target, true));
 
-		int damage = _unarmed->damage() + attributeMod( strength );
+		int damage = _unarmed->damage() + attributeMod(strength);
 
-		if( damage <= 0 )	// hits inflict at least 1 hp damage
+		if(damage <= 0)	// hits inflict at least 1 hp damage
 			damage = 1;
 
-		target->setHp( target->hp() - damage );
+		target->setHp(target->hp() - damage);
 		return;
 	}
 	else	// don't do any damage on miss
-		world().statusBar().addMessage( attackMessage( target, false ) );
+		world().statusBar().addMessage(attackMessage(target, false));
 }
 
-string Character::attackMessage( Entity* target, bool hit, Weapon* w )
+string Character::attackMessage(Entity* target, bool hit, Weapon* w)
 {
 	string msg = "The " + desc();
-	if( hit )
+	if(hit)
 		msg += " hits";
 	else
 		msg += " misses";
@@ -93,12 +93,12 @@ string Character::dieMessage()
 
 bool Character::los(int x, int y, double factor) const
 {
-	return world().los( this->x(), this->y(), x, y, _visionRange * factor );
+	return world().los(this->x(), this->y(), x, y, _visionRange * factor);
 }
 
-bool Character::los( Entity* e )
+bool Character::los(Entity* e)
 {
-	return los( e->x(), e->y() );
+	return los(e->x(), e->y());
 }
 
 // returns a vector with the entities currently seen by the character
@@ -106,20 +106,20 @@ vector<Entity*> Character::seenEntities()
 {
 	vector<Entity*> ents;
 
-	for( Entity* e : world().entities( x() - visionRange(),
+	for(Entity* e : world().entities(x() - visionRange(),
 									   y() - visionRange(),
 									   x() + visionRange() + 1,
-									   y() + visionRange() + 1 ) )
-	if( los( e ) )
-			ents.push_back( e );
+									   y() + visionRange() + 1))
+	if(los(e))
+			ents.push_back(e);
 
 	return ents;
 }
 
 int Character::armorClass()
 {
-	return 10 + attributeMod( dexterity ) + size() + naturalArmor() +
-			( _armor == nullptr ? 0 : _armor->ac() );
+	return 10 + attributeMod(dexterity) + size() + naturalArmor() +
+			(_armor == nullptr ? 0 : _armor->ac());
 }
 
 Attack* Character::unarmed()
@@ -132,34 +132,34 @@ Armor* Character::armor()
 	return _armor;
 }
 
-void Character::setArmor( Armor* armor )
+void Character::setArmor(Armor* armor)
 {
 	_armor = armor;
 }
 
-int Character::attribute( Character::Attribute attribute )
+int Character::attribute(Character::Attribute attribute)
 {
 	return _attributes[attribute];
 }
 
-int Character::attributeMod( Character::Attribute attribute )
+int Character::attributeMod(Character::Attribute attribute)
 {
-	int bonus = ( _attributes[attribute] - 10 ) / 2;
+	int bonus = (_attributes[attribute] - 10) / 2;
 
-	if( _armor )
+	if(_armor)
 	{
-		if( ( attribute == dexterity || attribute == strength ) )
+		if((attribute == dexterity || attribute == strength))
 		{
-			if( _armor )
+			if(_armor)
 				bonus += _armor->checkPenalty();
 
 			bonus += loadCheckPenalty();
 		}
-		if( attribute == dexterity )
+		if(attribute == dexterity)
 		{
-			if( bonus > _armor->maxDexBon() )
+			if(bonus > _armor->maxDexBon())
 				bonus = _armor->maxDexBon();
-			if( bonus > loadMaxDexBon() )
+			if(bonus > loadMaxDexBon())
 				bonus = loadMaxDexBon();
 		}
 	}
@@ -181,7 +181,7 @@ double Character::inventoryWeight()
 {
 	double weight = 0;
 
-	for( Item* i : inventory() )
+	for(Item* i : inventory())
 	{
 		weight += i->weight();
 	}
@@ -201,21 +201,21 @@ double Character::mediumLoad()
 
 double Character::heavyLoad()
 {
-	if( attribute( strength ) <= 10 )
-		return 10 * attribute( strength );
+	if(attribute(strength) <= 10)
+		return 10 * attribute(strength);
 	else
-		return 25 * pow( 2, attribute( strength ) / 5 );
+		return 25 * pow(2, attribute(strength) / 5);
 }
 
 Character::Load Character::load()
 {
 	double weight = inventoryWeight();
 
-	if( weight > heavyLoad() )
+	if(weight > heavyLoad())
 		return Load::overloaded;
-	else if( weight > mediumLoad() )
+	else if(weight > mediumLoad())
 		return Load::heavy;
-	else if( weight > lightLoad() )
+	else if(weight > lightLoad())
 		return Load::medium;
 	else
 		return Load::light;
@@ -223,7 +223,7 @@ Character::Load Character::load()
 
 int Character::loadMaxDexBon()
 {
-	switch( load() )
+	switch(load())
 	{
 	case Load::light:
 		return 999;	// no dex restriction
@@ -241,7 +241,7 @@ int Character::loadMaxDexBon()
 
 int Character::loadCheckPenalty()
 {
-	switch( load() )
+	switch(load())
 	{
 	case Load::light:
 		return 0;
@@ -260,7 +260,7 @@ Entity* Character::lastTarget() const
 	return _lastTarget;
 }
 
-void Character::setLastTarget( Entity* lastTarget )
+void Character::setLastTarget(Entity* lastTarget)
 {
 	_lastTarget = lastTarget;
 }

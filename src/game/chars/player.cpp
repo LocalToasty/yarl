@@ -20,27 +20,27 @@
 #include "character.h"
 #include "world.h"
 
-Player::Player( const Tile& t, int hp, int x, int y, double speed,
-				int visionRange, array<int, noOfAttributes>& attributes,
-				World& world, Attack* unarmed,
-				const list<Item*>& inventory, int bab, Size s,
-				int naturalArmor ) :
-	Humanoid( t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-			  inventory, bab, s, naturalArmor )
+Player::Player(const Tile& t, int hp, int x, int y, double speed,
+			   int visionRange, array<int, noOfAttributes>& attributes,
+			   World& world, Attack* unarmed,
+			   const list<Item*>& inventory, int bab, Size s,
+			   int naturalArmor) :
+	Humanoid(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
+			 inventory, bab, s, naturalArmor)
 {
 }
 
-string Player::attackMessage( Entity* target, bool hit, Weapon* w )
+string Player::attackMessage(Entity* target, bool hit, Weapon* w)
 {
 	string msg = "You ";
-	if( hit )
+	if(hit)
 		msg += "hit";
 	else
 		msg += "miss";
 
 	msg += " the " + target->desc();
 
-	if( w )
+	if(w)
 		msg += " with your " + w->desc();
 
 	msg += '.';

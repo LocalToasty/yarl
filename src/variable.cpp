@@ -26,18 +26,18 @@
 
 using namespace std;
 
-Variable::Variable( std::string def, std::string desc ) :
-	_val( def ), _def( def ), _desc( desc )
+Variable::Variable(std::string def, std::string desc) :
+	_val(def), _def(def), _desc(desc)
 
 {
 }
 
-void Variable::operator=( string val )
+void Variable::operator=(string val)
 {
 	_val = val;
 }
 
-void Variable::operator=( int val )
+void Variable::operator=(int val)
 {
 #ifdef __MINGW32__
 	// to_string method doesn't work in current versions of MinGW
@@ -46,7 +46,7 @@ void Variable::operator=( int val )
 	ss >> _val;
 
 #else
-	_val = to_string( val );
+	_val = to_string(val);
 #endif
 }
 
@@ -60,19 +60,19 @@ string Variable::toString()
 int Variable::toInt()
 {
 #ifdef __MINGW32__
-	return atoi( _val.c_str() );
+	return atoi(_val.c_str());
 #else
 	try
 	{
-		return stoi( _val );
+		return stoi(_val);
 	}
-	catch ( invalid_argument )	// _val is not an int
+	catch (invalid_argument)	// _val is not an int
 	{
 		try
 		{
-			return stoi( _def );
+			return stoi(_def);
 		}
-		catch ( invalid_argument )	// _def is not an int
+		catch (invalid_argument)	// _def is not an int
 		{
 			return 0;
 		}

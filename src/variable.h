@@ -33,11 +33,11 @@ private:
 public:
 	Variable(string def = "", string desc = "");
 
-	void	operator=(string val);
-	void	operator=(int val);
+	void operator=(string val);
+	void operator=(int val);
 
-	string	toString();
-	int		toInt();
+	string toString();
+	int	 toInt();
 };
 
 #endif

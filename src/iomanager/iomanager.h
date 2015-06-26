@@ -46,29 +46,29 @@ public:
 	virtual int height() = 0;
 
 	// turn the cursor on or off
-	virtual void cursor( bool val ) = 0;
+	virtual void cursor(bool val) = 0;
 
 	// cursor coordinates
 	virtual int cursorX() = 0;
 	virtual int cursorY() = 0;
 
 	// replace the character at the current cursor location
-	virtual void addChar( char c, Color col = Color::white ) = 0;
+	virtual void addChar(char c, Color col = Color::white) = 0;
 	// write a string of characters
-	virtual void addString( string s, Color col = Color::white ) = 0;
+	virtual void addString(string s, Color col = Color::white) = 0;
 
 	// move the cursor to the given coordinates
-	virtual void moveCursor( int x, int y ) = 0;
+	virtual void moveCursor(int x, int y) = 0;
 
 	// combined functions
-	virtual void moveAddChar( int x, int y, char c, Color col = Color::white );
-	virtual void moveAddString( int x, int y, string s,
-								Color col = Color::white );
+	virtual void moveAddChar(int x, int y, char c, Color col = Color::white);
+	virtual void moveAddString(int x, int y, string s,
+								Color col = Color::white);
 
 	// read one character from the keyboard
 	virtual char getChar() = 0;
 
-	virtual void clear( int x = 0, int y = 0, int w = -1, int h = -1 ) = 0;
+	virtual void clear(int x = 0, int y = 0, int w = -1, int h = -1) = 0;
 
 	// show all changes made to the streambuffer
 	virtual void refreshScreen() = 0;

@@ -42,20 +42,20 @@ void Entity::setMaxHp(int maxHp)
 {
 	_maxHp = maxHp;
 }
-Entity::Entity( const Tile& t, int hp, int x, int y, World& world, Size s,
-				int naturalArmor, const list<Item*>& inventory ) :
-	_t( t ), _x( x ), _y( y ), _hp( hp ), _maxHp( hp ), _world( world ),
-	_s( s ), _naturalArmor( naturalArmor ), _inventory( inventory )
+Entity::Entity(const Tile& t, int hp, int x, int y, World& world, Size s,
+				int naturalArmor, const list<Item*>& inventory) :
+	_t(t), _x(x), _y(y), _hp(hp), _maxHp(hp), _world(world),
+	_s(s), _naturalArmor(naturalArmor), _inventory(inventory)
 {
-	_sector = world.sector( x, y );
+	_sector = world.sector(x, y);
 
-	if( _sector )
-		_sector->addEntity( this );
+	if(_sector)
+		_sector->addEntity(this);
 }
 
 Entity::~Entity()
 {
-	if( _sector )
+	if(_sector)
 		_sector->removeEntity(this);
 }
 
@@ -134,32 +134,32 @@ list<Item*>& Entity::inventory()
 	return _inventory;
 }
 
-void Entity::setX( int x )
+void Entity::setX(int x)
 {
 	_x = x;
-	setSector( _world.sector( _x, _y ) );
+	setSector(_world.sector(_x, _y));
 }
 
-void Entity::setY( int y )
+void Entity::setY(int y)
 {
 	_y = y;
-	setSector( _world.sector( _x, _y ) );
+	setSector(_world.sector(_x, _y));
 }
 
 void Entity::setXY(int x, int y)
 {
 	_x = x;
 	_y = y;
-	setSector( _world.sector( _x, _y ) );
+	setSector(_world.sector(_x, _y));
 }
 
-void Entity::setSector( Sector* sector )
+void Entity::setSector(Sector* sector)
 {
-	if( _sector != nullptr )
-		_sector->removeEntity( this );
+	if(_sector != nullptr)
+		_sector->removeEntity(this);
 
-	if( sector != nullptr )
-		sector->addEntity( this );
+	if(sector != nullptr)
+		sector->addEntity(this);
 
 	_sector = sector;
 }
@@ -183,12 +183,12 @@ void Entity::setHp(int hp)
 {
 	if (hp <= 0)
 	{
-		_world.statusBar().addMessage( dieMessage() );
+		_world.statusBar().addMessage(dieMessage());
 		// drop inventory
 		for (Item* e : _inventory)
 		{
-			e->setXY( _x, _y );
-			e->setSeen( false );
+			e->setXY(_x, _y);
+			e->setSeen(false);
 		}
 
 		_sector->removeEntity(this);
@@ -196,7 +196,7 @@ void Entity::setHp(int hp)
 	_hp = hp;
 }
 
-void Entity::doDamage( int dmg )
+void Entity::doDamage(int dmg)
 {
-	setHp( _hp - dmg );
+	setHp(_hp - dmg);
 }

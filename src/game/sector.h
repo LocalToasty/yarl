@@ -52,17 +52,17 @@ public:
 	static int size();
 
 	const list<Entity*>& entities() const;
-	vector<Entity*> entities( int x, int y ) const;
-	void addEntity( Entity* e );
-	void removeEntity( Entity* e );
+	vector<Entity*> entities(int x, int y) const;
+	void addEntity(Entity* e);
+	void removeEntity(Entity* e);
 
-	Tile* tile( int x, int y );
-	void setTile( int x, int y, Tile* tile );
+	Tile* tile(int x, int y);
+	void setTile(int x, int y, Tile* tile);
 
-	bool passable( int x, int y );
+	bool passable(int x, int y);
 
-	bool explored( int x, int y );
-	void setExplored( int x, int y, bool explored = true );
+	bool explored(int x, int y);
+	void setExplored(int x, int y, bool explored = true);
 };
 
 #endif

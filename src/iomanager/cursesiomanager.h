@@ -24,25 +24,25 @@
 class CursesIOManager : public IOManager
 {
 private:
-	short cp( Color col );
+	short cp(Color col);
 
 public:
-    CursesIOManager( bool usecolor = true, bool cursor = false );
+    CursesIOManager(bool usecolor = true, bool cursor = false);
 	~CursesIOManager();
 
 	int width();
 	int height();
 
-	void cursor( bool val );
+	void cursor(bool val);
 
-	void addChar( char c, Color col = Color::white );
-	void addString( string s, Color col = Color::white );
+	void addChar(char c, Color col = Color::white);
+	void addString(string s, Color col = Color::white);
 
 	void moveCursor(int x, int y);
 
 	char getChar();
 
-    void clear( int x, int y, int w, int h );
+    void clear(int x, int y, int w, int h);
 
 	void refreshScreen();
 };

@@ -25,49 +25,49 @@ using namespace std;
 const int SDLIOManager::_defaultWidth = 80;
 const int SDLIOManager::_defaultHeight = 50;
 
-Uint32 SDLIOManager::color( Color col )
+Uint32 SDLIOManager::color(Color col)
 {
-	SDL_Surface* screen = SDL_GetWindowSurface( _window );
+	SDL_Surface* screen = SDL_GetWindowSurface(_window);
 
-	if( !_useColor )
-		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
+	if(!_useColor)
+		return SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
 
-	switch( col )
+	switch(col)
 	{
 	case Color::black:
-		return SDL_MapRGB( screen->format, 0x00, 0x00, 0x00 );
+		return SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
 
 	case Color::red:
-		return SDL_MapRGB( screen->format, 0xff, 0x00, 0x00 );
+		return SDL_MapRGB(screen->format, 0xff, 0x00, 0x00);
 
 	case Color::green:
-		return SDL_MapRGB( screen->format, 0x00, 0xff, 0x00 );
+		return SDL_MapRGB(screen->format, 0x00, 0xff, 0x00);
 
 	case Color::yellow:
-		return SDL_MapRGB( screen->format, 0xff, 0xff, 0x00 );
+		return SDL_MapRGB(screen->format, 0xff, 0xff, 0x00);
 
 	case Color::blue:
-		return SDL_MapRGB( screen->format, 0x00, 0x00, 0xff );
+		return SDL_MapRGB(screen->format, 0x00, 0x00, 0xff);
 
 	case Color::magenta:
-		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
+		return SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
 
 	case Color::cyan:
-		return SDL_MapRGB( screen->format, 0x00, 0xff, 0xff );
+		return SDL_MapRGB(screen->format, 0x00, 0xff, 0xff);
 
 	default:
 	case Color::white:
-		return SDL_MapRGB( screen->format, 0xff, 0xff, 0xff );
+		return SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
 	}
 }
 
-SDLIOManager::SDLIOManager( bool usecolor, bool cursor, const char* charset ) :
-	_cursorOn( cursor ), _useColor( usecolor )
+SDLIOManager::SDLIOManager(bool usecolor, bool cursor, const char* charset) :
+	_cursorOn(cursor), _useColor(usecolor)
 {
-	_characters = vector<char>( _width * _height, ' ' );
-	_colors = vector<Color>( _width * _height, Color::white );
+	_characters = vector<char>(_width * _height, ' ');
+	_colors = vector<Color>(_width * _height, Color::white);
 
-	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
 	{
 		cerr << "Error while initializing SDL: " << SDL_GetError() << endl;
 		return; // TODO
@@ -75,7 +75,7 @@ SDLIOManager::SDLIOManager( bool usecolor, bool cursor, const char* charset ) :
 
 	SDL_Surface* tmpCharset = SDL_LoadBMP(charset);
 
-	if ( tmpCharset == nullptr )
+	if (tmpCharset == nullptr)
 	{
 		cerr << "Error while trying to open char set: "
 			 << SDL_GetError() << endl;
@@ -85,31 +85,31 @@ SDLIOManager::SDLIOManager( bool usecolor, bool cursor, const char* charset ) :
 	_charWidth = tmpCharset->w / 16;
 	_charHeight = tmpCharset->h / 8;
 
-	_window = SDL_CreateWindow( "yarl",
+	_window = SDL_CreateWindow("yarl",
 								SDL_WINDOWPOS_UNDEFINED,
 								SDL_WINDOWPOS_UNDEFINED,
 								_defaultWidth * _charWidth,
 								_defaultHeight * _charHeight,
-								SDL_WINDOW_SHOWN );
+								SDL_WINDOW_SHOWN);
 
-	if ( _window == nullptr )
+	if (_window == nullptr)
 	{
 		cerr << "Error while opening window: "
 			 << SDL_GetError() << endl;
 		return; // TODO
 	}
 
-	SDL_Surface* screen = SDL_GetWindowSurface( _window );
+	SDL_Surface* screen = SDL_GetWindowSurface(_window);
 
 	// optimise charset format
-	_charset = SDL_ConvertSurface( tmpCharset, screen->format, 0 );
-	SDL_FreeSurface( tmpCharset );
+	_charset = SDL_ConvertSurface(tmpCharset, screen->format, 0);
+	SDL_FreeSurface(tmpCharset);
 }
 
 SDLIOManager::~SDLIOManager()
 {
-	SDL_DestroyWindow( _window );
-	SDL_FreeSurface( _charset );
+	SDL_DestroyWindow(_window);
+	SDL_FreeSurface(_charset);
 
 	SDL_Quit();
 }
@@ -124,7 +124,7 @@ int SDLIOManager::height()
 	return _height;
 }
 
-void SDLIOManager::cursor( bool val )
+void SDLIOManager::cursor(bool val)
 {
 	_cursorOn = val;
 }
@@ -139,38 +139,38 @@ int SDLIOManager::cursorY()
 	return _cursY;
 }
 
-void SDLIOManager::addChar( char c, Color col )
-{	
-_characters.at( _cursX + _width * _cursY ) = c;
-	_colors.at( _cursX + _width * _cursY ) = col;
+void SDLIOManager::addChar(char c, Color col)
+{
+_characters.at(_cursX + _width * _cursY) = c;
+	_colors.at(_cursX + _width * _cursY) = col;
 
 	_cursX++;
 
-	if ( _cursX > _width )
+	if (_cursX > _width)
 	{
 		_cursX = 0;
 		_cursY++;
 	}
 }
 
-void SDLIOManager::addString( string s, Color col )
+void SDLIOManager::addString(string s, Color col)
 {
-	for ( char c : s )
-		addChar( c, col );
+	for (char c : s)
+		addChar(c, col);
 }
 
-void SDLIOManager::moveCursor( int x, int y )
+void SDLIOManager::moveCursor(int x, int y)
 {
-	if ( x >= _width )
+	if (x >= _width)
 		_cursX = _width;
-	else if ( x < 0 )
+	else if (x < 0)
 		_cursX = 0;
 	else
 		_cursX = x;
 
-	if ( y >= _height )
+	if (y >= _height)
 		_cursY = _height;
-	else if ( y < 0 )
+	else if (y < 0)
 		_cursY = 0;
 	else
 		_cursY = y;
@@ -179,53 +179,53 @@ void SDLIOManager::moveCursor( int x, int y )
 char SDLIOManager::getChar()
 {
 	SDL_Event e;
-	for( ;; )	// getChar has to be blocking
+	for(;;)	// getChar has to be blocking
 	{
-		while( SDL_PollEvent( &e ) )
+		while(SDL_PollEvent(&e))
 		{
-			if( e.type == SDL_QUIT )
+			if(e.type == SDL_QUIT)
 			{
 				return 0;
 			}
 
-			else if( e.type == SDL_KEYDOWN )
+			else if(e.type == SDL_KEYDOWN)
 			{
-				if( e.key.keysym.sym == SDLK_RETURN )
+				if(e.key.keysym.sym == SDLK_RETURN)
 					return '\n';
 				else
-					return ( char ) e.key.keysym.sym;
+					return (char) e.key.keysym.sym;
 			}
 		}
 
-		SDL_Delay( 20 );	// to lower CPU usage
+		SDL_Delay(20);	// to lower CPU usage
 	}
 }
 
-void SDLIOManager::clear( int x, int y, int w, int h )
+void SDLIOManager::clear(int x, int y, int w, int h)
 {
-	for( int i = 0; i < w; i++ )
+	for(int i = 0; i < w; i++)
 	{
-		for( int j = 0; j < h; j++ )
+		for(int j = 0; j < h; j++)
 		{
-			_characters.at( x + i + ( y + j ) * _width ) = ' ';
+			_characters.at(x + i + (y + j) * _width) = ' ';
 		}
 	}
 }
 
 void SDLIOManager::refreshScreen()
 {
-		SDL_Surface* screen = SDL_GetWindowSurface( _window );
+		SDL_Surface* screen = SDL_GetWindowSurface(_window);
 
-		for( int y = 0; y < _height; y++ )
+		for(int y = 0; y < _height; y++)
 		{
-			for( int x = 0; x < _width; x++ )
+			for(int x = 0; x < _width; x++)
 			{
-				char c = _characters.at( x + y * _width );
-				Color col = _colors.at( x + y * _width );
+				char c = _characters.at(x + y * _width);
+				Color col = _colors.at(x + y * _width);
 
 				SDL_Rect ch;
-				ch.x = _charWidth * ( c & 0x0f );
-				ch.y = _charHeight * ( ( c & 0x70 ) >> 4 );
+				ch.x = _charWidth * (c & 0x0f);
+				ch.y = _charHeight * ((c & 0x70) >> 4);
 				ch.w = _charWidth;
 				ch.h = _charHeight;
 
@@ -235,24 +235,24 @@ void SDLIOManager::refreshScreen()
 				pos.w = _charWidth;
 				pos.h = _charHeight;
 
-				if( _cursorOn && _cursX == x && _cursY == y )
+				if(_cursorOn && _cursX == x && _cursY == y)
 				{
-					SDL_SetColorKey( _charset, SDL_TRUE,
-									 SDL_MapRGB( screen->format, 0, 0, 0 ) );
-					SDL_FillRect( screen, &pos,
-								  SDL_MapRGB( screen->format,
-											  0x80, 0x80, 0x80 ) );
+					SDL_SetColorKey(_charset, SDL_TRUE,
+									 SDL_MapRGB(screen->format, 0, 0, 0));
+					SDL_FillRect(screen, &pos,
+								  SDL_MapRGB(screen->format,
+											  0x80, 0x80, 0x80));
 				}
 				else
 				{
-					SDL_SetColorKey( _charset, SDL_TRUE,
-									 SDL_MapRGB( screen->format,
-												 0xff, 0xff,0xff ) );
-					SDL_FillRect( screen, &pos, color( col ) );
+					SDL_SetColorKey(_charset, SDL_TRUE,
+									 SDL_MapRGB(screen->format,
+												 0xff, 0xff,0xff));
+					SDL_FillRect(screen, &pos, color(col));
 				}
-				SDL_BlitSurface (_charset, &ch, screen, &pos );
+				SDL_BlitSurface (_charset, &ch, screen, &pos);
 			}
 		}
 
-	SDL_UpdateWindowSurface( _window );
+	SDL_UpdateWindowSurface(_window);
 }

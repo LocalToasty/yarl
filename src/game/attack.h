@@ -22,11 +22,11 @@
 class Attack
 {
 private:
-	int ( *_damage )();	// damage function
+	int (*_damage)();	// damage function
 	double _range;
 
 public:
-	Attack( int ( *damage )(), double range = 1.5 );
+	Attack(int (*damage)(), double range = 1.5);
 
 	int damage() const;
 	double range() const;

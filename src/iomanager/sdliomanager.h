@@ -44,37 +44,37 @@ private:
 	bool _cursorOn;
 
 	// screen dimensions (in characters)
-	int _width { _defaultWidth };
-	int _height { _defaultHeight };
+	int _width {_defaultWidth};
+	int _height {_defaultHeight};
 
 	// cursor position
-	int _cursX { 0 };
-	int _cursY { 0 };
+	int _cursX {0};
+	int _cursY {0};
 
 	bool _useColor;
 
-	Uint32 color( Color col );
+	Uint32 color(Color col);
 
 public:
-	SDLIOManager( bool usecolor, bool cursor = false,
-				  const char* charset = "charset.bmp" );
+	SDLIOManager(bool usecolor, bool cursor = false,
+				  const char* charset = "charset.bmp");
 	~SDLIOManager();
 
 	int width();
 	int height();
 
-	void cursor( bool val );
+	void cursor(bool val);
 	int cursorX();
 	int cursorY();
 
-	void addChar( char c, Color col = Color::white );
-	void addString( string s, Color col = Color::white );
+	void addChar(char c, Color col = Color::white);
+	void addString(string s, Color col = Color::white);
 
-	void moveCursor( int x, int y );
+	void moveCursor(int x, int y);
 
 	char getChar();
 
-	void clear( int x = 0, int y = 0, int w = -1, int h = -1 );
+	void clear(int x = 0, int y = 0, int w = -1, int h = -1);
 
 	void refreshScreen();
 };

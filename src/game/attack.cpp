@@ -18,8 +18,8 @@
 
 #include "attack.h"
 
-Attack::Attack( int ( *damage )(), double range ) :
-	_damage( damage ), _range( range )
+Attack::Attack(int (*damage)(), double range) :
+	_damage(damage), _range(range)
 {
 }
 

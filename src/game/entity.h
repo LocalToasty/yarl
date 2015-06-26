@@ -61,19 +61,19 @@ private:
 	World& _world;
 	Sector* _sector;
 
-	bool _seen { false };	// has the entity been seen yet?
+	bool _seen {false};	// has the entity been seen yet?
 	// if yes, last known coordinates
 	int _lastKnownX;
 	int _lastKnownY;
 
 	list<Item*>	_inventory;
 
-	Character* _lastAttacker { nullptr };
+	Character* _lastAttacker {nullptr};
 
 public:
-	Entity( const Tile& t, int hp, int x, int y, World& world,
+	Entity(const Tile& t, int hp, int x, int y, World& world,
 			Size s = Size::medium, int naturalArmor = 0,
-			const list<Item*>& inventory = {} );
+			const list<Item*>& inventory = {});
 	virtual ~Entity();
 
 	virtual string dieMessage();
@@ -101,19 +101,19 @@ public:
 
 	list<Item*>& inventory();
 
-	void setX( int x );
-	void setY( int y );
-	void setXY( int x, int y );
-	void setSector( Sector* Sector );
+	void setX(int x);
+	void setY(int y);
+	void setXY(int x, int y);
+	void setSector(Sector* Sector);
 
-	void setSeen( bool seen = true );
+	void setSeen(bool seen = true);
 	void setLastKnownX();
 	void setLastKnownY();
 
-	void setHp( int hp );
-	void doDamage( int dmg );
+	void setHp(int hp);
+	void doDamage(int dmg);
 
-	void setLastAttacker( Character* lastAttacker );
-	void setMaxHp( int maxHp );
+	void setLastAttacker(Character* lastAttacker);
+	void setMaxHp(int maxHp);
 };
 #endif

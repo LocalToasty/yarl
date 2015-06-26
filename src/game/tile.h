@@ -37,9 +37,9 @@ private:
 	bool _passable;
 
 public:
-	Tile( char repr = ' ', Color color = Color::black, string pref = "a",
+	Tile(char repr = ' ', Color color = Color::black, string pref = "a",
 		  string description = "", bool transparent = false,
-		  bool passable = false );
+		  bool passable = false);
 
 	char repr() const;
 	Color color() const;

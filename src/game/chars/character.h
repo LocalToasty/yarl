@@ -54,34 +54,34 @@ private:
 	int _visionRange;
 
 	Attack* _unarmed;
-	Armor* _armor { nullptr };
+	Armor* _armor {nullptr};
 
 	double _speed;
 
 	int _bab;	// base attack bonus
 
-	Entity* _lastTarget { nullptr };
+	Entity* _lastTarget {nullptr};
 
 protected:
 	array<int, noOfAttributes> _attributes;
 
 public:
-	Character( const Tile& t, int hp, int x, int y, double speed,
+	Character(const Tile& t, int hp, int x, int y, double speed,
 			   int visionRange, const array<int, noOfAttributes>& attributes,
 			   World& world, Attack* unarmed,
 			   const list<Item*>& inventory = {},
-			   int bab = 0, Size s = Size::medium, int naturalArmor = 0 );
+			   int bab = 0, Size s = Size::medium, int naturalArmor = 0);
 
-	bool los( int x, int y, double factor = 1 ) const;
-	bool los( Entity* e );
+	bool los(int x, int y, double factor = 1) const;
+	bool los(Entity* e);
 	vector<Entity*> seenEntities();
 
-	bool move( int dx, int dy );
+	bool move(int dx, int dy);
 
-	virtual void attack( Entity* target );
+	virtual void attack(Entity* target);
 
-	virtual string attackMessage( Entity* target, bool hit,
-								  Weapon* w = nullptr );
+	virtual string attackMessage(Entity* target, bool hit,
+								  Weapon* w = nullptr);
 	virtual string dieMessage();
 
 	int armorClass();
@@ -89,11 +89,11 @@ public:
 	Attack* unarmed();
 
 	Armor* armor();
-	void setArmor( Armor* armor );
+	void setArmor(Armor* armor);
 
-	int attribute( Attribute attribute );
-	void setAttribute( Attribute attribute, int value );
-	virtual int attributeMod( Attribute attribute );
+	int attribute(Attribute attribute);
+	void setAttribute(Attribute attribute, int value);
+	virtual int attributeMod(Attribute attribute);
 
 	int visionRange() const;
 	double speed() const;
@@ -110,7 +110,7 @@ public:
 	int loadCheckPenalty();
 
 	Entity* lastTarget() const;
-	void setLastTarget( Entity* lastTarget );
+	void setLastTarget(Entity* lastTarget);
 
 	int bab();
 };

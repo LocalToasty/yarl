@@ -31,9 +31,9 @@ private:
 	bool _shield;
 
 public:
-	Armor( Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-		   double weight, World& world, int x = -1, int y = -1,
-		   Size s = Size::small );
+	Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+		  double weight, World& world, int x = -1, int y = -1,
+		  Size s = Size::small);
 
 	int ac() const;
 	int maxDexBon() const;

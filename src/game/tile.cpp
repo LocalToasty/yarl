@@ -18,11 +18,11 @@
 
 #include "tile.h"
 
-Tile::Tile( char repr, Color color, string prefix, string description,
-			bool transparent, bool passable ) :
-	_repr( repr ), _color( color ), _prefix( prefix ),
-	_description( description ), _transparent( transparent ),
-	_passable( passable )
+Tile::Tile(char repr, Color color, string prefix, string description,
+		   bool transparent, bool passable) :
+	_repr(repr), _color(color), _prefix(prefix),
+	_description(description), _transparent(transparent),
+	_passable(passable)
 {}
 
 bool Tile::transparent() const

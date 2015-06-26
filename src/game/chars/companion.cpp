@@ -22,89 +22,89 @@
 
 using namespace std;
 
-Companion::Companion( const Tile& t, Character* companion,
-					  int hp, int x, int y, double speed, int visionRange,
-					  const array<int, Character::noOfAttributes>& attributes,
-					  World& world, Attack* unarmed,
-					  const list<Item*>& inventory, int bab, Entity::Size s,
-					  int naturalArmor ) :
-	NPC( t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-		 inventory, bab, s, naturalArmor ),
-	_companion( companion )
+Companion::Companion(const Tile& t, Character* companion,
+					 int hp, int x, int y, double speed, int visionRange,
+					 const array<int, Character::noOfAttributes>& attributes,
+					 World& world, Attack* unarmed,
+					 const list<Item*>& inventory, int bab, Entity::Size s,
+					 int naturalArmor) :
+	NPC(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
+		 inventory, bab, s, naturalArmor),
+	_companion(companion)
 {
 }
 
 void Companion::think()
 {
-	if( lastAttacker() != nullptr )
+	if(lastAttacker() != nullptr)
 	{
-		setLastTarget( lastAttacker() );
+		setLastTarget(lastAttacker());
 
-		if( lastTarget() == _companion )
+		if(lastTarget() == _companion)
 			_companion = nullptr;
 	}
-	else if( _companion != nullptr )
+	else if(_companion != nullptr)
 	{
-		if( _companion->lastTarget() != nullptr )
-			setLastTarget( _companion->lastTarget() );
-		else if( _companion->lastAttacker() != nullptr )
-			setLastTarget( _companion->lastAttacker() );
+		if(_companion->lastTarget() != nullptr)
+			setLastTarget(_companion->lastTarget());
+		else if(_companion->lastAttacker() != nullptr)
+			setLastTarget(_companion->lastAttacker());
 	}
 
-	if( lastTarget() != nullptr &&
-		lastTarget()->hp() > 0 && los( lastTarget() ) )
+	if(lastTarget() != nullptr &&
+		lastTarget()->hp() > 0 && los(lastTarget()))
 	{
 		_waypointX = lastTarget()->x();
 		_waypointY = lastTarget()->y();
 	}
-	else if( _companion != nullptr && los( _companion ) )
+	else if(_companion != nullptr && los(_companion))
 	{
-		_waypointX = _companion->x() + ( rand() % 9 ) - 4;
-		_waypointY = _companion->y() + ( rand() % 9 ) - 4;
+		_waypointX = _companion->x() + (rand() % 9) - 4;
+		_waypointY = _companion->y() + (rand() % 9) - 4;
 	}
 
-	if( _waypointX >= 0 && _waypointY >= 0 )
+	if(_waypointX >= 0 && _waypointY >= 0)
 	{
-		if( World::distance( x(), y(), _waypointX, _waypointY ) >
-			unarmed()->range() )
+		if(World::distance(x(), y(), _waypointX, _waypointY) >
+			unarmed()->range())
 		{
-			auto dir = world().route( x(), y(), _waypointX, _waypointY, true );
+			auto dir = world().route(x(), y(), _waypointX, _waypointY, true);
 			Command cmd = dir.front();
 
 			int dx = 0;
 			int dy = 0;
 
-			if( cmd == Command::west ||
+			if(cmd == Command::west ||
 				cmd == Command::northWest ||
-				cmd == Command::southWest )
+				cmd == Command::southWest)
 				dx = -1;
-			else if( cmd == Command::east ||
+			else if(cmd == Command::east ||
 					 cmd == Command::northEast ||
-					 cmd == Command::southEast )
+					 cmd == Command::southEast)
 				dx = 1;
 
-			if( cmd == Command::north ||
+			if(cmd == Command::north ||
 				cmd == Command::northWest ||
-				cmd == Command::northEast )
+				cmd == Command::northEast)
 				dy = -1;
-			else if( cmd == Command::south ||
+			else if(cmd == Command::south ||
 					 cmd == Command::southWest ||
-					 cmd == Command::southEast )
+					 cmd == Command::southEast)
 				dy = 1;
 
-			move( dx, dy );
-			setLastAction( lastAction() +
-						   ( abs( dx ) + abs( dy ) == 1 ? speed()
-														: 1.5 * speed() ) );
+			move(dx, dy);
+			setLastAction(lastAction() +
+						   (abs(dx) + abs(dy) == 1 ? speed()
+														: 1.5 * speed()));
 		}
-		else if( lastTarget() != nullptr && lastTarget()->hp() > 0 )
+		else if(lastTarget() != nullptr && lastTarget()->hp() > 0)
 		{
-			attack( lastTarget() );
-			setLastAction( lastAction() + 2 );
+			attack(lastTarget());
+			setLastAction(lastAction() + 2);
 		}
 	}
 	else
 	{
-		setLastAction( world().time() );
+		setLastAction(world().time());
 	}
 }

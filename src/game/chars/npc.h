@@ -25,19 +25,19 @@
 class NPC : public Character
 {
 private:
-	double _lastAction { 0 };
+	double _lastAction {0};
 
 public:
-	NPC( const Tile& t, int hp, int x, int y, double speed, int visionRange,
-		 const array<int, noOfAttributes>& attributes, World& world,
-		 Attack* unarmed,
-		 const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,
-		 int naturalArmor = 0 );
+	NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+		const array<int, noOfAttributes>& attributes, World& world,
+		Attack* unarmed,
+		const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,
+		int naturalArmor = 0);
 
 	virtual void think() = 0;
 
 	double lastAction() const;
-	void setLastAction( double lastAction );
+	void setLastAction(double lastAction);
 };
 
 #endif

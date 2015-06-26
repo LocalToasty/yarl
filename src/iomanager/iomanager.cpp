@@ -22,15 +22,15 @@ IOManager::~IOManager()
 {
 }
 
-void IOManager::moveAddChar( int x, int y, char c, Color col )
+void IOManager::moveAddChar(int x, int y, char c, Color col)
 {
-	moveCursor( x, y );
-	addChar( c, col );
+	moveCursor(x, y);
+	addChar(c, col);
 }
 
 
-void IOManager::moveAddString( int x, int y, std::string s, Color col )
+void IOManager::moveAddString(int x, int y, std::string s, Color col)
 {
-	moveCursor( x, y );
-	addString( s, col );
+	moveCursor(x, y);
+	addString(s, col);
 }

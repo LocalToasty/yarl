@@ -40,15 +40,15 @@ Sector::~Sector()
 
 // returns true if neither the terrain nor the any entities at the coordinates
 // are implassable.
-bool Sector::passable( int x, int y )
+bool Sector::passable(int x, int y)
 {
 	// check for terrain passability
-	if ( !tile( x, y )->passable() )
+	if (!tile(x, y)->passable())
 		return false;
 
 	// check for entitiy passability
-	for ( Entity* e : entities( x, y ) )
-		if ( !e->t().passable() )
+	for (Entity* e : entities(x, y))
+		if (!e->t().passable())
 			return false;
 
 	return true;
@@ -72,8 +72,8 @@ void Sector::addEntity(Entity* e)
 	// top.
 	auto comp = [](Entity* l, Entity* r)
 	{
-		return ( l->t().passable() && !r->t().passable() ) ||
-			   ( l->t().transparent() && !r->t().transparent() );
+		return (l->t().passable() && !r->t().passable()) ||
+			   (l->t().transparent() && !r->t().transparent());
 	};
 
 	auto pos = lower_bound(_entities.begin(), _entities.end(), e, comp);
@@ -86,13 +86,13 @@ void Sector::removeEntity(Entity* e)
 	_entities.remove(e);
 }
 
-vector<Entity*> Sector::entities( int x, int y ) const
+vector<Entity*> Sector::entities(int x, int y) const
 {
 	vector<Entity*> ents;
 
-	for( Entity* e : _entities )
-		if( e->x() == x && e->y() == y )
-			ents.push_back( e );
+	for(Entity* e : _entities)
+		if(e->x() == x && e->y() == y)
+			ents.push_back(e);
 
 	return ents;
 }
@@ -112,7 +112,7 @@ Tile* Sector::tile(int x, int y)
 	return _tiles.at(x % _size + (y % _size) * _size);
 }
 
-void Sector::setTile( int x, int y, Tile* tile )
+void Sector::setTile(int x, int y, Tile* tile)
 {
 	_tiles.at(x % _size + (y % _size) * _size) = tile;
 }
