@@ -86,6 +86,16 @@ void CursesIOManager::cursor(bool val)
 	curs_set(val);
 }
 
+int CursesIOManager::cursorX()
+{
+	return getcurx(stdscr);
+}
+
+int CursesIOManager::cursorY()
+{
+	return getcury(stdscr);
+}
+
 void CursesIOManager::addChar(char c, Color col)
 {
 	attrset(COLOR_PAIR(cp(col)));
@@ -105,14 +115,21 @@ void CursesIOManager::moveCursor(int x, int y)
 
 char CursesIOManager::getChar()
 {
-    return (char) getch();
+	char c = (char) getch();
+	switch(c)
+	{
+	case 127:
+		return '\b';
+	default:
+		return c;
+	}
 }
 
 void CursesIOManager::clear(int x, int y, int w, int h)
 {
     for(int i = 0; i < w; i++)
-    {
-        move(x, y);
+	{
+		move(y, x + i);
         for(int j = 0; j < h; j++)
         {
             addch(' ');
