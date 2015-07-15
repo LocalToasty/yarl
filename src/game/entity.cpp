@@ -109,6 +109,11 @@ int Entity::lastKnownY() const
 	return _lastKnownY;
 }
 
+string Entity::prefix()
+{
+	return _t.prefix();
+}
+
 string Entity::desc()
 {
 	return _t.desc();

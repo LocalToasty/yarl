@@ -89,6 +89,7 @@ public:
 	int lastKnownX() const;
 	int lastKnownY() const;
 
+	string prefix();
 	string desc();
 
 	int maxHp() const;

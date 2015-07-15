@@ -333,32 +333,47 @@ void Yarl::inventory_render()
 {
 	Player* player = _world->player();
 
-	_iom->moveAddString(0, 0, "Inventory", Color::yellow);
-
 	vector<Weapon*> weapons;
 	vector<Armor*> armor;
 	vector<Item*> misc;
 
+	int maxLen = 0;
+
 	for(Item* i : player->inventory())
 	{
+		int len = i->prefix().length() + i->desc().length();
+
 		if(Weapon* w = dynamic_cast<Weapon*>(i))
 		{
 			weapons.push_back(w);
+
+			if(i == player->mainHand() || i == player->offHand())
+				len += string(" (in both hands)").length();
 		}
 		else if(Armor* a = dynamic_cast<Armor*>(i))
 		{
 			armor.push_back(a);
+
+			if(i == player->mainHand() || i == player->offHand())
+				len += string(" (worn)").length();
 		}
 		else
 		{
 			misc.push_back(i);
 		}
+
+		if(len > maxLen)
+			maxLen = len;
 	}
+
+	_iom->clear(0, 0, maxLen + 3, 1);
+	_iom->moveAddString(0, 0, "Inventory", Color::yellow);
 
 	int row = 1;
 
 	if(!weapons.empty())
 	{
+		_iom->clear(0, row, maxLen + 3, weapons.size() + 1);
 		_iom->moveAddString(1, row, "Weapons", Color::cyan);
 		row++;
 
@@ -382,6 +397,7 @@ void Yarl::inventory_render()
 
 	if(!armor.empty())
 	{
+		_iom->clear(0, row, maxLen + 3, armor.size() + 1);
 		_iom->moveAddString(1, row, "Armor", Color::cyan);
 		row++;
 
@@ -408,6 +424,7 @@ void Yarl::inventory_render()
 
 	if(!misc.empty())
 	{
+		_iom->clear(0, row, maxLen + 3, misc.size() + 1);
 		_iom->moveAddString(1, row, "Miscellaneous", Color::cyan);
 		row++;
 
@@ -417,6 +434,8 @@ void Yarl::inventory_render()
 			row++;
 		}
 	}
+
+	_iom->clear(0, row, maxLen + 3, 1);
 }
 
 void Yarl::drop_render(Player* player)
@@ -432,8 +451,7 @@ void Yarl::drop_render(Player* player)
 		if(it != player->inventory().end())
 		{
 			// if there is, suggest it
-			_iom->addString((*it)->desc().
-							 substr(_buf.size()));
+			_iom->addString((*it)->desc().substr(_buf.size()));
 		}
 
 		_iom->addChar(' ');
