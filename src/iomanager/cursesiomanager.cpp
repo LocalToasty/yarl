@@ -54,7 +54,7 @@ CursesIOManager::CursesIOManager(bool usecolor, bool cursor)
 	initscr();
 	cbreak();
 	noecho();
-    curs_set(cursor);	// no cursor
+	curs_set(cursor);	// no cursor
 
 	// initialize colors
 	if (has_colors() && usecolor)
@@ -127,13 +127,13 @@ char CursesIOManager::getChar()
 
 void CursesIOManager::clear(int x, int y, int w, int h)
 {
-    for(int i = 0; i < w; i++)
+	for(int i = 0; i < w; i++)
 	{
 		move(y, x + i);
-        for(int j = 0; j < h; j++)
-        {
-            addch(' ');
-    	}
+		for(int j = 0; j < h; j++)
+		{
+			addch(' ');
+		}
    }
 }
 
