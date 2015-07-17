@@ -225,6 +225,7 @@ int Character::loadMaxDexBon()
 {
 	switch(load())
 	{
+	default:
 	case Load::light:
 		return 999;	// no dex restriction
 
@@ -243,6 +244,7 @@ int Character::loadCheckPenalty()
 {
 	switch(load())
 	{
+	default:
 	case Load::light:
 		return 0;
 

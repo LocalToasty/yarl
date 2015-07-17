@@ -29,6 +29,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <ctime>
 
 #if USE_SDL == ON
 #include "sdliomanager.h"
@@ -41,7 +42,7 @@ using namespace std;
 bool Yarl::init(int argc, char* argv[])
 {
 	// initialize variables
-	_variables =
+	_variables = map<string, Variable>
 	{
 		{"color",		{"1",	"enable / disable color."}},
 		{"showUnknown",	{"0",	"draw unexplored areas."}},
@@ -50,7 +51,7 @@ bool Yarl::init(int argc, char* argv[])
 		{"name",		{"Advent",	"Name of your character."}}
 	};
 
-	_bindings =
+	_bindings = map<char, Command>
 	{
 		{'h', Command::west},
 		{'l', Command::east},
@@ -242,7 +243,7 @@ bool Yarl::init(int argc, char* argv[])
 	}
 
 #if USE_SDL == ON
-	_iom = new SDLIOManager(_variables["color"].toInt());
+	_iom = new SDLIOManager(_variables["color"].toInt() != 0);
 #else
 	_iom = new CursesIOManager(_variables["color"].toInt());
 #endif
@@ -635,14 +636,12 @@ void Yarl::drop_logic(char input, Player* player)
 				}
 
 				// drop item
-				_world->statusBar().
-						addMessage("You dropped your " +
-									(*it)->desc() + '.');
+				_world->statusBar().addMessage("You dropped your " + (*it)->desc() + '.');
 
 				Character::Load before = player->load();
 
-				player->inventory().remove(*it);
 				(*it)->setXY(player->x(), player->y());
+				player->inventory().remove(*it);
 
 				Character::Load after = player->load();
 				if(after != before)
