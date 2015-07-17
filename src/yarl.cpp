@@ -257,8 +257,7 @@ bool Yarl::init(int argc, char* argv[])
 	return true;
 }
 
-list<Item*>::iterator getItemWithName(string name, list<Item*>::iterator it,
-									   list<Item*>::iterator end)
+list<Item*>::iterator getItemByName(string name, list<Item*>::iterator it, list<Item*>::iterator end)
 {
 	while(it != end)
 	{
@@ -308,7 +307,7 @@ void Yarl::world_render(Player* player, int width, int height)
 	// render entities
 	for(Entity* e :
 		 _world->entities(player->x() - width / 2, player->y() - height / 2,
-						   player->x() + width / 2, player->y() + height / 2))
+						  player->x() + width / 2, player->y() + height / 2))
 	{
 		if(player->los(e))
 		{
@@ -355,8 +354,17 @@ void Yarl::inventory_render()
 		{
 			armor.push_back(a);
 
-			if(i == player->mainHand() || i == player->offHand())
+			if (player->armor() == a)
 				len += string(" (worn)").length();
+			else if (player->mainHand() == a)
+			{
+				if (player->offHand() == a)
+					len += string(" (in both hands)").length();
+				else
+					len += string(" (in main hand)").length();
+			}
+			else if (player->offHand() == a)
+				len += string(" (in off hand)").length();
 		}
 		else
 		{
@@ -446,13 +454,28 @@ void Yarl::drop_render(Player* player)
 
 	if(!_buf.empty())
 	{
-		auto it = getItemWithName(_buf, player->inventory().begin(),
-								   player->inventory().end());
+		auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
+		for (int i = 0; i < _x; i++)
+			it = getItemByName(_buf, ++it, player->inventory().end());
+
 		// check if there is an item with a similar name in the inventory
 		if(it != player->inventory().end())
 		{
 			// if there is, suggest it
 			_iom->addString((*it)->desc().substr(_buf.size()));
+			
+			if(dynamic_cast<Weapon*>(*it))
+			{
+				if (player->mainHand() == *it)
+				{
+					if (player->offHand() == *it)
+						_iom->addString(" (in both hands)");
+					else
+						_iom->addString(" (in main hand)");
+				}
+				else if (player->offHand() == *it)
+					_iom->addString(" (in off hand)");
+			}
 		}
 
 		_iom->addChar(' ');
@@ -467,14 +490,12 @@ void Yarl::equip_render(Player* player)
 	if(!_buf.empty())
 	{
 		// check if there is an item with a similar name in the inventory
-		for(auto it = getItemWithName(_buf, player->inventory().begin(),
+		for(auto it = getItemByName(_buf, player->inventory().begin(),
 										player->inventory().end());
 			 it != player->inventory().end();
-			 it = getItemWithName(_buf, ++it,
-								   player->inventory().end()))
+			 it = getItemByName(_buf, ++it, player->inventory().end()))
 		{
-			if(dynamic_cast<Armor*>(*it) ||
-				dynamic_cast<Weapon*>(*it))
+			if(dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it))
 			{
 				_iom->addString((*it)->desc().substr(_buf.size()));
 				break;
@@ -493,11 +514,11 @@ void Yarl::unequip_render(Player* player)
 	if(!_buf.empty())
 	{
 		// check if there is an item with a similar name in the inventory
-		for(auto it = getItemWithName(_buf,
+		for(auto it = getItemByName(_buf,
 										player->inventory().begin(),
 										player->inventory().end());
 			 it != player->inventory().end();
-			 it = getItemWithName(_buf, ++it,
+			 it = getItemByName(_buf, ++it,
 								   player->inventory().end()))
 		{
 			if(*it == player->mainHand() ||
@@ -558,8 +579,7 @@ void Yarl::charInfo_render(Player* player, int width, int height)
 	ss >> buf;
 	_iom->moveAddString(22, height - 1, "AC: " + buf);
 #else
-	_iom->moveAddString(22, height - 1, "AC: " +
-						 to_string(player->armorClass()));
+	_iom->moveAddString(22, height - 1, "AC: " + to_string(player->armorClass()));
 #endif
 
 	// load
@@ -585,9 +605,7 @@ void Yarl::render()
 	// render status bar
 	if(!_world->statusBar().empty())
 	{
-		_iom->moveAddString(0, 0,
-							 _world->statusBar().
-								getLine(_iom->width()).c_str());
+		_iom->moveAddString(0, 0, _world->statusBar().getLine(_iom->width()).c_str());
 		if(!_world->statusBar().empty())
 			_state = State::moreMessages;
 	}
@@ -624,11 +642,27 @@ void Yarl::drop_logic(char input, Player* player)
 	{
 		if(!_buf.empty())
 			_buf.pop_back();
+
+		return;
+	}
+
+	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
+	for (int i = 0; i < _x; i++)
+		it = getItemByName(_buf, ++it, player->inventory().end());
+	
+	if (input == '\t')	// tab switches through possible items
+	{
+		if (it != player->inventory().end())
+		{
+			it = getItemByName(_buf, ++it, player->inventory().end());
+			if (it != player->inventory().end())
+				_x++;
+			else
+				_x = 0;
+		}
 	}
 	else if(input == '\n')
 	{
-		auto it = getItemWithName(_buf, player->inventory().begin(),
-								   player->inventory().end());
 		if(_buf.empty())
 		{
 			_world->statusBar().addMessage("Never mind.");
@@ -638,8 +672,7 @@ void Yarl::drop_logic(char input, Player* player)
 			if(player->armor() == *it)
 			{
 				// you have to take off armor before you can drop armor
-				_world->statusBar().
-						addMessage("You cannot drop worn armor.");
+				_world->statusBar().addMessage("You cannot drop worn armor.");
 			}
 			else
 			{
@@ -670,8 +703,7 @@ void Yarl::drop_logic(char input, Player* player)
 							addMessage("Your are now unencumbered.");
 					if(after == Character::Load::medium)
 						_world->statusBar().
-							addMessage("Your movements are now "
-										"encumbered.");
+							addMessage("Your movements are now encumbered.");
 					else if(after == Character::Load::heavy)
 						_world->statusBar().
 							addMessage("You are burdened by your load.");
@@ -708,8 +740,7 @@ void Yarl::equip_logic(char input, Player* player)
 		}
 		else
 		{
-			auto it = getItemWithName(_buf, player->inventory().begin(),
-									   player->inventory().end());
+			auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
 			if(it != player->inventory().end())
 			{
 				Armor* a = dynamic_cast<Armor*>(*it);
@@ -717,8 +748,7 @@ void Yarl::equip_logic(char input, Player* player)
 				{
 					if(player->armor())
 					{
-						_world->statusBar().
-							addMessage("You are already wearing armor.");
+						_world->statusBar().addMessage("You are already wearing armor.");
 					}
 					else
 					{
@@ -751,7 +781,7 @@ void Yarl::equip_logic(char input, Player* player)
 
 void Yarl::equip_selectHand_logic(char input, Player* player)
 {
-	auto it = getItemWithName(_buf, player->inventory().begin(),
+	auto it = getItemByName(_buf, player->inventory().begin(),
 							   player->inventory().end());
 
 	if(it != player->inventory().end())
@@ -845,11 +875,11 @@ void Yarl::unequip_logic(char input, Player* player)
 		}
 		else
 		{
-			for(auto it = getItemWithName(_buf,
+			for(auto it = getItemByName(_buf,
 											player->inventory().begin(),
 											player->inventory().end());
 				 it != player->inventory().end();
-				 it = getItemWithName(_buf, ++it,
+				 it = getItemByName(_buf, ++it,
 									   player->inventory().end()))
 			{
 				if(player->mainHand() == *it)
@@ -1092,6 +1122,7 @@ bool Yarl::logic()
 	else if(cmd == Command::drop)
 	{
 		_buf.clear();	// clear previous buffer
+		_x = 0;	// tab-count
 		_state = State::drop;
 	}
 	else if(cmd == Command::inventory)
