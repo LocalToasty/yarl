@@ -760,8 +760,7 @@ void Yarl::equip_logic(char input, Player* player)
 					_state = State::equip_selectHand;
 				else	// item not equippable
 				{
-					_world->statusBar().
-						addMessage("You have no such item.");
+					_world->statusBar().addMessage("You have no such item.");
 					_state = State::def;
 				}
 			}
@@ -781,63 +780,77 @@ void Yarl::equip_logic(char input, Player* player)
 
 void Yarl::equip_selectHand_logic(char input, Player* player)
 {
-	auto it = getItemByName(_buf, player->inventory().begin(),
-							   player->inventory().end());
+	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
 
 	if(it != player->inventory().end())
 	{
 		if(input == 'm')	// main hand
 		{
-			if(player->mainHand() && player->mainHand() != *it &&
-				player->mainHand() != player->offHand())
+			// check if the weapon is already equipped
+			if (player->mainHand() == *it && player->offHand() != *it)
 			{
-				_world->statusBar().
-					addMessage("You have to unequip your " +
-								player->mainHand()->desc() + " first.");
+				_world->statusBar().addMessage("You are already holding the " +
+					(*it)->desc() + " in your main hand.");
+			}
+			// check if the player is already wielding another weapon
+			else if(player->mainHand() && player->mainHand() != player->offHand())
+			{
+				_world->statusBar().addMessage("You have to unequip your " +
+					player->mainHand()->desc() + " first.");
 			}
 			else
 			{
+				// check if the character was wielding the weapon two-handed before
+				if (player->offHand() == *it)
+					player->setOffHand(nullptr);
+
 				player->setMainHand(*it);
-				_world->statusBar().
-					addMessage("You now hold the " + (*it)->desc() +
-								" in your main hand.");
+				_world->statusBar().addMessage("You are now holding the " + (*it)->desc() +
+					" in your main hand.");
 			}
 		}
 		else if(input == 'o')	// off hand
 		{
-			if(player->offHand() &&
-				player->offHand() != player->mainHand())
+			if (player->offHand() == *it && player->mainHand() != *it)
 			{
-				_world->statusBar().
-					addMessage("You have to unequip your " +
-								player->offHand()->desc() + " first.");
+				_world->statusBar().addMessage("You are already holding the " +
+					(*it)->desc() + " in your off hand.");
+			}
+			else if(player->offHand() && player->offHand() != player->mainHand())
+			{
+				_world->statusBar().addMessage("You have to unequip your " +
+					player->offHand()->desc() + " first.");
 			}
 			else
 			{
+				// if the char was wielding the weapon two handed before, he now doesn't
+				if (player->mainHand() == *it)
+					player->setMainHand(nullptr);
+
 				player->setOffHand(*it);
 				_world->statusBar().
-					addMessage("You now hold the " + (*it)->desc() +
+					addMessage("You are now holding the " + (*it)->desc() +
 								" in your off hand.");
 			}
 		}
 		else if(input == 'b')
 		{
-			if(player->mainHand() || player->offHand())
+			// check if any hands are blocked by other items
+			string items;
+
+			if (player->mainHand() && player->mainHand() != *it)
+				items += player->mainHand()->desc();
+
+			if (player->offHand() && player->offHand() != *it)
 			{
-				string items;
+				if(!items.empty())
+					items += " and your ";
 
-				if(player->mainHand())
-					items += player->mainHand()->desc();
+				items += player->offHand()->desc();
+			}
 
-				if(player->offHand() &&
-					player->offHand() != player->mainHand())
-				{
-					if(!items.empty())
-						items += " and your ";
-
-					items += player->offHand()->desc();
-				}
-
+			if (!items.empty())
+			{
 				_world->statusBar().
 					addMessage("You have to unequip your " + items +
 								" first.");
@@ -847,7 +860,7 @@ void Yarl::equip_selectHand_logic(char input, Player* player)
 				player->setMainHand(*it);
 				player->setOffHand(*it);
 				_world->statusBar().
-					addMessage("You now hold the " + (*it)->desc() +
+					addMessage("You are now holding the " + (*it)->desc() +
 								" in both hands.");
 			}
 		}
