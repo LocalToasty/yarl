@@ -20,6 +20,7 @@
 #include "world.h"
 #include "sector.h"
 #include "yarlconfig.h"
+#include "player.h"
 #include <cstdlib>
 #include <cmath>	// for pow
 
@@ -77,11 +78,14 @@ string Character::attackMessage(Entity* target, bool hit, Weapon* w)
 {
 	string msg = "The " + desc();
 	if(hit)
-		msg += " hits";
+		msg += " hits ";
 	else
-		msg += " misses";
+		msg += " misses ";
 
-	msg += " the " + target->desc() + '.';
+	if (!dynamic_cast<Player*>(target))
+		msg += "the ";
+
+	msg += target->desc() + '.';
 
 	return msg;
 }
