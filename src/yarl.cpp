@@ -138,7 +138,7 @@ bool Yarl::init(int argc, char* argv[])
 				 "It is free software,\nand you are welcome to "
 				 "redistribute it under certain conditions.\n"
 				 "For further information consult the GNU GPL version 3 or "
-				 "later\n<http://gnu.org/licenses/>\n\n";
+				 "later\n<http://gnu.org/licenses/>\n";
 			return false;
 		}
 
@@ -487,22 +487,38 @@ void Yarl::equip_render(Player* player)
 	_iom->moveAddString(0, 0, "What do you want to equip? ");
 	_iom->addString(_buf, Color::cyan);
 
-	if(!_buf.empty())
+	if (!_buf.empty())
 	{
-		// check if there is an item with a similar name in the inventory
-		for(auto it = getItemByName(_buf, player->inventory().begin(),
-										player->inventory().end());
-			 it != player->inventory().end();
-			 it = getItemByName(_buf, ++it, player->inventory().end()))
+		auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
+		if (it != player->inventory().end())
 		{
-			if(dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it))
+			for (int i = 0; i < _x; i++)
 			{
-				_iom->addString((*it)->desc().substr(_buf.size()));
-				break;
+				while (it != player->inventory().end())
+				{
+					it = getItemByName(_buf, ++it, player->inventory().end());
+					if (it != player->inventory().end() && (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it)))
+						break;
+				}
 			}
-		}
 
-		_iom->addChar(' ');
+			_iom->addString((*it)->desc().substr(_buf.size()));
+
+			if (dynamic_cast<Weapon*>(*it))
+			{
+				if (player->mainHand() == *it)
+				{
+					if (player->offHand() == *it)
+						_iom->addString(" (in both hands)");
+					else
+						_iom->addString(" (in main hand)");
+				}
+				else if (player->offHand() == *it)
+					_iom->addString(" (in off hand)");
+			}
+
+			_iom->addChar(' ');
+		}
 	}
 }
 
@@ -514,14 +530,11 @@ void Yarl::unequip_render(Player* player)
 	if(!_buf.empty())
 	{
 		// check if there is an item with a similar name in the inventory
-		for(auto it = getItemByName(_buf,
-										player->inventory().begin(),
-										player->inventory().end());
+		for (auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
 			 it != player->inventory().end();
-			 it = getItemByName(_buf, ++it,
-								   player->inventory().end()))
+			 it = getItemByName(_buf, ++it, player->inventory().end()))
 		{
-			if(*it == player->mainHand() ||
+			if (*it == player->mainHand() ||
 				*it == player->offHand() ||
 				*it == player->armor())
 			{
@@ -619,7 +632,7 @@ void Yarl::render()
 		drop_render(player);
 
 	// equip prompt
-	else if(_state == State::equip)
+	else if (_state == State::equip)
 		equip_render(player);
 
 	else if(_state == State::equip_selectHand)
@@ -726,10 +739,42 @@ void Yarl::drop_logic(char input, Player* player)
 
 void Yarl::equip_logic(char input, Player* player)
 {
-	if(input == '\b')
+	if (input == '\b')
 	{
-		if(!_buf.empty())
+		if (!_buf.empty())
 			_buf.pop_back();
+
+		return;
+	}
+
+	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
+	for (int i = 0; i < _x; i++)
+	{
+		while (it != player->inventory().end())
+		{
+			it = getItemByName(_buf, ++it, player->inventory().end());
+			if (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it))
+				break;
+		}
+	}
+
+	if (input == '\t')	// tab switches through possible items
+	{
+		while (it != player->inventory().end())
+		{
+			it = getItemByName(_buf, ++it, player->inventory().end());
+			if (it != player->inventory().end() && (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it)))
+				break;
+		}
+
+		if (it != player->inventory().end())
+		{
+			_x++;
+		}
+		else
+		{
+			_x = 0;
+		}
 	}
 	else if(input == '\n')
 	{
@@ -740,7 +785,6 @@ void Yarl::equip_logic(char input, Player* player)
 		}
 		else
 		{
-			auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
 			if(it != player->inventory().end())
 			{
 				Armor* a = dynamic_cast<Armor*>(*it);
@@ -781,6 +825,15 @@ void Yarl::equip_logic(char input, Player* player)
 void Yarl::equip_selectHand_logic(char input, Player* player)
 {
 	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
+	for (int i = 0; i < _x; i++)
+	{
+		while (it != player->inventory().end())
+		{
+			it = getItemByName(_buf, ++it, player->inventory().end());
+			if (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it))
+				break;
+		}
+	}
 
 	if(it != player->inventory().end())
 	{
@@ -1125,6 +1178,7 @@ bool Yarl::logic()
 	else if(cmd == Command::equip)
 	{
 		_buf.clear();
+		_x = 0;
 		_state = State::equip;
 	}
 	else if(cmd == Command::unequip)
