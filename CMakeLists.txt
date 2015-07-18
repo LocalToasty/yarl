@@ -5,7 +5,7 @@ project(yarl)
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 11)
-set(VERSION_IDENTIFIER develop)
+set(VERSION_IDENTIFIER twoWeaponFighting)
 
 option(USE_SDL "use SDL as backend of the IOManager" ON)
 

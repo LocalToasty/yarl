@@ -41,50 +41,47 @@ void Humanoid::attack(Entity* target)
 
 	int toHitMod = bab() + attributeMod(strength) + size();
 
-	if(w1)	// weapon in main hand
+	if (w1)	// weapon in main hand
 	{
-		if(w2 && w2 != w1)	// two weapon fighting
+		// if character is fighting with two weapons apply a penalty
+		if (_twoWeaponFighting && w2 && w2 != w1)
 		{
 			toHitMod -= 6;
 		}
 
 		int hitRoll = rand() % 20 + 1;
-		if(hitRoll == 20 ||	// natural 20 is a hit, nat. 1 a miss
-			(hitRoll != 1 && hitRoll + toHitMod >= target->armorClass()))
+		// natural 20 is a hit, natural 1 a miss
+		if (hitRoll == 20 || (hitRoll != 1 && hitRoll + toHitMod >= target->armorClass()))
 		{
-			world().statusBar().
-				addMessage(attackMessage(target, true, w1));
+			world().statusBar().addMessage(attackMessage(target, true, w1));
 
 			int damage = w1->damage() + attributeMod(strength);
 
 			// wielded in both hands
-			if(w1 == w2 && attributeMod(strength) > 0)
+			if (w1 == w2 && attributeMod(strength) > 0)
 				damage += attributeMod(strength) / 2;
 
-			if(damage <= 0)
+			if (damage <= 0)
 				damage = 1;
 
 			target->doDamage(damage);
 		}
 		else	// miss
-			world().statusBar().
-				addMessage(attackMessage(target, false, w1));
+			world().statusBar().addMessage(attackMessage(target, false, w1));
 	}
 
-	if(w2 && w1 != w2)
+	if (w2 && w1 != w2 && (!w1 || _twoWeaponFighting))
 	{
-		toHitMod -= 4;
+		toHitMod -= 4;	// off hand has a to hit malus
 		int hitRoll = rand() % 20 + 1;
-		if(hitRoll == 20 ||	// natural 20 is a hit, nat. 1 a miss
-			(hitRoll != 1 && hitRoll + toHitMod >= target->armorClass()))
+		if (hitRoll == 20 || (hitRoll != 1 && hitRoll + toHitMod >= target->armorClass()))
 		{
-			world().statusBar().
-				addMessage(attackMessage(target, true, w1));
+			world().statusBar().addMessage(attackMessage(target, true, w1));
 
 			int damage = w2->damage();
 
 			// only half the strength bonus is added for off hand
-			if(attributeMod(strength) > 0)
+			if (attributeMod(strength) > 0)
 				damage += attributeMod(strength) / 2;
 			else	// strength malus
 				damage += attributeMod(strength);
@@ -92,13 +89,12 @@ void Humanoid::attack(Entity* target)
 			target->doDamage(damage);
 		}
 		else
-			world().statusBar().
-				addMessage(attackMessage(target, false, w1));
+			world().statusBar().addMessage(attackMessage(target, false, w1));
 	}
 
-	else if(!w1 && !w2)
+	else if (!w1 && !w2)
 	{
-		world().statusBar().addMessage(attackMessage(target, false));
+		Character::attack(target);
 	}
 }
 

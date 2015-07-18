@@ -26,8 +26,10 @@ class Item;
 class Humanoid : public Character
 {
 private:
-	Item* _mainHand {nullptr};
-	Item* _offHand {nullptr};
+	Item* _mainHand{ nullptr };
+	Item* _offHand{ nullptr };
+
+	bool _twoWeaponFighting{ false };
 
 public:
 	Humanoid(const Tile& t, int hp, int x, int y, double speed,
