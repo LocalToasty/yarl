@@ -38,3 +38,10 @@ not SDL should be used as the I/O backend:
 `$ cmake -DUSE_SDL=<ON|OFF> .`
 
 If USE_SDL is turned off, a Curses implementation will be used.
+
+Should cmake fail to find your SDL libraries you can specify their
+location:
+
+`$ cmake -DUSE_SDL=ON -DSDL2_INCLUDE_DIR=<include dir>
+-DSDL2_LIBRARY=<library dir>/SDL2.lib -DSDL2MAIN_LIBRARY=<library
+dir>/SDL2main.lib .`
