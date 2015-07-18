@@ -32,6 +32,8 @@ enum class Command
 	southWest,
 	MOVEMENT_END,
 
+	twoWeaponFightingToggle,
+
 	equip,
 	unequip,
 

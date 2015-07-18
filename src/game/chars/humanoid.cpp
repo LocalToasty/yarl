@@ -146,6 +146,15 @@ int Humanoid::attributeMod(Character::Attribute attribute)
 	return bonus;
 }
 
+bool Humanoid::twoWeaponFighting()
+{
+	return _twoWeaponFighting;
+}
+void Humanoid::setTwoWeaponFighting(bool twoWeaponFighting)
+{
+	_twoWeaponFighting = twoWeaponFighting;
+}
+
 Item* Humanoid::mainHand()
 {
 	return _mainHand;

@@ -42,6 +42,9 @@ public:
 	int armorClass();
 	int attributeMod(Attribute attribute);
 
+	bool twoWeaponFighting();
+	void setTwoWeaponFighting(bool twoWeaponFighting);
+
 	Item* mainHand();
 	Item* offHand();
 
