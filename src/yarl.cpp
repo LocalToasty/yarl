@@ -866,9 +866,7 @@ void Yarl::unequip_logic(char input, Player* player)
 
 	if (input == '\t')
 	{
-		auto i = *it;
 		it = getItemByName(_buf, ++it, player->inventory().end(), valid);
-		i = *it;
 
 		if (it != player->inventory().end())
 		{

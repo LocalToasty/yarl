@@ -127,18 +127,10 @@ int Humanoid::attributeMod(Character::Attribute attribute)
 
 	if(attribute == dexterity || attribute == strength)
 	{
-		if(armor())
-			bonus += armor()->checkPenalty();
+		bonus += loadCheckPenalty();
 
 		Armor* s1 = dynamic_cast<Armor*>(_mainHand);
 		Armor* s2 = dynamic_cast<Armor*>(_offHand);
-		if(s1 && s1->isShield())
-			bonus += s1->checkPenalty();
-		if(s2 && s1 != s2 && s2->isShield())
-			bonus += s2->checkPenalty();
-
-		bonus += loadCheckPenalty();
-
 
 		if(attribute == dexterity)
 		{
