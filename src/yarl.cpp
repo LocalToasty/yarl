@@ -1,4 +1,4 @@
-/*
+﻿/*
  * YARL - Yet another Roguelike
  * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
  *
@@ -25,6 +25,7 @@
 #include "world.h"
 #include "npc.h"
 #include <stdexcept>
+#include <functional>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -257,14 +258,28 @@ bool Yarl::init(int argc, char* argv[])
 	return true;
 }
 
-list<Item*>::iterator getItemByName(string name, list<Item*>::iterator it, list<Item*>::iterator end)
+list<Item*>::iterator getItemByName(string name, list<Item*>::iterator it, list<Item*>::iterator end, function<bool(Item*)> valid = [](Item* i) {return true;})
 {
-	while(it != end)
+	while (it != end)
 	{
-		if((*it)->desc().substr(0, name.size()) == name)
-			return it;
+		if ((*it)->desc().substr(0, name.size()) == name)
+		{
+			if (valid(*it))
+			{
+				return it;
+			}
+		}
 		it++;
 	}
+
+	return it;
+}
+
+list<Item*>::iterator getNthItemByName(string name, int n, list<Item*>::iterator it, list<Item*>::iterator end, function<bool(Item*)> valid = [](Item* i) {return true;})
+{
+	it = getItemByName(name, it, end, valid);
+	for (int i = 0; i < n; i++)
+		it = getItemByName(name, ++it, end, valid);
 
 	return it;
 }
@@ -454,9 +469,7 @@ void Yarl::drop_render(Player* player)
 
 	if(!_buf.empty())
 	{
-		auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
-		for (int i = 0; i < _x; i++)
-			it = getItemByName(_buf, ++it, player->inventory().end());
+		auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end());
 
 		// check if there is an item with a similar name in the inventory
 		if(it != player->inventory().end())
@@ -489,19 +502,10 @@ void Yarl::equip_render(Player* player)
 
 	if (!_buf.empty())
 	{
-		auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
+		auto valid = [](Item* i){return dynamic_cast<Armor*>(i) || dynamic_cast<Weapon*>(i);};
+		auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
 		if (it != player->inventory().end())
 		{
-			for (int i = 0; i < _x; i++)
-			{
-				while (it != player->inventory().end())
-				{
-					it = getItemByName(_buf, ++it, player->inventory().end());
-					if (it != player->inventory().end() && (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it)))
-						break;
-				}
-			}
-
 			_iom->addString((*it)->desc().substr(_buf.size()));
 
 			if (dynamic_cast<Weapon*>(*it))
@@ -530,20 +534,10 @@ void Yarl::unequip_render(Player* player)
 	if(!_buf.empty())
 	{
 		// check if there is an item with a similar name in the inventory
-		for (auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
-			 it != player->inventory().end();
-			 it = getItemByName(_buf, ++it, player->inventory().end()))
-		{
-			if (*it == player->mainHand() ||
-				*it == player->offHand() ||
-				*it == player->armor())
-			{
-				_iom->addString((*it)->desc().
-								 substr(_buf.size()));
-				break;
-			}
-		}
+		auto valid = bind([](Player* p, Item* i){return p->mainHand() == i || p->offHand() == i || p->armor() == i;}, player, placeholders::_1);
+		auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
 
+		_iom->addString((*it)->desc().substr(_buf.size()));
 		_iom->addChar(' ');
 	}
 }
@@ -563,7 +557,7 @@ void Yarl::charInfo_render(Player* player, int width, int height)
 	Color hpCol = Color::green;
 	if(player->hp() < player->maxHp() / 4)
 		hpCol = Color::red;
-	else if(player->hp() < player->maxHp() / 3)
+	else if(player->hp() < player->maxHp() / 2)
 		hpCol = Color::yellow;
 
 #ifdef __MINGW32__
@@ -659,20 +653,15 @@ void Yarl::drop_logic(char input, Player* player)
 		return;
 	}
 
-	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
-	for (int i = 0; i < _x; i++)
-		it = getItemByName(_buf, ++it, player->inventory().end());
+	auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end());
 	
 	if (input == '\t')	// tab switches through possible items
 	{
+		it = getItemByName(_buf, ++it, player->inventory().end());
 		if (it != player->inventory().end())
-		{
-			it = getItemByName(_buf, ++it, player->inventory().end());
-			if (it != player->inventory().end())
-				_x++;
-			else
-				_x = 0;
-		}
+			_x++;
+		else
+			_x = 0;
 	}
 	else if(input == '\n')
 	{
@@ -747,25 +736,12 @@ void Yarl::equip_logic(char input, Player* player)
 		return;
 	}
 
-	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
-	for (int i = 0; i < _x; i++)
-	{
-		while (it != player->inventory().end())
-		{
-			it = getItemByName(_buf, ++it, player->inventory().end());
-			if (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it))
-				break;
-		}
-	}
+	auto valid = [](Item* i) {return dynamic_cast<Armor*>(i) || dynamic_cast<Weapon*>(i);};
+	auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
 
 	if (input == '\t')	// tab switches through possible items
 	{
-		while (it != player->inventory().end())
-		{
-			it = getItemByName(_buf, ++it, player->inventory().end());
-			if (it != player->inventory().end() && (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it)))
-				break;
-		}
+		it = getItemByName(_buf, ++it, player->inventory().end(), valid);
 
 		if (it != player->inventory().end())
 		{
@@ -932,6 +908,26 @@ void Yarl::unequip_logic(char input, Player* player)
 	{
 		if(!_buf.empty())
 			_buf.pop_back();
+		return;
+	}
+
+	auto valid = bind([](Player* p, Item* i){return p->mainHand() == i || p->offHand() == i || p->armor() == i;}, player, placeholders::_1);
+	auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
+
+	if (input == '\t')
+	{
+		auto i = *it;
+		it = getItemByName(_buf, ++it, player->inventory().end(), valid);
+		i = *it;
+
+		if (it != player->inventory().end())
+		{
+			_x++;
+		}
+		else
+		{
+			_x = 0;
+		}
 	}
 	else if(input == '\n')
 	{
@@ -941,22 +937,14 @@ void Yarl::unequip_logic(char input, Player* player)
 		}
 		else
 		{
-			for(auto it = getItemByName(_buf,
-											player->inventory().begin(),
-											player->inventory().end());
-				 it != player->inventory().end();
-				 it = getItemByName(_buf, ++it,
-									   player->inventory().end()))
-			{
-				if(player->mainHand() == *it)
-					player->setMainHand(nullptr);
+			if(player->mainHand() == *it)
+				player->setMainHand(nullptr);
 
-				if(player->offHand() == *it)
-					player->setOffHand(nullptr);
+			if(player->offHand() == *it)
+				player->setOffHand(nullptr);
 
-				if(player->armor() == *it)
-					player->setArmor(nullptr);
-			}
+			if(player->armor() == *it)
+				player->setArmor(nullptr);
 		}
 
 		_state = State::def;
