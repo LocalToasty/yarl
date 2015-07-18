@@ -54,27 +54,29 @@ bool Yarl::init(int argc, char* argv[])
 
 	_bindings = map<char, Command>
 	{
-		{'h', Command::west},
-		{'l', Command::east},
-		{'k', Command::north},
-		{'j', Command::south},
-		{'y', Command::northWest},
-		{'u', Command::northEast},
-		{'b', Command::southWest},
-		{'n', Command::southEast},
+		{ 'h', Command::west },
+		{ 'l', Command::east },
+		{ 'k', Command::north },
+		{ 'j', Command::south },
+		{ 'y', Command::northWest },
+		{ 'u', Command::northEast },
+		{ 'b', Command::southWest },
+		{ 'n', Command::southEast },
 
-		{'.', Command::wait},
-		{',', Command::pickup},
+		{ '.', Command::wait },
 
-		{'e', Command::equip},
-		{'t', Command::unequip},
+		{ 'f', Command::twoWeaponFightingToggle },
 
-		{'d', Command::drop},
-		{'i', Command::inventory},
+		{ 'e', Command::equip },
+		{ 't', Command::unequip },
 
-		{'/', Command::examine},
+		{ ',', Command::pickup },
+		{ 'd', Command::drop },
+		{ 'i', Command::inventory },
 
-		{'q', Command::quit}
+		{ '/', Command::examine },
+
+		{ 'q', Command::quit }
 	};
 
 	// get config file path
@@ -883,7 +885,7 @@ void Yarl::unequip_logic(char input, Player* player)
 		{
 			_world->statusBar().addMessage("Never mind.");
 		}
-		else
+		else if (it != player->inventory().end())
 		{
 			if(player->mainHand() == *it)
 				player->setMainHand(nullptr);
@@ -1107,6 +1109,18 @@ bool Yarl::logic()
 
 	else if(cmd > Command::MOVEMENT_BEGIN && cmd < Command::MOVEMENT_END)
 		move_logic(input, cmd, player);
+
+	else if (cmd == Command::twoWeaponFightingToggle)
+	{
+		player->setTwoWeaponFighting(!player->twoWeaponFighting());
+		string message = "Two weapon fighting ";
+		if (player->twoWeaponFighting())
+			message += "enabled.";
+		else
+			message += "disabled.";
+
+		_world->statusBar().addMessage(message);
+	}
 
 	else if(cmd == Command::pickup)
 		pickup_logic(player);
