@@ -403,18 +403,7 @@ void Yarl::inventory_render()
 
 		for(Weapon* w : weapons)
 		{
-			_iom->moveAddString(2, row, w->t().prefix() + w->desc());
-
-			if(player->mainHand() == w)
-			{
-				if(player->offHand() == w)
-					_iom->addString(" (in both hands)");
-				else
-					_iom->addString(" (in main hand)");
-			}
-			else if(player->offHand() == w)
-				_iom->addString(" (in off hand)");
-
+			_iom->moveAddString(2, row, w->t().prefix() + w->desc() + player->itemStatus(w));
 			row++;
 		}
 	}
@@ -427,21 +416,7 @@ void Yarl::inventory_render()
 
 		for(Armor* a : armor)
 		{
-			_iom->moveAddString(2, row, a->t().prefix() + a->desc());
-
-			if(player->armor() == a)
-				_iom->addString(" (worn)");
-			else if(player->mainHand() == a)
-			{
-				if(player->offHand() == a)
-					_iom->addString(" (in both hands)");
-				else
-					_iom->addString(" (in main hand)");
-			}
-			else if(player->offHand() == a)
-				_iom->addString(" (in off hand)");
-
-
+			_iom->moveAddString(2, row, a->t().prefix() + a->desc() + player->itemStatus(a));
 			row++;
 		}
 	}
@@ -454,7 +429,7 @@ void Yarl::inventory_render()
 
 		for(Item* i : misc)
 		{
-			_iom->moveAddString(2, row, i->t().prefix() + i->desc());
+			_iom->moveAddString(2, row, i->t().prefix() + i->desc() + player->itemStatus(i));
 			row++;
 		}
 	}
@@ -475,20 +450,7 @@ void Yarl::drop_render(Player* player)
 		if(it != player->inventory().end())
 		{
 			// if there is, suggest it
-			_iom->addString((*it)->desc().substr(_buf.size()));
-			
-			if(dynamic_cast<Weapon*>(*it))
-			{
-				if (player->mainHand() == *it)
-				{
-					if (player->offHand() == *it)
-						_iom->addString(" (in both hands)");
-					else
-						_iom->addString(" (in main hand)");
-				}
-				else if (player->offHand() == *it)
-					_iom->addString(" (in off hand)");
-			}
+			_iom->addString((*it)->desc().substr(_buf.size()) + player->itemStatus(*it));
 		}
 
 		_iom->addChar(' ');
@@ -504,24 +466,10 @@ void Yarl::equip_render(Player* player)
 	{
 		auto valid = [](Item* i){return dynamic_cast<Armor*>(i) || dynamic_cast<Weapon*>(i);};
 		auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
+
 		if (it != player->inventory().end())
 		{
-			_iom->addString((*it)->desc().substr(_buf.size()));
-
-			if (dynamic_cast<Weapon*>(*it))
-			{
-				if (player->mainHand() == *it)
-				{
-					if (player->offHand() == *it)
-						_iom->addString(" (in both hands)");
-					else
-						_iom->addString(" (in main hand)");
-				}
-				else if (player->offHand() == *it)
-					_iom->addString(" (in off hand)");
-			}
-
-			_iom->addChar(' ');
+			_iom->addString((*it)->desc().substr(_buf.size()) + player->itemStatus(*it) + ' ');
 		}
 	}
 }
@@ -537,7 +485,7 @@ void Yarl::unequip_render(Player* player)
 		auto valid = bind([](Player* p, Item* i){return p->mainHand() == i || p->offHand() == i || p->armor() == i;}, player, placeholders::_1);
 		auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
 
-		_iom->addString((*it)->desc().substr(_buf.size()));
+		_iom->addString((*it)->desc().substr(_buf.size()) + player->itemStatus(*it));
 		_iom->addChar(' ');
 	}
 }

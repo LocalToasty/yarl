@@ -30,6 +30,20 @@ Player::Player(const Tile& t, int hp, int x, int y, double speed,
 {
 }
 
+string Player::itemStatus(Item* i)
+{
+	if (i == mainHand() && i == offHand())
+		return " (in both hands)";
+	else if (i == mainHand())
+		return " (in main hand)";
+	else if (i == offHand())
+		return " (in off hand)";
+	else if (i == armor())
+		return " (worn)";
+
+	return "";
+}
+
 string Player::attackMessage(Entity* target, bool hit, Weapon* w)
 {
 	string msg = "You ";

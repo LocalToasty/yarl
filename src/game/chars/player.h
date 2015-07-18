@@ -33,6 +33,8 @@ public:
 			Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
 			Size s = Size::medium, int naturalArmor = 0);
 
+	string itemStatus(Item* i);
+
 	string attackMessage(Entity* target, bool hit , Weapon* w = nullptr);
 	string dieMessage();
 };
