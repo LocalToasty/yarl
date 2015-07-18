@@ -485,8 +485,10 @@ void Yarl::unequip_render(Player* player)
 		auto valid = bind([](Player* p, Item* i){return p->mainHand() == i || p->offHand() == i || p->armor() == i;}, player, placeholders::_1);
 		auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), valid);
 
-		_iom->addString((*it)->desc().substr(_buf.size()) + player->itemStatus(*it));
-		_iom->addChar(' ');
+		if (it != player->inventory().end())
+		{
+			_iom->addString((*it)->desc().substr(_buf.size()) + player->itemStatus(*it) + ' ');
+		}
 	}
 }
 
@@ -1120,6 +1122,7 @@ bool Yarl::logic()
 	else if(cmd == Command::unequip)
 	{
 		_buf.clear();
+		_x = 0;
 		_state = State::unequip;
 	}
 	else if(cmd == Command::drop)
