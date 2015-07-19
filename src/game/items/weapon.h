@@ -1,4 +1,3 @@
-#include "item.h"
 /*
  * YARL - Yet another Roguelike
  * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
@@ -20,13 +19,19 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
+#include "item.h"
 #include "attack.h"
 
 class Weapon : public Item, public Attack
 {
+private:
+	bool _twoHanded;
+
 public:
-	Weapon(const Tile& t, Attack a, double weight, World& world, int hp,
-		   int x = -1, int y = -1, Size s = Size::small);
+	Weapon(const Tile& t, Attack a, bool twoHanded, double weight, World& world,
+		int hp, int x = -1, int y = -1, Size s = Size::small);
+
+	bool twoHanded();
 };
 
 #endif

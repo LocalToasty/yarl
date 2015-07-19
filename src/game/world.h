@@ -60,6 +60,7 @@ private:
 	static Tile _dogCorpse;
 
 	static Tile _shortSword;
+	static Tile _claymore;
 	static Tile _leatherArmor;
 	static Tile _buckler;
 

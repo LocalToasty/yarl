@@ -716,6 +716,7 @@ void Yarl::equip_logic(char input, Player* player)
 			if(it != player->inventory().end())
 			{
 				Armor* a = dynamic_cast<Armor*>(*it);
+				Weapon* w = dynamic_cast<Weapon*>(*it);
 				if(a && !a->isShield())
 				{
 					if(player->armor())
@@ -728,8 +729,45 @@ void Yarl::equip_logic(char input, Player* player)
 					}
 					_state = State::def;
 				}
-				else if(a || dynamic_cast<Weapon*>(*it))
-					_state = State::equip_selectHand;
+				else if (a || w)
+				{
+					if (w && !w->twoHanded())
+					{
+						_state = State::equip_selectHand;
+					}
+					else	// two handed weapon
+					{
+						// check if any hands are blocked by other items
+						string items;
+
+						if (player->mainHand() && player->mainHand() != *it)
+							items += player->mainHand()->desc();
+
+						if (player->offHand() && player->offHand() != *it && player->mainHand() != player->offHand())
+						{
+							if (!items.empty())
+								items += " and your ";
+
+							items += player->offHand()->desc();
+						}
+
+						if (!items.empty())
+						{
+							_world->statusBar().addMessage("You have to unequip your "
+								+ items + " first.");
+						}
+						else
+						{
+							player->setMainHand(*it);
+							player->setOffHand(*it);
+							_world->statusBar().
+								addMessage("You are now holding the " + (*it)->desc() +
+								" in both hands.");
+						}
+
+						_state = State::def;
+					}
+				}
 				else	// item not equippable
 				{
 					_world->statusBar().addMessage("You have no such item.");
@@ -752,19 +790,13 @@ void Yarl::equip_logic(char input, Player* player)
 
 void Yarl::equip_selectHand_logic(char input, Player* player)
 {
-	auto it = getItemByName(_buf, player->inventory().begin(), player->inventory().end());
-	for (int i = 0; i < _x; i++)
-	{
-		while (it != player->inventory().end())
-		{
-			it = getItemByName(_buf, ++it, player->inventory().end());
-			if (dynamic_cast<Armor*>(*it) || dynamic_cast<Weapon*>(*it))
-				break;
-		}
-	}
+	auto it = getNthItemByName(_buf, _x, player->inventory().begin(), player->inventory().end(), [](Item* i){ return dynamic_cast<Armor*>(i) || dynamic_cast<Weapon*>(i); });
 
 	if(it != player->inventory().end())
 	{
+		Weapon* w1 = dynamic_cast<Weapon*>(player->mainHand());
+		bool twoHanded = (w1) ? w1->twoHanded() : false;
+
 		if(input == 'm')	// main hand
 		{
 			// check if the weapon is already equipped
@@ -774,7 +806,7 @@ void Yarl::equip_selectHand_logic(char input, Player* player)
 					(*it)->desc() + " in your main hand.");
 			}
 			// check if the player is already wielding another weapon
-			else if(player->mainHand() && player->mainHand() != player->offHand())
+			else if(player->mainHand() && (player->mainHand() != player->offHand() || twoHanded))
 			{
 				_world->statusBar().addMessage("You have to unequip your " +
 					player->mainHand()->desc() + " first.");
@@ -797,7 +829,7 @@ void Yarl::equip_selectHand_logic(char input, Player* player)
 				_world->statusBar().addMessage("You are already holding the " +
 					(*it)->desc() + " in your off hand.");
 			}
-			else if(player->offHand() && player->offHand() != player->mainHand())
+			else if(player->offHand() && (player->offHand() != player->mainHand() || twoHanded ))
 			{
 				_world->statusBar().addMessage("You have to unequip your " +
 					player->offHand()->desc() + " first.");
@@ -822,7 +854,7 @@ void Yarl::equip_selectHand_logic(char input, Player* player)
 			if (player->mainHand() && player->mainHand() != *it)
 				items += player->mainHand()->desc();
 
-			if (player->offHand() && player->offHand() != *it)
+			if (player->offHand() && player->offHand() != *it && player->mainHand() != player->offHand())
 			{
 				if(!items.empty())
 					items += " and your ";
@@ -832,9 +864,8 @@ void Yarl::equip_selectHand_logic(char input, Player* player)
 
 			if (!items.empty())
 			{
-				_world->statusBar().
-					addMessage("You have to unequip your " + items +
-								" first.");
+				_world->statusBar().addMessage("You have to unequip your "
+					+ items + " first.");
 			}
 			else
 			{

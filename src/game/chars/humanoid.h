@@ -45,10 +45,10 @@ public:
 	bool twoWeaponFighting();
 	void setTwoWeaponFighting(bool twoWeaponFighting);
 
+//	string equip
 	Item* mainHand();
-	Item* offHand();
-
 	void setMainHand(Item* i);
+	Item* offHand();
 	void setOffHand(Item* i);
 };
 
