@@ -134,8 +134,10 @@ bool Yarl::init(int argc, char* argv[])
 			if (!string(VERSION_IDENTIFIER).empty())
 				cout << '-' << VERSION_IDENTIFIER;
 
-			cout << " (" << BUILD_TYPE << ")\n"
-				"Copyright (C) 2015 Marko van Treeck "
+			if (!string(BUILD_TYPE).empty())
+				cout << " (" << BUILD_TYPE << ' ';
+
+			cout << "\nCopyright (C) 2015 Marko van Treeck "
 				"<markovantreeck@gmail.com>\n\n"
 				"This program comes with ABSOLUTELY NO WARRANTY. "
 				"It is free software,\nand you are welcome to "
