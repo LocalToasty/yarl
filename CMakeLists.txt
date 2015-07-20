@@ -25,7 +25,7 @@ elseif(NOT USE_SDL)
 endif(USE_SDL)
 
 configure_file("${PROJECT_SOURCE_DIR}/yarlconfig.h.in"
-   "${PROJECT_BINARY_DIR}/yarlconfig.h")
+	"${PROJECT_SOURCE_DIR}/src/yarlconfig.h")
 
 include_directories("${PROJECT_BINARY_DIR}")
 
