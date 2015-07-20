@@ -18,7 +18,7 @@
 
 #include "attack.h"
 
-Attack::Attack(int (*damage)(), int critMultiplier, int critRange,
+Attack::Attack(int(*damage)(), int critRange, int critMultiplier,
 	string critVerb, double range) :
 	_damage(damage), _range(range), _critVerb(critVerb),
 	_critMultiplier(critMultiplier), _critRange(critRange)
