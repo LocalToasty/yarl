@@ -73,8 +73,7 @@ World::World(int width, int height) :
 	_player->setArmor(arm);
 
 	new Armor(_buckler, 1, 999, -1, true, 5, *this, 43, 43);
-	new Weapon(_claymore, {[](){return rand() % 6 + 1;}}, true, 2, *this,
-				5, 42, 43);
+	new Weapon(_claymore, {[](){return rand() % 10 + 1;}, 19, 2}, true, 8, *this, 5, 42, 43);
 
 	attr = {13, 13, 15, 2, 12, 6};
 	new Companion(_dog, _player, rand() % 8 + 3, 45, 46, (double) 3/4, 12,

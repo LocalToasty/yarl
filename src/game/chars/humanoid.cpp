@@ -55,11 +55,19 @@ void Humanoid::attack(Entity* target)
 		{
 			world().statusBar().addMessage(attackMessage(target, true, w1));
 
-			int damage = w1->damage() + attributeMod(strength);
+			int damageMod = attributeMod(strength);
 
-			// wielded in both hands
-			if (w1 == w2 && attributeMod(strength) > 0)
-				damage += attributeMod(strength) / 2;
+			if (w1 == w2 && attributeMod(strength) > 0)	// wielded in both hands
+				damageMod += attributeMod(strength) / 2;
+
+			int damage = w1->damage() + damageMod;
+
+			if (hitRoll >= w1->critRange() &&	// check if there is a potential crit
+				rand() % 20 + 1 + toHitMod >= target->armorClass())	// confirm critical hit
+			{
+				for (int i = 1; i < w1->critMultiplier(); i++)
+					damage += w1->damage() + damageMod;
+			}
 
 			if (damage <= 0)
 				damage = 1;
@@ -78,13 +86,19 @@ void Humanoid::attack(Entity* target)
 		{
 			world().statusBar().addMessage(attackMessage(target, true, w1));
 
-			int damage = w2->damage();
+			// when fighting with an off hand weapon only half the strength bonus is applied
+			int damageMod = (attributeMod(strength) > 0) ?
+				attributeMod(strength) / 2 :
+				attributeMod(strength);	// strength malus
+			
+			int damage = w2->damage() + damageMod;
 
-			// only half the strength bonus is added for off hand
-			if (attributeMod(strength) > 0)
-				damage += attributeMod(strength) / 2;
-			else	// strength malus
-				damage += attributeMod(strength);
+			if (hitRoll >= w2->critRange() &&	// check if there is a potential crit
+				rand() % 20 + 1 + toHitMod >= target->armorClass())	// confirm critical hit
+			{
+				for (int i = 1; i < w2->critMultiplier(); i++)
+					damage += w2->damage() + damageMod;
+			}
 
 			target->doDamage(damage);
 		}

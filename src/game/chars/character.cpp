@@ -56,15 +56,22 @@ void Character::attack(Entity* target)
 
 	// hit roll
 	int toHitMod = _bab + attributeMod(strength) + size();
-	if(World::distance(x(), y(), target->x(), target->y()) <=
-		_unarmed->range() &&
-		rand() % 20 + 1 + toHitMod >= target->armorClass())
+	int hitRoll = rand() % 20 + 1;
+	if (World::distance(x(), y(), target->x(), target->y()) <= _unarmed->range() &&
+		hitRoll + toHitMod >= target->armorClass())
 	{
 		world().statusBar().addMessage(attackMessage(target, true));
 
 		int damage = _unarmed->damage() + attributeMod(strength);
 
-		if(damage <= 0)	// hits inflict at least 1 hp damage
+		if (hitRoll >= _unarmed->critRange() &&	// check if there is a potential crit
+			rand() % 20 + 1 + toHitMod >= target->armorClass())	// confirm critical hit
+		{
+			for (int i = 1; i < _unarmed->critMultiplier(); i++)
+				damage += _unarmed->damage() + attributeMod(strength);
+		}
+
+		if (damage <= 0)	// hits inflict at least 1 hp damage
 			damage = 1;
 
 		target->setHp(target->hp() - damage);
