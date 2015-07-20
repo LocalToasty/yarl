@@ -56,31 +56,53 @@ void Character::attack(Entity* target)
 
 	// hit roll
 	int toHitMod = _bab + attributeMod(strength) + size();
-	if(World::distance(x(), y(), target->x(), target->y()) <=
-		_unarmed->range() &&
-		rand() % 20 + 1 + toHitMod >= target->armorClass())
-	{
-		world().statusBar().addMessage(attackMessage(target, true));
+	int hitRoll = rand() % 20 + 1;
 
+	if (World::distance(x(), y(), target->x(), target->y()) <= _unarmed->range() &&
+		hitRoll + toHitMod >= target->armorClass())
+	{
+		bool crit = false;
 		int damage = _unarmed->damage() + attributeMod(strength);
 
-		if(damage <= 0)	// hits inflict at least 1 hp damage
+		if (hitRoll >= _unarmed->critRange())	// check if there is a potential crit
+		{
+			crit = rand() % 20 + 1 + toHitMod >= target->armorClass();
+			if (crit)	// confirm crit
+			{
+				for (int i = 1; i < _unarmed->critMultiplier(); i++)
+				{
+					damage += _unarmed->damage() + attributeMod(strength);
+				}
+			}
+		}
+
+		world().statusBar().addMessage(attackMessage(target, true, crit));
+
+		if (damage <= 0)	// hits inflict at least 1 hp damage
 			damage = 1;
 
 		target->setHp(target->hp() - damage);
 		return;
 	}
 	else	// don't do any damage on miss
-		world().statusBar().addMessage(attackMessage(target, false));
+		world().statusBar().addMessage(attackMessage(target, false, false));
 }
 
-string Character::attackMessage(Entity* target, bool hit, Weapon* w)
+string Character::attackMessage(Entity* target, bool hit, bool crit, Weapon* w)
 {
 	string msg = "The " + desc();
-	if(hit)
+	if (crit && w)
+	{
+		msg += w->critVerb() + "s ";
+	}
+	else if (hit)
+	{
 		msg += " hits ";
+	}
 	else
+	{
 		msg += " misses ";
+	}
 
 	if (!dynamic_cast<Player*>(target))
 		msg += "the ";

@@ -67,10 +67,10 @@ protected:
 
 public:
 	Character(const Tile& t, int hp, int x, int y, double speed,
-			   int visionRange, const array<int, noOfAttributes>& attributes,
-			   World& world, Attack* unarmed,
-			   const list<Item*>& inventory = {},
-			   int bab = 0, Size s = Size::medium, int naturalArmor = 0);
+		int visionRange, const array<int, noOfAttributes>& attributes,
+		World& world, Attack* unarmed,
+		const list<Item*>& inventory = {},
+		int bab = 0, Size s = Size::medium, int naturalArmor = 0);
 
 	bool los(int x, int y, double factor = 1) const;
 	bool los(Entity* e);
@@ -80,7 +80,8 @@ public:
 
 	virtual void attack(Entity* target);
 
-	virtual string attackMessage(Entity* target, bool hit, Weapon* w = nullptr);
+	virtual string attackMessage(Entity* target,
+		bool hit, bool crit, Weapon* w = nullptr);
 	virtual string dieMessage();
 
 	int armorClass();

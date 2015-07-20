@@ -42,13 +42,13 @@ public:
 	int armorClass();
 	int attributeMod(Attribute attribute);
 
-	bool twoWeaponFighting();
+	bool twoWeaponFighting() const;
 	void setTwoWeaponFighting(bool twoWeaponFighting);
 
 //	string equip
-	Item* mainHand();
+	Item* mainHand() const;
 	void setMainHand(Item* i);
-	Item* offHand();
+	Item* offHand() const;
 	void setOffHand(Item* i);
 };
 

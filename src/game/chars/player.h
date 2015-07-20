@@ -29,13 +29,13 @@ class Player : public Humanoid
 {
 public:
 	Player(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-			array<int, noOfAttributes>& attributes, World& world,
-			Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
-			Size s = Size::medium, int naturalArmor = 0);
+		array<int, noOfAttributes>& attributes, World& world,
+		Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+		Size s = Size::medium, int naturalArmor = 0);
 
 	string itemStatus(Item* i);
 
-	string attackMessage(Entity* target, bool hit , Weapon* w = nullptr);
+	string attackMessage(Entity* target, bool hit, bool crit, Weapon* w = nullptr);
 	string dieMessage();
 };
 

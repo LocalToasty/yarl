@@ -18,8 +18,10 @@
 
 #include "attack.h"
 
-Attack::Attack(int (*damage)(), double range) :
-	_damage(damage), _range(range)
+Attack::Attack(int (*damage)(), int critMultiplier, int critRange,
+	string critVerb, double range) :
+	_damage(damage), _range(range), _critVerb(critVerb),
+	_critMultiplier(critMultiplier), _critRange(critRange)
 {
 }
 
@@ -31,4 +33,19 @@ double Attack::range() const
 int Attack::damage() const
 {
 	return _damage();
+}
+
+int Attack::critRange()
+{
+	return _critRange;
+}
+
+int Attack::critMultiplier()
+{
+	return _critMultiplier;
+}
+
+string Attack::critVerb()
+{
+	return _critVerb;
 }

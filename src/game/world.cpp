@@ -63,7 +63,7 @@ World::World(int width, int height) :
 	_player = new Player(_hero, 9 + rand() % 8, 42, 42, 1, 12, attr, *this,
 						  new Attack([](){return rand() % 2 + 1;}), {}, 1);
 
-	Weapon* weap = new Weapon(_shortSword, {[](){return rand() % 6 + 1;}}, false, 2, *this, 5);
+	Weapon* weap = new Weapon(_shortSword, {[](){return rand() % 6 + 1;}, 19, 2}, false, 2, *this, 5);
 	_player->inventory().push_back(weap);
 	_player->setMainHand(weap);
 	_player->setOffHand(weap);
@@ -73,8 +73,7 @@ World::World(int width, int height) :
 	_player->setArmor(arm);
 
 	new Armor(_buckler, 1, 999, -1, true, 5, *this, 43, 43);
-	new Weapon(_claymore, {[](){return rand() % 6 + 1;}}, true, 2, *this,
-				5, 42, 43);
+	new Weapon(_claymore, {[](){ return rand() % 10 + 1; }, 19, 2, "smite"}, true, 8, *this, 5, 42, 43);
 
 	attr = {13, 13, 15, 2, 12, 6};
 	new Companion(_dog, _player, rand() % 8 + 3, 45, 46, (double) 3/4, 12,
@@ -84,6 +83,7 @@ World::World(int width, int height) :
 				   2, Entity::Size::small, 1);
 
 	attr = {11, 15, 12, 10, 9, 6};
+	new Character(_goblin, 1000, 43, 43, 1, 1, attr, *this, new Attack([](){return rand() % 2 + 1; }));
 	new Companion(_goblin, nullptr, rand() % 10 + 2, 45, 45, 1, 12, attr,
 				   *this, new Attack([](){return rand() % 2 + 1;}), {}, 1,
 				   Entity::Size::small);
