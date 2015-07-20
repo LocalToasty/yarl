@@ -61,30 +61,29 @@ private:
 	string _buf;
 	int _x, _y;
 
-	void world_render(Player* player, int width, int height);
-	void inventory_render();
-	void drop_render(Player* player);
-	void equip_render(Player* player);
-	void unequip_render(Player* player);
-	void examine_render();
-	void charInfo_render(Player* player, int width, int height);
+	bool init(int argc, char* argv[]);
+	void render();
+	bool logic();
+	int cleanup();
+	void usage(ostream& out = cout);
 
-	void drop_logic(char input, Player* player);
-	void equip_logic(char input, Player* player);
-	void equip_selectHand_logic(char input, Player* player);
-	void unequip_logic(char input, Player* player);
-	void examine_logic(char input, Command cmd, Player* player);
+	void world_render(Player* player, int width, int height);
+	void charInfo_render(Player* player, int width, int height);
+	void inventory_render();
+
 	void move_logic(char input, Command cmd, Player* player);
 	void pickup_logic(Player* player);
 
-	bool init(int argc, char* argv[]);
+	void drop_render(Player* player);
+	void drop_logic(char input, Player* player);
 
-	void render();
-	bool logic();
+	void equip_render(Player* player);
+	void equip_logic(char input, Player* player);
+	void equip_selectHand_logic(char input, Player* player);
+	void unequip_render(Player* player);
+	void unequip_logic(char input, Player* player);
 
-	int cleanup();
-
-	void usage(ostream& out = cout);
+	void examine_logic(char input, Command cmd, Player* player);
 
 public:
 	int exec(int argc, char* argv[]);
