@@ -44,13 +44,21 @@ string Player::itemStatus(Item* i)
 	return "";
 }
 
-string Player::attackMessage(Entity* target, bool hit, Weapon* w)
+string Player::attackMessage(Entity* target, bool hit, bool crit, Weapon* w)
 {
 	string msg = "You ";
-	if(hit)
+	if (crit && w)
+	{
+		msg += w->critVerb();
+	}
+	else if (hit)
+	{
 		msg += "hit";
+	}
 	else
+	{
 		msg += "miss";
+	}
 
 	msg += " the " + target->desc();
 

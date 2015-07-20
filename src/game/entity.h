@@ -98,7 +98,7 @@ public:
 	int hp() const;
 	Size size() const;
 	int naturalArmor() const;
-	virtual int armorClass() const;
+	virtual int armorClass();
 
 	list<Item*>& inventory();
 

@@ -19,6 +19,10 @@
 #ifndef ATTACK_H
 #define ATTACK_H
 
+#include <string>
+
+using namespace std;
+
 class Attack
 {
 private:
@@ -28,13 +32,17 @@ private:
 	int _critRange;	// minimum result to score a critical hit
 	int _critMultiplier;	// amount by which the damage is multiplied
 
+	string _critVerb;	// word used to describe a critical hit
+
 public:
-	Attack(int (*damage)(), int critRange = 20, int critMultiplier = 2, double range = 1.5);
+	Attack(int (*damage)(), int critRange = 20, int critMultiplier = 2,
+		string critVerb = "maim", double range = 1.5);
 
 	int damage() const;
 	double range() const;
 	int critRange();
 	int critMultiplier();
+	string critVerb();
 };
 
 #endif

@@ -80,7 +80,8 @@ public:
 
 	virtual void attack(Entity* target);
 
-	virtual string attackMessage(Entity* target, bool hit, Weapon* w = nullptr);
+	virtual string attackMessage(Entity* target,
+		bool hit, bool crit, Weapon* w = nullptr);
 	virtual string dieMessage();
 
 	int armorClass();

@@ -59,7 +59,7 @@ Entity::~Entity()
 		_sector->removeEntity(this);
 }
 
-int Entity::armorClass() const
+int Entity::armorClass()
 {
 	return 5 + _s + _naturalArmor;
 }

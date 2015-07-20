@@ -53,8 +53,6 @@ void Humanoid::attack(Entity* target)
 		// natural 20 is a hit, natural 1 a miss
 		if (hitRoll == 20 || (hitRoll != 1 && hitRoll + toHitMod >= target->armorClass()))
 		{
-			world().statusBar().addMessage(attackMessage(target, true, w1));
-
 			int damageMod = attributeMod(strength);
 
 			if (w1 == w2 && attributeMod(strength) > 0)	// wielded in both hands
@@ -62,12 +60,21 @@ void Humanoid::attack(Entity* target)
 
 			int damage = w1->damage() + damageMod;
 
-			if (hitRoll >= w1->critRange() &&	// check if there is a potential crit
-				rand() % 20 + 1 + toHitMod >= target->armorClass())	// confirm critical hit
+			bool crit = false;
+			if (hitRoll >= w1->critRange())	// check if there is a potential crit
 			{
-				for (int i = 1; i < w1->critMultiplier(); i++)
-					damage += w1->damage() + damageMod;
+				int res = rand() % 20 + 1 + toHitMod;
+				crit = res >= target->armorClass();
+				if (crit)	// confirm critical hit
+				{
+					for (int i = 1; i < w1->critMultiplier(); i++)
+					{
+						damage += w1->damage() + damageMod;
+					}
+				}
 			}
+
+			world().statusBar().addMessage(attackMessage(target, true, crit, w1));
 
 			if (damage <= 0)
 				damage = 1;
@@ -75,7 +82,7 @@ void Humanoid::attack(Entity* target)
 			target->doDamage(damage);
 		}
 		else	// miss
-			world().statusBar().addMessage(attackMessage(target, false, w1));
+			world().statusBar().addMessage(attackMessage(target, false, false, w1));
 	}
 
 	if (w2 && w1 != w2 && (!w1 || _twoWeaponFighting))
@@ -93,17 +100,25 @@ void Humanoid::attack(Entity* target)
 			
 			int damage = w2->damage() + damageMod;
 
-			if (hitRoll >= w2->critRange() &&	// check if there is a potential crit
-				rand() % 20 + 1 + toHitMod >= target->armorClass())	// confirm critical hit
+			bool crit = false;
+			if (hitRoll >= w2->critRange())	// check if there is a potential crit
 			{
-				for (int i = 1; i < w2->critMultiplier(); i++)
-					damage += w2->damage() + damageMod;
+				crit = rand() % 20 + 1 + toHitMod >= target->armorClass();
+				if (crit)	// confirm critical hit
+				{
+					for (int i = 1; i < w2->critMultiplier(); i++)
+					{
+						damage += w2->damage() + damageMod;
+					}
+				}
 			}
+
+			world().statusBar().addMessage(attackMessage(target, true, crit, w2));
 
 			target->doDamage(damage);
 		}
 		else
-			world().statusBar().addMessage(attackMessage(target, false, w1));
+			world().statusBar().addMessage(attackMessage(target, false, false, w2));
 	}
 
 	else if (!w1 && !w2)
@@ -160,21 +175,22 @@ int Humanoid::attributeMod(Character::Attribute attribute)
 	return bonus;
 }
 
-bool Humanoid::twoWeaponFighting()
+bool Humanoid::twoWeaponFighting() const
 {
 	return _twoWeaponFighting;
 }
+
 void Humanoid::setTwoWeaponFighting(bool twoWeaponFighting)
 {
 	_twoWeaponFighting = twoWeaponFighting;
 }
 
-Item* Humanoid::mainHand()
+Item* Humanoid::mainHand() const
 {
 	return _mainHand;
 }
 
-Item* Humanoid::offHand()
+Item* Humanoid::offHand() const
 {
 	return _offHand;
 }
