@@ -83,7 +83,7 @@ World::World(int width, int height) :
 				   2, Entity::Size::small, 1);
 
 	attr = {11, 15, 12, 10, 9, 6};
-	new Character(_goblin, 1000, 43, 43, 1, 1, attr, *this, new Attack([](){return rand() % 2 + 1; }));
+	new Character(_goblin, 1000, 44, 43, 1, 1, attr, *this, new Attack([](){return rand() % 2 + 1; }));
 	new Companion(_goblin, nullptr, rand() % 10 + 2, 45, 45, 1, 12, attr,
 				   *this, new Attack([](){return rand() % 2 + 1;}), {}, 1,
 				   Entity::Size::small);

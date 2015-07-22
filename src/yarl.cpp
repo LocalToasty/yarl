@@ -825,6 +825,7 @@ void Yarl::drop_logic(char input, Player* player)
 	}
 	else
 	{
+		_x = 0;
 		_buf.push_back(input);
 	}
 }
@@ -951,6 +952,7 @@ void Yarl::equip_logic(char input, Player* player)
 	}
 	else
 	{
+		_x = 0;
 		_buf.push_back(input);
 	}
 }
@@ -1121,6 +1123,7 @@ void Yarl::unequip_logic(char input, Player* player)
 	}
 	else
 	{
+		_x = 0;
 		_buf.push_back(input);
 	}
 }
