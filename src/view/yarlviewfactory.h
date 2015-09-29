@@ -16,16 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "npc.h"
-#include "character.h"
+#ifndef YARLVIEWFACTORY_H
+#define YARLVIEWFACTORY_H
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-         const array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+#include "yarlview.h"
+#include "yarlcontroller.h"
+#include "world.h"
+#include <memory>
 
-double NPC::lastAction() const { return _lastAction; }
+std::unique_ptr<YarlView> makeView(YarlController& controller, World& world);
 
-void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }
+#endif

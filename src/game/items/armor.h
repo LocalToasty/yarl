@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,24 +21,23 @@
 
 #include "item.h"
 
-class Armor : public Item
-{
-private:
-	int _ac;	// armor class bonus
-	int _maxDexBon;	// maximum dexterity bonus
-	int _checkPenalty;	// penalty imposed onto str / dex checks
+class Armor : public Item {
+ private:
+  int _ac;            // armor class bonus
+  int _maxDexBon;     // maximum dexterity bonus
+  int _checkPenalty;  // penalty imposed onto str / dex checks
 
-	bool _shield;
+  bool _shield;
 
-public:
-	Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-		  double weight, World& world, int x = -1, int y = -1,
-		  Size s = Size::small);
+ public:
+  Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+        double weight, World& world, int x = -1, int y = -1,
+        Size s = Size::small);
 
-	int ac() const;
-	int maxDexBon() const;
-	int checkPenalty() const;
-	int isShield() const;
+  int ac() const;
+  int maxDexBon() const;
+  int checkPenalty() const;
+  bool isShield() const;
 };
 
 #endif

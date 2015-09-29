@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,38 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CURSESIOM_H
-#define CURSESIOM_H
+#ifndef EVENT_H
+#define EVENT_H
 
-#include "iomanager.h"
-
-class CursesIOManager : public IOManager
-{
-private:
-	short cp(Color col);
-
-public:
-    CursesIOManager(bool usecolor = true, bool cursor = false);
-	~CursesIOManager();
-
-	int width();
-	int height();
-
-	void cursor(bool val);
-
-	int cursorX();
-	int cursorY();
-
-	void addChar(char c, Color col = Color::white);
-	void addString(string s, Color col = Color::white);
-
-	void moveCursor(int x, int y);
-
-	char getChar();
-
-    void clear(int x, int y, int w, int h);
-
-	void refreshScreen();
+class Event {
+ public:
+  virtual ~Event() {}
 };
 
 #endif

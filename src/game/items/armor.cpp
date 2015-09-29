@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,17 @@
 #include "armor.h"
 
 Armor::Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-			  double weight, World& world, int x, int y, Size s) :
-	Item(t, weight, world, ac * 5 , x, y, s), _ac(ac),
-	_maxDexBon(maxDexBon), _checkPenalty(checkPenalty), _shield(shield)
-{
-}
+             double weight, World& world, int x, int y, Size s)
+    : Item(t, weight, world, ac * 5, x, y, s),
+      _ac(ac),
+      _maxDexBon(maxDexBon),
+      _checkPenalty(checkPenalty),
+      _shield(shield) {}
 
-int Armor::ac() const
-{
-	return _ac;
-}
+int Armor::ac() const { return _ac; }
 
-int Armor::maxDexBon() const
-{
-	return _maxDexBon;
-}
+int Armor::maxDexBon() const { return _maxDexBon; }
 
-int Armor::checkPenalty() const
-{
-	return _checkPenalty;
-}
+int Armor::checkPenalty() const { return _checkPenalty; }
 
-int Armor::isShield() const
-{
-	return _shield;
-}
+bool Armor::isShield() const { return _shield; }

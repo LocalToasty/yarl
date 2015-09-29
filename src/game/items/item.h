@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,15 @@
 
 #include "entity.h"
 
-class Item : public Entity
-{
-private:
-	double _weight;
+class Item : public Entity {
+ private:
+  double _weight;
 
-public:
-	Item(const Tile& t, double weight, World& world, int hp,
-		 int x = -1, int y = -1, Size s = Size::medium);
+ public:
+  Item(const Tile& t, double weight, World& world, int hp, int x = -1,
+       int y = -1, Size s = Size::medium);
 
-
-	double weight() const;
+  double weight() const;
 };
 
 #endif

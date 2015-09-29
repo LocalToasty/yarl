@@ -1,5 +1,5 @@
 ﻿# YARL - Yet another Roguelike
-Copyright &copy; 2015 Marko van Treeck
+Copyright &copy; 2015-2016 Marko van Treeck
 &lt;<markovantreeck@gmail.com>&gt;
 
 This program is free software: you can redistribute it and/or modify it

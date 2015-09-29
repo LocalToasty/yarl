@@ -16,16 +16,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "npc.h"
-#include "character.h"
+#ifndef YARL_H
+#define YARL_H
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-         const array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+#include "sector.h"
+#include "tile.h"
+#include "statusbar.h"
+#include "command.h"
+#include "world.h"
+#include "yarlview.h"
+#include <iostream>
+#include <memory>
+#include <string>
+#include <map>
 
-double NPC::lastAction() const { return _lastAction; }
+class Player;
 
-void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }
+class YarlController {
+ private:
+  std::unique_ptr<World> _world;
+  std::unique_ptr<YarlView> _view;
+
+  map<char, Command> _bindings;
+
+  bool init(int argc, char* argv[]);
+  void render();
+  bool logic();
+  int cleanup();
+  void usage(ostream& out = cout);
+
+ public:
+  int exec(int argc, char* argv[]);
+  void quit();
+
+  void moveCommand(Command direction);
+  void equip();
+  void unequip();
+  void pickup();
+  void drop();
+  void showInventory();
+  void examine();
+  void twoWeaponFightingToggle();
+};
+
+#endif

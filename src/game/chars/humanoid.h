@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,33 +23,32 @@
 
 class Item;
 
-class Humanoid : public Character
-{
-private:
-	Item* _mainHand{ nullptr };
-	Item* _offHand{ nullptr };
+class Humanoid : public Character {
+ private:
+  Item* _mainHand{nullptr};
+  Item* _offHand{nullptr};
 
-	bool _twoWeaponFighting{ false };
+  bool _twoWeaponFighting{false};
 
-public:
-	Humanoid(const Tile& t, int hp, int x, int y, double speed,
-			 int visionRange, const array<int, noOfAttributes>& attributes,
-			 World& world, Attack* unarmed,
-			 const list<Item*>& inventory = {},
-			 int bab = 0, Size s = Size::medium, int naturalArmor = 0);
+ public:
+  Humanoid(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+           const array<int, noOfAttributes>& attributes, World& world,
+           Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+           Size s = Size::medium, int naturalArmor = 0);
 
-	void attack(Entity* target);
-	int armorClass();
-	int attributeMod(Attribute attribute);
+  void attack(Entity* target);
+  int armorClass();
+  int attributeMod(Attribute attribute);
 
-	bool twoWeaponFighting() const;
-	void setTwoWeaponFighting(bool twoWeaponFighting);
+  bool twoWeaponFighting() const;
+  void setTwoWeaponFighting(bool twoWeaponFighting);
 
-//	string equip
-	Item* mainHand() const;
-	void setMainHand(Item* i);
-	Item* offHand() const;
-	void setOffHand(Item* i);
+  //	string equip
+  Item* mainHand() const;
+  void setMainHand(Item* i);
+  Item* offHand() const;
+  void setOffHand(Item* i);
+  void setBothHands(Item* i);
 };
 
 #endif

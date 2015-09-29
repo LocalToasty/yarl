@@ -16,16 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "npc.h"
-#include "character.h"
+#ifndef ATTACKEVENT_H
+#define ATTACKEVENT_H
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-         const array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+#include "event.h"
 
-double NPC::lastAction() const { return _lastAction; }
+struct AttackEvent : public Event {
+  AttackEvent(Character const& attacker, Entity const& target, bool hit)
+      : attacker(attacker), target(target), hit(hit) {}
 
-void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }
+  Character const& attacker;
+  Entity const& target;
+  bool hit;
+};
+
+#endif

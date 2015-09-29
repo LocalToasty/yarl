@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,34 +19,33 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include "iomanager.h"
+#include "yarlview.h"
 #include <string>
 
 using namespace std;
 
-class Tile
-{
-private:
-	char _repr;
-	Color _color;
+class Tile {
+ private:
+  char _repr;
+  Color _color;
 
-	string _prefix;
-	string _description;
+  string _prefix;
+  string _description;
 
-	bool _transparent;
-	bool _passable;
+  bool _transparent;
+  bool _passable;
 
-public:
-	Tile(char repr = ' ', Color color = Color::black, string pref = "a",
-		  string description = "", bool transparent = false,
-		  bool passable = false);
+ public:
+  Tile(char repr = ' ', Color color = Color::black, string pref = "a",
+       string description = "", bool transparent = false,
+       bool passable = false);
 
-	char repr() const;
-	Color color() const;
-	string prefix() const;
-	string desc() const;
-	bool passable() const;
-	bool transparent() const;
+  char repr() const;
+  Color color() const;
+  string prefix() const;
+  string desc() const;
+  bool passable() const;
+  bool transparent() const;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VARIABLE_H
-#define VARIABLE_H
+#ifndef DROPEVENT_H
+#define DROPEVENT_H
 
-#include <string>
+#include "event.h"
 
-using namespace std;
+class Item;
+class Entity;
 
-class Variable
-{
-private:
-	string	_val;
-	string	_def;
-	string	_desc;
+struct DropEvent : public Event {
+  DropEvent(Entity const& dropper, Item const& droppedItem)
+      : dropper(dropper), item(droppedItem) {}
 
-public:
-	Variable(string def = "", string desc = "");
-
-	void operator=(string val);
-	void operator=(int val);
-
-	string toString();
-	int	 toInt();
+  Entity const& dropper;
+  Item const& item;
 };
 
 #endif

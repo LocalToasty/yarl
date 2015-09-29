@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "iomanager.h"
+#include "yarlviewfactory.h"
+#include "yarlconfig.h"
 
-IOManager::~IOManager()
-{
-}
+#if USE_SDL == ON
+#include "sdlyarlview.h"
+#else
+#include "cursesyarlview.h"
+#endif
 
-void IOManager::moveAddChar(int x, int y, char c, Color col)
-{
-	moveCursor(x, y);
-	addChar(c, col);
-}
-
-
-void IOManager::moveAddString(int x, int y, std::string s, Color col)
-{
-	moveCursor(x, y);
-	addString(s, col);
+std::unique_ptr<YarlView> makeView(YarlController& controller, World& world) {
+#if USE_SDL == ON
+  return std::make_unique<SDLYarlView>(controller, world);
+#else
+  return std::make_unique<CursesYarlView>(controller, world);
+#endif
 }

@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,38 +19,22 @@
 #include "tile.h"
 
 Tile::Tile(char repr, Color color, string prefix, string description,
-		   bool transparent, bool passable) :
-	_repr(repr), _color(color), _prefix(prefix),
-	_description(description), _transparent(transparent),
-	_passable(passable)
-{}
+           bool transparent, bool passable)
+    : _repr(repr),
+      _color(color),
+      _prefix(prefix),
+      _description(description),
+      _transparent(transparent),
+      _passable(passable) {}
 
-bool Tile::transparent() const
-{
-	return _transparent;
-}
+bool Tile::transparent() const { return _transparent; }
 
-char Tile::repr() const
-{
-	return _repr;
-}
+char Tile::repr() const { return _repr; }
 
-Color Tile::color() const
-{
-	return _color;
-}
+Color Tile::color() const { return _color; }
 
-string Tile::prefix() const
-{
-	return _prefix;
-}
+string Tile::prefix() const { return _prefix; }
 
-string Tile::desc() const
-{
-	return _description;
-}
+string Tile::desc() const { return _description; }
 
-bool Tile::passable() const
-{
-	return _passable;
-}
+bool Tile::passable() const { return _passable; }

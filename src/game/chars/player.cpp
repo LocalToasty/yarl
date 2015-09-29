@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,56 +21,24 @@
 #include "world.h"
 
 Player::Player(const Tile& t, int hp, int x, int y, double speed,
-			   int visionRange, array<int, noOfAttributes>& attributes,
-			   World& world, Attack* unarmed,
-			   const list<Item*>& inventory, int bab, Size s,
-			   int naturalArmor) :
-	Humanoid(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-			 inventory, bab, s, naturalArmor)
-{
-}
+               int visionRange, array<int, noOfAttributes>& attributes,
+               World& world, Attack* unarmed, const list<Item*>& inventory,
+               int bab, Size s, int naturalArmor)
+    : Humanoid(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
+               inventory, bab, s, naturalArmor) {}
 
-string Player::itemStatus(Item* i)
-{
-	if (i == mainHand() && i == offHand())
-		return " (in both hands)";
-	else if (i == mainHand())
-		return " (in main hand)";
-	else if (i == offHand())
-		return " (in off hand)";
-	else if (i == armor())
-		return " (worn)";
+string Player::itemStatus(Item* i) const {
+  std::string description = i->desc();
 
-	return "";
-}
+  if (i == mainHand() && i == offHand()) {
+    description += " (in both hands)";
+  } else if (i == mainHand()) {
+    description += " (in main hand)";
+  } else if (i == offHand()) {
+    description += " (in off hand)";
+  } else if (i == armor()) {
+    description += " (worn)";
+  }
 
-string Player::attackMessage(Entity* target, bool hit, bool crit, Weapon* w)
-{
-	string msg = "You ";
-	if (crit && w)
-	{
-		msg += w->critVerb();
-	}
-	else if (hit)
-	{
-		msg += "hit";
-	}
-	else
-	{
-		msg += "miss";
-	}
-
-	msg += " the " + target->desc();
-
-	if(w)
-		msg += " with your " + w->desc();
-
-	msg += '.';
-
-	return msg;
-}
-
-string Player::dieMessage()
-{
-	return "You die.";
+  return description;
 }

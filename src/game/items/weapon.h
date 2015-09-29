@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +22,15 @@
 #include "item.h"
 #include "attack.h"
 
-class Weapon : public Item, public Attack
-{
-private:
-	bool _twoHanded;
+class Weapon : public Item, public Attack {
+ private:
+  bool _twoHanded;
 
-public:
-	Weapon(const Tile& t, Attack a, bool twoHanded, double weight, World& world,
-		int hp, int x = -1, int y = -1, Size s = Size::small);
+ public:
+  Weapon(const Tile& t, Attack a, bool twoHanded, double weight, World& world,
+         int hp, int x = -1, int y = -1, Size s = Size::small);
 
-	bool twoHanded();
+  bool twoHanded();
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,34 +18,20 @@
 
 #include "attack.h"
 
-Attack::Attack(int(*damage)(), int critRange, int critMultiplier,
-	string critVerb, double range) :
-	_damage(damage), _range(range), _critVerb(critVerb),
-	_critMultiplier(critMultiplier), _critRange(critRange)
-{
-}
+Attack::Attack(int (*damage)(), int critRange, int critMultiplier,
+               string critVerb, double range)
+    : _damage(damage),
+      _range(range),
+      _critRange(critRange),
+      _critMultiplier(critMultiplier),
+      _critVerb(critVerb) {}
 
-double Attack::range() const
-{
-	return _range;
-}
+double Attack::range() const { return _range; }
 
-int Attack::damage() const
-{
-	return _damage();
-}
+int Attack::damage() const { return _damage(); }
 
-int Attack::critRange()
-{
-	return _critRange;
-}
+int Attack::critRange() { return _critRange; }
 
-int Attack::critMultiplier()
-{
-	return _critMultiplier;
-}
+int Attack::critMultiplier() { return _critMultiplier; }
 
-string Attack::critVerb()
-{
-	return _critVerb;
-}
+string Attack::critVerb() { return _critVerb; }

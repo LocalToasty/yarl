@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,92 +29,90 @@ class Character;
 
 using namespace std;
 
-class Entity
-{
-public:
-	enum Size
-	{
-		colossal = -8,
-		gargantuan = -4,
-		huge = -2,
-		large = -1,
-		medium = 0,
-		small = 1,
-		tiny = 2,
-		diminutive = 4,
-		fine = 8
-	};
+class Entity {
+ public:
+  enum Size {
+    colossal = -8,
+    gargantuan = -4,
+    huge = -2,
+    large = -1,
+    medium = 0,
+    small = 1,
+    tiny = 2,
+    diminutive = 4,
+    fine = 8
+  };
 
-private:
-	const Tile& _t;
+ private:
+  const Tile& _t;
 
-	int _x;
-	int _y;
+  int _x;
+  int _y;
 
-	int	_hp;	// hitpoints
-	int _maxHp;
+  int _hp;  // hitpoints
+  int _maxHp;
 
-	int _naturalArmor;
+  int _naturalArmor;
 
-	Size _s;
+  Size _s;
 
-	World& _world;
-	Sector* _sector;
+  World& _world;
+  Sector* _sector;
 
-	bool _seen {false};	// has the entity been seen yet?
-	// if yes, last known coordinates
-	int _lastKnownX;
-	int _lastKnownY;
+  bool _seen{false};  // has the entity been seen yet?
+  // if yes, last known coordinates
+  int _lastKnownX;
+  int _lastKnownY;
 
-	list<Item*>	_inventory;
+  list<Item*> _inventory;
 
-	Character* _lastAttacker {nullptr};
+  Character* _lastAttacker{nullptr};
 
-public:
-	Entity(const Tile& t, int hp, int x, int y, World& world,
-			Size s = Size::medium, int naturalArmor = 0,
-			const list<Item*>& inventory = {});
-	virtual ~Entity();
+ public:
+  Entity(const Tile& t, int hp, int x, int y, World& world,
+         Size s = Size::medium, int naturalArmor = 0,
+         const list<Item*>& inventory = {});
+  virtual ~Entity();
 
-	virtual string dieMessage();
+  virtual string dieMessage();
 
-	const Tile&	t() const;
+  const Tile& t() const;
 
-	int x() const;
-	int y() const;
-	World& world() const;
-	Sector* sector() const;
+  int x() const;
+  int y() const;
+  World& world() const;
+  Sector* sector() const;
 
-	bool seen() const;
-	int lastKnownX() const;
-	int lastKnownY() const;
+  bool seen() const;
+  int lastKnownX() const;
+  int lastKnownY() const;
 
-	string prefix();
-	string desc();
+  string prefix() const;
+  string desc() const;
 
-	int maxHp() const;
-	Character* lastAttacker() const;
+  int maxHp() const;
+  Character* lastAttacker() const;
 
-	int hp() const;
-	Size size() const;
-	int naturalArmor() const;
-	virtual int armorClass();
+  int hp() const;
+  Size size() const;
+  int naturalArmor() const;
+  virtual int armorClass();
 
-	list<Item*>& inventory();
+  list<Item*>& inventory();
 
-	void setX(int x);
-	void setY(int y);
-	void setXY(int x, int y);
-	void setSector(Sector* Sector);
+  void setX(int x);
+  void setY(int y);
+  void setXY(int x, int y);
+  void setSector(Sector* Sector);
 
-	void setSeen(bool seen = true);
-	void setLastKnownX();
-	void setLastKnownY();
+  void setSeen(bool seen = true);
+  void setLastKnownX();
+  void setLastKnownY();
 
-	void setHp(int hp);
-	void doDamage(int dmg);
+  void setHp(int hp);
+  void doDamage(int dmg);
 
-	void setLastAttacker(Character* lastAttacker);
-	void setMaxHp(int maxHp);
+  void setLastAttacker(Character* lastAttacker);
+  void setMaxHp(int maxHp);
 };
 #endif

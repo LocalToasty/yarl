@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,20 @@
 #include "character.h"
 #include "command.h"
 
-class NPC : public Character
-{
-private:
-	double _lastAction {0};
+class NPC : public Character {
+ private:
+  double _lastAction{0};
 
-public:
-	NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-		const array<int, noOfAttributes>& attributes, World& world,
-		Attack* unarmed,
-		const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,
-		int naturalArmor = 0);
+ public:
+  NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+      const array<int, noOfAttributes>& attributes, World& world,
+      Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+      Size s = Size::medium, int naturalArmor = 0);
 
-	virtual void think() = 0;
+  virtual void think() = 0;
 
-	double lastAction() const;
-	void setLastAction(double lastAction);
+  double lastAction() const;
+  void setLastAction(double lastAction);
 };
 
 #endif

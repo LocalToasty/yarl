@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,189 +19,124 @@
 #include "entity.h"
 #include "world.h"
 #include "sector.h"
-
 #include "item.h"
+#include "deathevent.h"
+#include "dropevent.h"
 
+Character* Entity::lastAttacker() const { return _lastAttacker; }
 
-Character* Entity::lastAttacker() const
-{
-    return _lastAttacker;
+void Entity::setLastAttacker(Character* lastAttacker) {
+  _lastAttacker = lastAttacker;
 }
 
-void Entity::setLastAttacker(Character* lastAttacker)
-{
-    _lastAttacker = lastAttacker;
-}
+int Entity::maxHp() const { return _maxHp; }
 
-int Entity::maxHp() const
-{
-	return _maxHp;
-}
-
-void Entity::setMaxHp(int maxHp)
-{
-	_maxHp = maxHp;
-}
+void Entity::setMaxHp(int maxHp) { _maxHp = maxHp; }
 Entity::Entity(const Tile& t, int hp, int x, int y, World& world, Size s,
-				int naturalArmor, const list<Item*>& inventory) :
-	_t(t), _x(x), _y(y), _hp(hp), _maxHp(hp), _world(world),
-	_s(s), _naturalArmor(naturalArmor), _inventory(inventory)
-{
-	_sector = world.sector(x, y);
+               int naturalArmor, const list<Item*>& inventory)
+    : _t(t),
+      _x(x),
+      _y(y),
+      _hp(hp),
+      _maxHp(hp),
+      _naturalArmor(naturalArmor),
+      _s(s),
+      _world(world),
+      _inventory(inventory) {
+  _sector = world.sector(x, y);
 
-	if(_sector)
-		_sector->addEntity(this);
+  if (_sector) {
+    _sector->addEntity(this);
+  }
 }
 
-Entity::~Entity()
-{
-	if(_sector)
-		_sector->removeEntity(this);
+Entity::~Entity() {
+  if (_sector) {
+    _sector->removeEntity(this);
+  }
 }
 
-int Entity::armorClass()
-{
-	return 5 + _s + _naturalArmor;
+int Entity::armorClass() { return 5 + _s + _naturalArmor; }
+
+string Entity::dieMessage() { return "The " + desc() + " is destroyed."; }
+
+const Tile& Entity::t() const { return _t; }
+
+int Entity::x() const { return _x; }
+
+int Entity::y() const { return _y; }
+
+World& Entity::world() const { return _world; }
+
+Sector* Entity::sector() const { return _sector; }
+
+bool Entity::seen() const { return _seen; }
+
+int Entity::lastKnownX() const { return _lastKnownX; }
+
+int Entity::lastKnownY() const { return _lastKnownY; }
+
+string Entity::prefix() const { return _t.prefix(); }
+
+string Entity::desc() const { return _t.desc(); }
+
+int Entity::hp() const { return _hp; }
+
+Entity::Size Entity::size() const { return _s; }
+
+int Entity::naturalArmor() const { return _naturalArmor; }
+
+list<Item*>& Entity::inventory() { return _inventory; }
+
+void Entity::setX(int x) {
+  _x = x;
+  setSector(_world.sector(_x, _y));
 }
 
-string Entity::dieMessage()
-{
-	return "The " + desc() + " is destroyed.";
+void Entity::setY(int y) {
+  _y = y;
+  setSector(_world.sector(_x, _y));
 }
 
-const Tile& Entity::t() const
-{
-	return _t;
+void Entity::setXY(int x, int y) {
+  _x = x;
+  _y = y;
+  setSector(_world.sector(_x, _y));
 }
 
-int Entity::x() const
-{
-	return _x;
+void Entity::setSector(Sector* sector) {
+  if (_sector != nullptr) {
+    _sector->removeEntity(this);
+  }
+
+  if (sector != nullptr) {
+    sector->addEntity(this);
+  }
+
+  _sector = sector;
 }
 
-int Entity::y() const
-{
-	return _y;
+void Entity::setSeen(bool seen) { _seen = seen; }
+
+void Entity::setLastKnownX() { _lastKnownX = _x; }
+
+void Entity::setLastKnownY() { _lastKnownY = _y; }
+
+void Entity::setHp(int hp) {
+  if (hp <= 0) {
+    world().addEvent(std::make_unique<DeathEvent>(*this));
+
+    // drop inventory
+    for (Item* e : _inventory) {
+      e->setXY(_x, _y);
+      e->setSeen(false);
+      world().addEvent(std::make_unique<DropEvent>(*this, *e));
+    }
+
+    _sector->removeEntity(this);
+  }
+
+  _hp = hp;
 }
 
-World& Entity::world() const
-{
-	return _world;
-}
-
-Sector* Entity::sector() const
-{
-	return _sector;
-}
-
-bool Entity::seen() const
-{
-	return _seen;
-}
-
-int Entity::lastKnownX() const
-{
-	return _lastKnownX;
-}
-
-int Entity::lastKnownY() const
-{
-	return _lastKnownY;
-}
-
-string Entity::prefix()
-{
-	return _t.prefix();
-}
-
-string Entity::desc()
-{
-	return _t.desc();
-}
-
-int Entity::hp() const
-{
-	return _hp;
-}
-
-Entity::Size Entity::size() const
-{
-	return _s;
-}
-
-int Entity::naturalArmor() const
-{
-	return _naturalArmor;
-}
-
-list<Item*>& Entity::inventory()
-{
-	return _inventory;
-}
-
-void Entity::setX(int x)
-{
-	_x = x;
-	setSector(_world.sector(_x, _y));
-}
-
-void Entity::setY(int y)
-{
-	_y = y;
-	setSector(_world.sector(_x, _y));
-}
-
-void Entity::setXY(int x, int y)
-{
-	_x = x;
-	_y = y;
-	setSector(_world.sector(_x, _y));
-}
-
-void Entity::setSector(Sector* sector)
-{
-	if(_sector != nullptr)
-		_sector->removeEntity(this);
-
-	if(sector != nullptr)
-		sector->addEntity(this);
-
-	_sector = sector;
-}
-
-void Entity::setSeen(bool seen)
-{
-	_seen = seen;
-}
-
-void Entity::setLastKnownX()
-{
-	_lastKnownX = _x;
-}
-
-void Entity::setLastKnownY()
-{
-	_lastKnownY = _y;
-}
-
-void Entity::setHp(int hp)
-{
-	if (hp <= 0)
-	{
-		_world.statusBar().addMessage(dieMessage());
-		// drop inventory
-		for (Item* e : _inventory)
-		{
-			e->setXY(_x, _y);
-			e->setSeen(false);
-		}
-
-		_sector->removeEntity(this);
-	}
-	_hp = hp;
-}
-
-void Entity::doDamage(int dmg)
-{
-	setHp(_hp - dmg);
-}
+void Entity::doDamage(int dmg) { setHp(_hp - dmg); }

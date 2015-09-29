@@ -16,16 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "npc.h"
-#include "character.h"
+#ifndef STATUSBAR_H
+#define STATUSBAR_H
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-         const array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+#include <string>
+#include <list>
 
-double NPC::lastAction() const { return _lastAction; }
+using namespace std;
 
-void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }
+class StatusBar {
+ private:
+  list<string> _messages;
+
+ public:
+  bool empty();
+
+  void addMessage(string message);
+
+  string getLine(size_t maxLen);
+};
+
+#endif

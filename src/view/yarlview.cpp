@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STATUSBAR_H
-#define STATUSBAR_H
+#include "yarlview.h"
 
-#include <string>
-#include <list>
-
-using namespace std;
-
-class StatusBar
-{
-private:
-	list<string> _messages;
-
-public:
-	bool empty();
-
-	void addMessage(string message);
-
-	string getLine(int maxLen);
-};
-
-#endif
+YarlView::~YarlView() {}

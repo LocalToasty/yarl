@@ -16,16 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "npc.h"
-#include "character.h"
+#ifndef DEATHEVENT_H
+#define DEATHEVENT_H
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-         const array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+#include "event.h"
 
-double NPC::lastAction() const { return _lastAction; }
+struct DeathEvent : public Event {
+  DeathEvent(Entity const& victim) : victim(victim) {}
 
-void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }
+  Entity const& victim;
+};
+
+#endif

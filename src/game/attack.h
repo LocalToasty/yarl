@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,26 +23,25 @@
 
 using namespace std;
 
-class Attack
-{
-private:
-	int (*_damage)();	// damage function
-	double _range;
+class Attack {
+ private:
+  int (*_damage)();  // damage function
+  double _range;
 
-	int _critRange;	// minimum result to score a critical hit
-	int _critMultiplier;	// amount by which the damage is multiplied
+  int _critRange;       // minimum result to score a critical hit
+  int _critMultiplier;  // amount by which the damage is multiplied
 
-	string _critVerb;	// word used to describe a critical hit
+  string _critVerb;  // word used to describe a critical hit
 
-public:
-	Attack(int (*damage)(), int critRange = 20, int critMultiplier = 2,
-		string critVerb = "maim", double range = 1.5);
+ public:
+  Attack(int (*damage)(), int critRange = 20, int critMultiplier = 2,
+         string critVerb = "maim", double range = 1.5);
 
-	int damage() const;
-	double range() const;
-	int critRange();
-	int critMultiplier();
-	string critVerb();
+  int damage() const;
+  double range() const;
+  int critRange();
+  int critMultiplier();
+  string critVerb();
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,35 +19,34 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-enum class Command
-{
-	MOVEMENT_BEGIN,
-	west,
-	south,
-	north,
-	east,
-	northEast,
-	northWest,
-	southEast,
-	southWest,
-	MOVEMENT_END,
+enum class Command {
+  MOVEMENT_BEGIN,
+  west,
+  south,
+  north,
+  east,
+  northEast,
+  northWest,
+  southEast,
+  southWest,
+  MOVEMENT_END,
 
-	twoWeaponFightingToggle,
+  wait,
+  none,  // TODO replace with optional
 
-	equip,
-	unequip,
+  equip,
+  unequip,
 
-	pickup,
-	drop,
-	inventory,
+  pickup,
+  drop,
+  inventory,
+  examine,
 
-	examine,
+  twoWeaponFightingToggle,
 
-	wait,
-	none,
+  cancel,
 
-	quit
+  quit
 };
-
 
 #endif

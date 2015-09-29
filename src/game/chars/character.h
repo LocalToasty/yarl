@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,91 +28,78 @@
 
 using namespace std;
 
-class Character : public Entity
-{
-public:
-	enum Attribute
-	{
-		strength,
-		dexterity,
-		constitution,
-		intelligence,
-		wisdom,
-		charisma,
-		noOfAttributes
-	};
+class Character : public Entity {
+ public:
+  enum Attribute {
+    strength,
+    dexterity,
+    constitution,
+    intelligence,
+    wisdom,
+    charisma,
+    noOfAttributes
+  };
 
-	enum class Load
-	{
-		light,
-		medium,
-		heavy,
-		overloaded
-	};
+  enum class Load { light, medium, heavy, overloaded };
 
-private:
-	int _visionRange;
+ private:
+  int _visionRange;
 
-	Attack* _unarmed;
-	Armor* _armor {nullptr};
+  Attack* _unarmed;
+  Armor* _armor{nullptr};
 
-	double _speed;
+  double _speed;
 
-	int _bab;	// base attack bonus
+  int _bab;  // base attack bonus
 
-	Entity* _lastTarget {nullptr};
+  Entity* _lastTarget{nullptr};
 
-protected:
-	array<int, noOfAttributes> _attributes;
+ protected:
+  array<int, noOfAttributes> _attributes;
 
-public:
-	Character(const Tile& t, int hp, int x, int y, double speed,
-		int visionRange, const array<int, noOfAttributes>& attributes,
-		World& world, Attack* unarmed,
-		const list<Item*>& inventory = {},
-		int bab = 0, Size s = Size::medium, int naturalArmor = 0);
+ public:
+  Character(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+            const array<int, noOfAttributes>& attributes, World& world,
+            Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+            Size s = Size::medium, int naturalArmor = 0);
 
-	bool los(int x, int y, double factor = 1) const;
-	bool los(Entity* e);
-	vector<Entity*> seenEntities();
+  bool los(int x, int y, double factor = 1) const;
+  bool los(const Entity& e, double factor = 1) const;
+  vector<Entity*> seenEntities();
 
-	bool move(int dx, int dy);
+  bool move(int dx, int dy);
 
-	virtual void attack(Entity* target);
+  virtual void attack(Entity* target);
 
-	virtual string attackMessage(Entity* target,
-		bool hit, bool crit, Weapon* w = nullptr);
-	virtual string dieMessage();
+  int armorClass();
 
-	int armorClass();
+  Attack* unarmed();
 
-	Attack* unarmed();
+  Armor* armor() const;
+  void setArmor(Armor* armor);
 
-	Armor* armor();
-	void setArmor(Armor* armor);
+  int attribute(Attribute attribute);
+  void setAttribute(Attribute attribute, int value);
+  virtual int attributeMod(Attribute attribute);
 
-	int attribute(Attribute attribute);
-	void setAttribute(Attribute attribute, int value);
-	virtual int attributeMod(Attribute attribute);
+  int visionRange() const;
+  double speed() const;
 
-	int visionRange() const;
-	double speed() const;
+  double inventoryWeight();
 
-	double inventoryWeight();
+  double lightLoad();
+  double mediumLoad();
+  double heavyLoad();
 
-	double lightLoad();
-	double mediumLoad();
-	double heavyLoad();
+  Load load();
 
-	Load load();
+  int loadMaxDexBon();
+  int loadCheckPenalty();
 
-	int loadMaxDexBon();
-	int loadCheckPenalty();
+  Entity* lastTarget() const;
+  void setLastTarget(Entity* lastTarget);
 
-	Entity* lastTarget() const;
-	void setLastTarget(Entity* lastTarget);
-
-	int bab();
+  int bab();
 };
 
 #endif

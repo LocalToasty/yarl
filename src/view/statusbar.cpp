@@ -16,16 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "npc.h"
-#include "character.h"
+#include "statusbar.h"
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-         const array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+bool StatusBar::empty() { return _messages.empty(); }
 
-double NPC::lastAction() const { return _lastAction; }
+void StatusBar::addMessage(std::string message) {
+  _messages.push_back(message);
+}
 
-void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }
+string StatusBar::getLine(size_t maxLen) {
+  string line;
+  string more = ".. ";
+
+  for (;;) {
+    int addChars = 2;  // preceding + leading space
+
+    if (_messages.size() > 1) {
+      addChars += more.length();
+    }
+
+    if (_messages.empty()) {
+      line.push_back(' ');
+      return line;
+    } else if (line.length() + _messages.front().length() + addChars < maxLen) {
+      line.push_back(' ');
+      line.append(_messages.front());
+      _messages.pop_front();
+    }
+    //		else if (line.empty())	// TODO
+    else {
+      return line.append(more);
+    }
+  }
+}

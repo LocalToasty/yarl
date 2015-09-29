@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,8 @@
 
 #include "weapon.h"
 
-Weapon::Weapon(const Tile& t, Attack a, bool twoHanded, double weight, World& world, int hp, int x, int y, Size s) :
-	Item(t, weight, world, hp, x, y, s), Attack(a), _twoHanded(twoHanded)
-{
-}
+Weapon::Weapon(const Tile& t, Attack a, bool twoHanded, double weight,
+               World& world, int hp, int x, int y, Size s)
+    : Item(t, weight, world, hp, x, y, s), Attack(a), _twoHanded(twoHanded) {}
 
-bool Weapon::twoHanded()
-{
-	return _twoHanded;
-}
+bool Weapon::twoHanded() { return _twoHanded; }

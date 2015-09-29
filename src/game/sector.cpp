@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,92 +27,76 @@ using namespace std;
 
 const int Sector::_size = 0x20;
 
-Sector::Sector(Tile* defTile) :
-	_tiles(_size * _size, defTile), _explored(_size * _size)
-{
-}
+Sector::Sector(Tile* defTile)
+    : _tiles(_size * _size, defTile), _explored(_size * _size) {}
 
-Sector::~Sector()
-{
-	for (Entity* e : _entities)
-		delete e;
+Sector::~Sector() {
+  for (Entity* e : _entities) {
+    delete e;
+  }
 }
 
 // returns true if neither the terrain nor the any entities at the coordinates
 // are implassable.
-bool Sector::passable(int x, int y)
-{
-	// check for terrain passability
-	if (!tile(x, y)->passable())
-		return false;
+bool Sector::passable(int x, int y) {
+  // check for terrain passability
+  if (!tile(x, y)->passable()) {
+    return false;
+  }
 
-	// check for entitiy passability
-	for (Entity* e : entities(x, y))
-		if (!e->t().passable())
-			return false;
+  // check for entitiy passability
+  for (Entity* e : entities(x, y))
+    if (!e->t().passable()) {
+      return false;
+    }
 
-	return true;
+  return true;
 }
 
-int Sector::size()
-{
-	return _size;
+int Sector::size() { return _size; }
+
+const list<Entity*>& Sector::entities() const { return _entities; }
+
+void Sector::addEntity(Entity* e) {
+  // Entities which are passable should be drawn before those wich are not.
+  // Entities which are transparent should be drawn before those wich are not.
+  // This is to ensure that the impassable / opaque entities are drawn on
+  // top.
+  auto comp = [](Entity* l, Entity* r) {
+    return (l->t().passable() && !r->t().passable()) ||
+           (l->t().transparent() && !r->t().transparent());
+  };
+
+  auto pos = lower_bound(_entities.begin(), _entities.end(), e, comp);
+
+  _entities.insert(pos, e);
 }
 
-const list<Entity*>& Sector::entities() const
-{
-	return _entities;
+void Sector::removeEntity(Entity* e) { _entities.remove(e); }
+
+vector<Entity*> Sector::entities(int x, int y) const {
+  vector<Entity*> ents;
+
+  for (Entity* e : _entities)
+    if (e->x() == x && e->y() == y) {
+      ents.push_back(e);
+    }
+
+  return ents;
 }
 
-void Sector::addEntity(Entity* e)
-{
-	// Entities which are passable should be drawn before those wich are not.
-	// Entities which are transparent should be drawn before those wich are not.
-	// This is to ensure that the impassable / opaque entities are drawn on
-	// top.
-	auto comp = [](Entity* l, Entity* r)
-	{
-		return (l->t().passable() && !r->t().passable()) ||
-			   (l->t().transparent() && !r->t().transparent());
-	};
-
-	auto pos = lower_bound(_entities.begin(), _entities.end(), e, comp);
-
-	_entities.insert(pos, e);
+bool Sector::explored(int x, int y) {
+  return _explored.at(x % _size + (y % _size) * _size);
 }
 
-void Sector::removeEntity(Entity* e)
-{
-	_entities.remove(e);
+void Sector::setExplored(int x, int y, bool explored) {
+  _explored.at(x % _size + (y % _size) * _size) = explored;
 }
 
-vector<Entity*> Sector::entities(int x, int y) const
-{
-	vector<Entity*> ents;
-
-	for(Entity* e : _entities)
-		if(e->x() == x && e->y() == y)
-			ents.push_back(e);
-
-	return ents;
+Tile* Sector::tile(int x, int y) {
+  return _tiles.at(x % _size + (y % _size) * _size);
 }
 
-bool Sector::explored(int x, int y)
-{
-	return _explored.at(x % _size + (y % _size) * _size);
-}
-
-void Sector::setExplored(int x, int y, bool explored)
-{
-	_explored.at(x % _size + (y % _size) * _size) = explored;
-}
-
-Tile* Sector::tile(int x, int y)
-{
-	return _tiles.at(x % _size + (y % _size) * _size);
-}
-
-void Sector::setTile(int x, int y, Tile* tile)
-{
-	_tiles.at(x % _size + (y % _size) * _size) = tile;
+void Sector::setTile(int x, int y, Tile* tile) {
+  _tiles.at(x % _size + (y % _size) * _size) = tile;
 }

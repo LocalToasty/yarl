@@ -1,6 +1,6 @@
 /*
  * YARL - Yet another Roguelike
- * Copyright (C) 2015  Marko van Treeck <markovantreeck@gmail.com>
+ * Copyright (C) 2015-2016  Marko van Treeck <markovantreeck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,81 +20,80 @@
 #define WORLD_H
 
 #include "command.h"
-#include "statusbar.h"
 #include "tile.h"
 #include "weapon.h"
 #include "armor.h"
+#include "event.h"
 #include <vector>
-
-using namespace std;
+#include <queue>
+#include <memory>
 
 class Sector;
 class Character;
 class Entity;
 class Player;
 
-class World
-{
-private:
-	int _width;
-	int _height;
+class World {
+ public:
+  World(int width, int height);
 
-	vector<Sector*> _sectors;
+  static double distance(int x1, int y1, int x2, int y2);
 
-	StatusBar _statusBar;
+  bool los(int x1, int y1, int x2, int y2, double range = -1);
+  vector<Command> route(int x1, int y1, int x2, int y2, bool converge = false);
 
-	Player* _player;
+  Sector* sector(int x, int y) const;
+  Player* player() const;
 
-	double _time {0};
+  Tile* tile(int x, int y) const;
+  void setTile(int x, int y, Tile* t);
 
-	static Tile _grass;
-	static Tile _mud;
-	static Tile _tree;
-	static Tile _none;
+  bool explored(int x, int y);
+  void setExplored(int x, int y, bool explored = true);
 
-	static Tile _hero;
+  bool passable(int x, int y);
 
-	static Tile _goblin;
+  vector<Entity*> entities(int x, int y);
+  vector<Entity*> entities(int x1, int y1, int x2, int y2);
+  void addEntitiy(Entity* e);
+  void removeEntity(Entity* e);
 
-	static Tile _dog;
-	static Tile _dogCorpse;
+  double time();
+  void letTimePass(double time);
+  void think();
 
-	static Tile _shortSword;
-	static Tile _claymore;
-	static Tile _leatherArmor;
-	static Tile _buckler;
+  bool eventAvailable() const;
+  void addEvent(std::unique_ptr<Event>&& event);
+  std::unique_ptr<Event> getEvent();
 
-public:
-	World(int width, int height);
-	~World();
+ private:
+  int _width;
+  int _height;
 
-	static double distance(int x1, int y1, int x2, int y2);
+  std::vector<Sector*> _sectors;
 
-	bool los(int x1, int y1, int x2, int y2, double range = -1);
-	vector<Command> route(int x1, int y1, int x2, int y2,
-						  bool converge = false);
+  Player* _player;
 
-	Sector* sector(int x, int y);
-	Player* player();
+  double _time{0};
 
-	Tile* tile(int x, int y);
-	void setTile(int x, int y, Tile* t);
+  std::queue<std::unique_ptr<Event>> _events;
 
-	bool explored(int x, int y);
-	void setExplored(int x, int y, bool explored = true);
+  static Tile _grass;
+  static Tile _mud;
+  static Tile _tree;
+  static Tile _none;
 
-	bool passable(int x, int y);
+  static Tile _hero;
 
-	vector<Entity*> entities(int x, int y);
-	vector<Entity*> entities(int x1, int y1, int x2, int y2);
-	void addEntitiy(Entity* e);
-	void removeEntity(Entity* e);
+  static Tile _goblin;
 
-	double time();
-	void letTimePass(double time);
-	void think();
+  static Tile _dog;
+  static Tile _dogCorpse;
 
-	StatusBar& statusBar();
+  static Tile _shortSword;
+  static Tile _claymore;
+  static Tile _leatherArmor;
+  static Tile _buckler;
 };
 
 #endif
