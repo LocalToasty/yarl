@@ -270,6 +270,11 @@ void YarlController::quit() {
 }
 
 void YarlController::moveCommand(Command direction) {
+  if (direction == Command::wait) {
+    _world->letTimePass(1);
+    return;
+  }
+
   Player* player = _world->player();
   int dx = 0;
   int dy = 0;
