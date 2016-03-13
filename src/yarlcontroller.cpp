@@ -26,6 +26,7 @@
 #include "world.h"
 #include "npc.h"
 #include "dropevent.h"
+#include <boost/range/adaptor/reversed.hpp>
 #include <stdexcept>
 #include <functional>
 #include <algorithm>
@@ -300,7 +301,7 @@ void YarlController::moveCommand(Command direction) {
 
     if (!ents.empty()) {
       _world->letTimePass(2);
-      player->attack(ents.front());
+      player->attack(ents.back());
     }
   } else {  // movement success
     _world->letTimePass((abs(dx) + abs(dy) == 1) ? player->speed()
@@ -309,7 +310,7 @@ void YarlController::moveCommand(Command direction) {
 
     // always at least 1 because player stands here
     if (ents.size() > 1) {
-      for (Entity* e : ents) {
+      for (Entity* e : boost::adaptors::reverse(ents)) {
         if (e != player) {
           _view->addStatusMessage("You see a " + e->desc() + " here.");
         }

@@ -23,6 +23,7 @@
 #include "attackevent.h"
 #include "deathevent.h"
 #include "dropevent.h"
+#include <boost/range/adaptor/reversed.hpp>
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <memory>
@@ -471,9 +472,11 @@ void ConsoleYarlView::draw() {
   }
 
   // render entities
-  for (Entity* e :
-       _world.entities(player->x() - width() / 2, player->y() - height() / 2,
-                       player->x() + width() / 2, player->y() + height() / 2)) {
+  auto ents =
+      _world.entities(player->x() - width() / 2, player->y() - height() / 2,
+                      player->x() + width() / 2, player->y() + height() / 2);
+
+  for (Entity* e : ents) {
     if (player->los(*e)) {
       e->setSeen();
       e->setLastKnownX();

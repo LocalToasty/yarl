@@ -88,16 +88,6 @@ int Entity::naturalArmor() const { return _naturalArmor; }
 
 list<Item*>& Entity::inventory() { return _inventory; }
 
-void Entity::setX(int x) {
-  _x = x;
-  setSector(_world.sector(_x, _y));
-}
-
-void Entity::setY(int y) {
-  _y = y;
-  setSector(_world.sector(_x, _y));
-}
-
 void Entity::setXY(int x, int y) {
   _x = x;
   _y = y;

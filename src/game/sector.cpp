@@ -62,12 +62,12 @@ void Sector::addEntity(Entity* e) {
   // Entities which are transparent should be drawn before those wich are not.
   // This is to ensure that the impassable / opaque entities are drawn on
   // top.
-  auto comp = [](Entity* l, Entity* r) {
-    return (l->t().passable() && !r->t().passable()) ||
-           (l->t().transparent() && !r->t().transparent());
+  auto comp = [](Entity* element, Entity* value) {
+    return (element->t().passable() && !value->t().passable()) ||
+           (element->t().transparent() && !value->t().transparent());
   };
 
-  auto pos = lower_bound(_entities.begin(), _entities.end(), e, comp);
+  auto pos = std::upper_bound(_entities.begin(), _entities.end(), e, comp);
 
   _entities.insert(pos, e);
 }
