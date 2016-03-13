@@ -16,9 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef COMPANION_H
+#define COMPANION_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "npc.h"
+
+class Companion : public NPC {
+ private:
+  Character* _companion;
+
+  int _waypointX{-1};
+  int _waypointY{-1};
+
+ public:
+  Companion(const Tile& t, Character* companion, int hp, int x, int y,
+            double speed, int visionRange,
+            const array<int, noOfAttributes>& attributes, World& world,
+            Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+            Size s = Size::medium, int naturalArmor = 0);
+
+  void think();
+};
+
+#endif

@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "weapon.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+Weapon::Weapon(const Tile& t, Attack a, bool twoHanded, double weight,
+               World& world, int hp, int x, int y, Size s)
+    : Item(t, weight, world, hp, x, y, s), Attack(a), _twoHanded(twoHanded) {}
+
+bool Weapon::twoHanded() { return _twoHanded; }

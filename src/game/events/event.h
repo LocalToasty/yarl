@@ -16,9 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef EVENT_H
+#define EVENT_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+class Event {
+ public:
+  virtual ~Event() {}
+};
+
+#endif

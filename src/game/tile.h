@@ -16,9 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef TILE_H
+#define TILE_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "yarlview.h"
+#include <string>
+
+using namespace std;
+
+class Tile {
+ private:
+  char _repr;
+  Color _color;
+
+  string _prefix;
+  string _description;
+
+  bool _transparent;
+  bool _passable;
+
+ public:
+  Tile(char repr = ' ', Color color = Color::black, string pref = "a",
+       string description = "", bool transparent = false,
+       bool passable = false);
+
+  char repr() const;
+  Color color() const;
+  string prefix() const;
+  string desc() const;
+  bool passable() const;
+  bool transparent() const;
+};
+
+#endif

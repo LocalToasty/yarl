@@ -16,9 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "yarlview.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+YarlView::~YarlView() {}

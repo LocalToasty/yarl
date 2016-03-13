@@ -16,9 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef WEAPON_H
+#define WEAPON_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "item.h"
+#include "attack.h"
+
+class Weapon : public Item, public Attack {
+ private:
+  bool _twoHanded;
+
+ public:
+  Weapon(const Tile& t, Attack a, bool twoHanded, double weight, World& world,
+         int hp, int x = -1, int y = -1, Size s = Size::small);
+
+  bool twoHanded();
+};
+
+#endif

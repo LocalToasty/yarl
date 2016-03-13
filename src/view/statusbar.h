@@ -16,9 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef STATUSBAR_H
+#define STATUSBAR_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include <string>
+#include <list>
+
+using namespace std;
+
+class StatusBar {
+ private:
+  list<string> _messages;
+
+ public:
+  bool empty();
+
+  void addMessage(string message);
+
+  string getLine(size_t maxLen);
+};
+
+#endif

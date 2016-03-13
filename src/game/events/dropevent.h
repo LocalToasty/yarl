@@ -16,9 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef DROPEVENT_H
+#define DROPEVENT_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "event.h"
+
+class Item;
+class Entity;
+
+struct DropEvent : public Event {
+  DropEvent(Entity const& dropper, Item const& droppedItem)
+      : dropper(dropper), item(droppedItem) {}
+
+  Entity const& dropper;
+  Item const& item;
+};
+
+#endif

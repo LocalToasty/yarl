@@ -16,9 +16,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef YARL_H
+#define YARL_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "sector.h"
+#include "tile.h"
+#include "statusbar.h"
+#include "command.h"
+#include "world.h"
+#include "yarlview.h"
+#include <iostream>
+#include <memory>
+#include <string>
+#include <map>
+
+class Player;
+
+class YarlController {
+ private:
+  std::unique_ptr<World> _world;
+  std::unique_ptr<YarlView> _view;
+
+  map<char, Command> _bindings;
+
+  bool init(int argc, char* argv[]);
+  void render();
+  bool logic();
+  int cleanup();
+  void usage(ostream& out = cout);
+
+ public:
+  int exec(int argc, char* argv[]);
+  void quit();
+
+  void moveCommand(Command direction);
+  void equip();
+  void unequip();
+  void pickup();
+  void drop();
+  void showInventory();
+  void examine();
+  void twoWeaponFightingToggle();
+};
+
+#endif

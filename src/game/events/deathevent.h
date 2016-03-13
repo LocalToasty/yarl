@@ -16,9 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef DEATHEVENT_H
+#define DEATHEVENT_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "event.h"
+
+struct DeathEvent : public Event {
+  DeathEvent(Entity const& victim) : victim(victim) {}
+
+  Entity const& victim;
+};
+
+#endif

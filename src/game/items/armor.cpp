@@ -16,9 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "armor.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+Armor::Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+             double weight, World& world, int x, int y, Size s)
+    : Item(t, weight, world, ac * 5, x, y, s),
+      _ac(ac),
+      _maxDexBon(maxDexBon),
+      _checkPenalty(checkPenalty),
+      _shield(shield) {}
+
+int Armor::ac() const { return _ac; }
+
+int Armor::maxDexBon() const { return _maxDexBon; }
+
+int Armor::checkPenalty() const { return _checkPenalty; }
+
+bool Armor::isShield() const { return _shield; }

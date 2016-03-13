@@ -16,9 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef ARMOR_H
+#define ARMOR_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "item.h"
+
+class Armor : public Item {
+ private:
+  int _ac;            // armor class bonus
+  int _maxDexBon;     // maximum dexterity bonus
+  int _checkPenalty;  // penalty imposed onto str / dex checks
+
+  bool _shield;
+
+ public:
+  Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
+        double weight, World& world, int x = -1, int y = -1,
+        Size s = Size::small);
+
+  int ac() const;
+  int maxDexBon() const;
+  int checkPenalty() const;
+  bool isShield() const;
+};
+
+#endif

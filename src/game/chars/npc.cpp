@@ -16,9 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "npc.h"
+#include "character.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+         const array<int, noOfAttributes>& attributes, World& world,
+         Attack* unarmed, const list<Item*>& inventory, int bab, Size s,
+         int naturalArmor)
+    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
+                inventory, bab, s, naturalArmor) {}
+
+double NPC::lastAction() const { return _lastAction; }
+
+void NPC::setLastAction(double lastAction) { _lastAction = lastAction; }

@@ -16,9 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef COMMAND_H
+#define COMMAND_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+enum class Command {
+  MOVEMENT_BEGIN,
+  west,
+  south,
+  north,
+  east,
+  northEast,
+  northWest,
+  southEast,
+  southWest,
+  MOVEMENT_END,
+
+  wait,
+  none,  // TODO replace with optional
+
+  equip,
+  unequip,
+
+  pickup,
+  drop,
+  inventory,
+  examine,
+
+  twoWeaponFightingToggle,
+
+  cancel,
+
+  quit
+};
+
+#endif

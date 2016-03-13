@@ -16,9 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef PLAYER_H
+#define PLAYER_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "humanoid.h"
+#include "weapon.h"
+#include <string>
+
+using namespace std;
+
+class Player : public Humanoid {
+ public:
+  Player(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+         array<int, noOfAttributes>& attributes, World& world, Attack* unarmed,
+         const list<Item*>& inventory = {}, int bab = 0, Size s = Size::medium,
+         int naturalArmor = 0);
+
+  string itemStatus(Item* i) const;
+};
+
+#endif

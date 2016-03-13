@@ -16,9 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "attack.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+Attack::Attack(int (*damage)(), int critRange, int critMultiplier,
+               string critVerb, double range)
+    : _damage(damage),
+      _range(range),
+      _critRange(critRange),
+      _critMultiplier(critMultiplier),
+      _critVerb(critVerb) {}
+
+double Attack::range() const { return _range; }
+
+int Attack::damage() const { return _damage(); }
+
+int Attack::critRange() { return _critRange; }
+
+int Attack::critMultiplier() { return _critMultiplier; }
+
+string Attack::critVerb() { return _critVerb; }

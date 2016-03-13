@@ -16,9 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "tile.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+Tile::Tile(char repr, Color color, string prefix, string description,
+           bool transparent, bool passable)
+    : _repr(repr),
+      _color(color),
+      _prefix(prefix),
+      _description(description),
+      _transparent(transparent),
+      _passable(passable) {}
+
+bool Tile::transparent() const { return _transparent; }
+
+char Tile::repr() const { return _repr; }
+
+Color Tile::color() const { return _color; }
+
+string Tile::prefix() const { return _prefix; }
+
+string Tile::desc() const { return _description; }
+
+bool Tile::passable() const { return _passable; }

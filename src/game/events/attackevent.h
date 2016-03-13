@@ -16,9 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef ATTACKEVENT_H
+#define ATTACKEVENT_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "event.h"
+
+struct AttackEvent : public Event {
+  AttackEvent(Character const& attacker, Entity const& target, bool hit)
+      : attacker(attacker), target(target), hit(hit) {}
+
+  Character const& attacker;
+  Entity const& target;
+  bool hit;
+};
+
+#endif

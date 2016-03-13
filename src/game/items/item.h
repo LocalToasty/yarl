@@ -16,9 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef ITEM_H
+#define ITEM_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "entity.h"
+
+class Item : public Entity {
+ private:
+  double _weight;
+
+ public:
+  Item(const Tile& t, double weight, World& world, int hp, int x = -1,
+       int y = -1, Size s = Size::medium);
+
+  double weight() const;
+};
+
+#endif

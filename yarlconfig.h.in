@@ -16,9 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef YARLCONFIG_H
+#define YARLCONFIG_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#define PROJECT_NAME "@PROJECT_NAME@"
+
+#define VERSION_MAJOR @VERSION_MAJOR@
+#define VERSION_MINOR @VERSION_MINOR@
+#define VERSION_PATCH @VERSION_PATCH@
+#define VERSION_IDENTIFIER "@VERSION_IDENTIFIER@"
+
+#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+
+#define ON 1
+#define OFF 0
+#define USE_SDL @USE_SDL@
+
+#endif

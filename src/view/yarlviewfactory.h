@@ -16,9 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#ifndef YARLVIEWFACTORY_H
+#define YARLVIEWFACTORY_H
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
-}
+#include "yarlview.h"
+#include "yarlcontroller.h"
+#include "world.h"
+#include <memory>
+
+std::unique_ptr<YarlView> makeView(YarlController& controller, World& world);
+
+#endif

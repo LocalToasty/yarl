@@ -16,9 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "yarlcontroller.h"
+#include "yarlviewfactory.h"
+#include "yarlconfig.h"
 
-int main(int argc, char* argv[]) {
-  YarlController app;
-  return app.exec(argc, argv);
+#if USE_SDL == ON
+#include "sdlyarlview.h"
+#else
+#include "cursesyarlview.h"
+#endif
+
+std::unique_ptr<YarlView> makeView(YarlController& controller, World& world) {
+#if USE_SDL == ON
+  return std::make_unique<SDLYarlView>(controller, world);
+#else
+  return std::make_unique<CursesYarlView>(controller, world);
+#endif
 }
