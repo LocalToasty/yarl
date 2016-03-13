@@ -45,6 +45,7 @@ add_executable(
   src/yarlcontroller.h
   src/yarlcontroller.cpp
   src/command.h
+  src/vec.hpp
   src/view/yarlview.h
   src/view/yarlview.cpp
   src/view/yarlviewfactory.h

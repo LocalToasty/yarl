@@ -24,6 +24,7 @@
 #include "weapon.h"
 #include "armor.h"
 #include "event.h"
+#include "vec.hpp"
 #include <vector>
 #include <queue>
 #include <memory>
@@ -37,25 +38,25 @@ class World {
  public:
   World(int width, int height);
 
-  static double distance(int x1, int y1, int x2, int y2);
+  static double distance(Position from, Position to);
 
-  bool los(int x1, int y1, int x2, int y2, double range = -1);
-  std::vector<Command> route(int x1, int y1, int x2, int y2,
+  bool los(Position from, Position to, double range = -1);
+  std::vector<Command> route(Position from, Position dest,
                              bool converge = false);
 
-  Sector* sector(int x, int y) const;
+  Sector* sector(Position pos) const;
   Player* player() const;
 
-  Tile* tile(int x, int y) const;
-  void setTile(int x, int y, Tile* t);
+  Tile* tile(Position pos) const;
+  void setTile(Position pos, Tile* t);
 
-  bool explored(int x, int y);
-  void setExplored(int x, int y, bool explored = true);
+  bool explored(Position pos) const;
+  void setExplored(Position pos, bool explored = true);
 
-  bool passable(int x, int y);
+  bool passable(Position pos);
 
-  std::vector<Entity*> entities(int x, int y);
-  std::vector<Entity*> entities(int x1, int y1, int x2, int y2);
+  std::vector<Entity*> entities(Position pos) const;
+  std::vector<Entity*> entities(Position topLeft, Position botRight);
   void addEntitiy(Entity* e);
   void removeEntity(Entity* e);
 

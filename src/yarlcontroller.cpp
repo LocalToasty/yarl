@@ -276,36 +276,20 @@ void YarlController::moveCommand(Command direction) {
   }
 
   Player* player = _world->player();
-  int dx = 0;
-  int dy = 0;
+  Vec<int, 2> diff(direction);
 
-  if (direction == Command::west || direction == Command::northWest ||
-      direction == Command::southWest) {
-    dx = -1;
-  } else if (direction == Command::east || direction == Command::northEast ||
-             direction == Command::southEast) {
-    dx = 1;
-  }
-
-  if (direction == Command::north || direction == Command::northWest ||
-      direction == Command::northEast) {
-    dy = -1;
-  } else if (direction == Command::south || direction == Command::southWest ||
-             direction == Command::southEast) {
-    dy = 1;
-  }
-
-  if (!player->move(dx, dy)) {  // an entity is blocking
-    auto ents = _world->entities(player->x() + dx, player->y() + dy);
+  if (!player->move(diff)) {  // an entity is blocking
+    auto ents = _world->entities(player->pos() + diff);
 
     if (!ents.empty()) {
       _world->letTimePass(2);
       player->attack(ents.back());
     }
   } else {  // movement success
-    _world->letTimePass((abs(dx) + abs(dy) == 1) ? player->speed()
-                                                 : 1.5 * player->speed());
-    auto ents = _world->entities(player->x(), player->y());
+    _world->letTimePass((abs(diff[0]) + abs(diff[1]) == 1)
+                            ? player->speed()
+                            : 1.5 * player->speed());
+    auto ents = _world->entities(player->pos());
 
     // always at least 1 because player stands here
     if (ents.size() > 1) {
@@ -444,7 +428,7 @@ void YarlController::drop() {
 
       Character::Load before = player->load();
 
-      (item)->setXY(player->x(), player->y());
+      item->setPos(player->pos());
       player->inventory().remove(item);
 
       Character::Load after = player->load();
@@ -471,13 +455,10 @@ void YarlController::drop() {
 void YarlController::examine() {
   // user entered coordinates
   if (auto pos = _view->promptCoordinates()) {
-    int x, y;
-    std::tie(x, y) = *pos;
-
-    if (_world->explored(x, y)) {
+    if (_world->explored(*pos)) {
       // find the topmost already seen entity
       // FIXME: if an already seen entity has moved, this doesn't work
-      auto const ents = _world->entities(x, y);
+      auto const ents = _world->entities(*pos);
       auto e =
           std::find_if(ents.cbegin(), ents.cend(), std::mem_fn(&Entity::seen));
 
@@ -485,7 +466,7 @@ void YarlController::examine() {
       if (e != ents.cend()) {
         t = &(*e)->t();
       } else {  // no entity found, show information on the ground
-        t = _world->tile(x, y);
+        t = _world->tile(*pos);
       }
 
       _view->addStatusMessage(std::string() + t->repr() + " - " + t->prefix() +
@@ -508,10 +489,10 @@ void YarlController::pickup() {
   Character::Load before = player->load();
 
   // search for entities in reach of the player
-  for (Entity* e : _world->entities(player->x(), player->y())) {
+  for (Entity* e : _world->entities(player->pos())) {
     if (dynamic_cast<Item*>(e) != nullptr) {
       _world->removeEntity(e);
-      e->setXY(-1, -1);
+      e->setPos(Vec<int, 2>({-1, -1}));
       player->inventory().push_back((Item*)e);
 
       _view->addStatusMessage("You pick up the " + e->desc() + '.');

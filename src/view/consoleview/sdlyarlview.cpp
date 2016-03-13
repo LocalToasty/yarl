@@ -127,21 +127,15 @@ int SDLYarlView::width() const { return _width; }
 
 int SDLYarlView::height() const { return _height; }
 
-void SDLYarlView::cursor(bool val) { _cursorOn = val; }
-
-int SDLYarlView::cursorX() const { return _cursX; }
-
-int SDLYarlView::cursorY() const { return _cursY; }
-
 void SDLYarlView::addChar(char c, Color col) {
-  _characters.at(_cursX + _width * _cursY) = c;
-  _colors.at(_cursX + _width * _cursY) = col;
+  _characters.at(_cursPos[0] + _width * _cursPos[1]) = c;
+  _colors.at(_cursPos[0] + _width * _cursPos[1]) = col;
 
-  _cursX++;
+  _cursPos[0]++;
 
-  if (_cursX > _width) {
-    _cursX = 0;
-    _cursY++;
+  if (_cursPos[0] > _width) {
+    _cursPos[0] = 0;
+    _cursPos[1]++;
   }
 }
 
@@ -151,21 +145,21 @@ void SDLYarlView::addString(std::string s, Color col) {
   }
 }
 
-void SDLYarlView::moveCursor(int x, int y) {
-  if (x >= _width) {
-    _cursX = _width;
-  } else if (x < 0) {
-    _cursX = 0;
+void SDLYarlView::moveCursor(Vec<int, 2> pos) {
+  if (pos[0] >= _width) {
+    _cursPos[0] = _width;
+  } else if (pos[0] < 0) {
+    _cursPos[0] = 0;
   } else {
-    _cursX = x;
+    _cursPos[0] = pos[0];
   }
 
-  if (y >= _height) {
-    _cursY = _height;
-  } else if (y < 0) {
-    _cursY = 0;
+  if (pos[1] >= _height) {
+    _cursPos[1] = _height;
+  } else if (pos[1] < 0) {
+    _cursPos[1] = 0;
   } else {
-    _cursY = y;
+    _cursPos[1] = pos[1];
   }
 }
 
@@ -219,7 +213,7 @@ void SDLYarlView::refreshScreen() {
       pos.w = _charWidth;
       pos.h = _charHeight;
 
-      if (_cursorOn && _cursX == x && _cursY == y) {
+      if (_cursorOn && _cursPos[0] == x && _cursPos[1] == y) {
         SDL_SetColorKey(_charset, SDL_TRUE,
                         SDL_MapRGB(screen->format, 0, 0, 0));
         SDL_FillRect(screen, &pos,

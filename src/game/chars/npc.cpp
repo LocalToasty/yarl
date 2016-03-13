@@ -19,11 +19,11 @@
 #include "npc.h"
 #include "character.h"
 
-NPC::NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+NPC::NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
          const std::array<int, noOfAttributes>& attributes, World& world,
          Attack* unarmed, const std::list<Item*>& inventory, int bab, Size s,
          int naturalArmor)
-    : Character(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
+    : Character(t, hp, pos, speed, visionRange, attributes, world, unarmed,
                 inventory, bab, s, naturalArmor) {}
 
 double NPC::lastAction() const { return _lastAction; }

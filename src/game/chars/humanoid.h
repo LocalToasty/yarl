@@ -31,7 +31,7 @@ class Humanoid : public Character {
   bool _twoWeaponFighting{false};
 
  public:
-  Humanoid(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+  Humanoid(const Tile& t, int hp, Position pos, double speed, int visionRange,
            const std::array<int, noOfAttributes>& attributes, World& world,
            Attack* unarmed, const std::list<Item*>& inventory = {}, int bab = 0,
            Size s = Size::medium, int naturalArmor = 0);

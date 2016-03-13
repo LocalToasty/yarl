@@ -21,6 +21,7 @@
 
 #include "consoleyarlview.h"
 #include "statusbar.h"
+#include "vec.hpp"
 #include <SDL2/SDL.h>
 #include <vector>
 #include <queue>
@@ -47,11 +48,10 @@ class SDLYarlView : public ConsoleYarlView {
   int height() const;
 
   // turn the cursor on or off
-  void cursor(bool val);
+  void cursor(bool val) { _cursorOn = val; }
 
   // cursor coordinates
-  int cursorX() const;
-  int cursorY() const;
+  Vec<int, 2> cursorPos() const { return _cursPos; }
 
   // replace the character at the current cursor location
   void addChar(char c, Color col = Color::white);
@@ -59,7 +59,7 @@ class SDLYarlView : public ConsoleYarlView {
   void addString(std::string s, Color col = Color::white);
 
   // move the cursor to the given coordinates
-  void moveCursor(int x, int y);
+  void moveCursor(Vec<int, 2> pos);
 
   void clear(int x, int y, int w, int h);
 
@@ -89,8 +89,7 @@ class SDLYarlView : public ConsoleYarlView {
   int _height{_defaultHeight};
 
   // cursor position
-  int _cursX{0};
-  int _cursY{0};
+  Vec<int, 2> _cursPos{{0, 0}};
 
   bool _useColor;
 

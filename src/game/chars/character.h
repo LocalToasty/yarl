@@ -56,16 +56,16 @@ class Character : public Entity {
   std::array<int, noOfAttributes> _attributes;
 
  public:
-  Character(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+  Character(const Tile& t, int hp, Position pos, double speed, int visionRange,
             const std::array<int, noOfAttributes>& attributes, World& world,
             Attack* unarmed, const std::list<Item*>& inventory = {},
             int bab = 0, Size s = Size::medium, int naturalArmor = 0);
 
-  bool los(int x, int y, double factor = 1) const;
+  bool los(Position pos, double factor = 1) const;
   bool los(const Entity& e, double factor = 1) const;
   std::vector<Entity*> seenEntities();
 
-  bool move(int dx, int dy);
+  bool move(Position diff);
 
   virtual void attack(Entity* target);
 

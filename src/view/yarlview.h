@@ -19,6 +19,7 @@
 #ifndef YARLVIEW_H
 #define YARLVIEW_H
 
+#include "vec.hpp"
 #include <string>
 #include <list>
 #include <functional>
@@ -73,7 +74,7 @@ class YarlView {
    *   tile with a cursor.
    * \returns a pair containing the locations coordinates.
    */
-  virtual boost::optional<std::pair<int, int>> promptCoordinates() = 0;
+  virtual boost::optional<Position> promptCoordinates() = 0;
 
   virtual void showItemList(std::string const& title,
                             std::list<Item*> const& items,

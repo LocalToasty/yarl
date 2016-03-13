@@ -24,7 +24,6 @@
 #include "deathevent.h"
 #include "dropevent.h"
 #include <boost/range/adaptor/reversed.hpp>
-#include <SDL2/SDL.h>
 #include <iostream>
 #include <memory>
 #include <map>
@@ -147,12 +146,12 @@ int ConsoleYarlView::multipleChoiceDialog(
     const std::string& query, const std::vector<std::string>& possibleAnswers,
     size_t defAnswer) {
   // show prompt
-  moveAddString(0, 0, query);
+  moveAddString({0, 0}, query);
 
   std::string buffer;
 
   while (true) {
-    clear(query.size(), 0, width() - cursorX(), 1);
+    clear(query.size(), 0, width() - cursorPos()[0], 1);
 
     size_t currChoice;
     if (!buffer.empty()) {  // get the index of the current choice
@@ -166,7 +165,7 @@ int ConsoleYarlView::multipleChoiceDialog(
       currChoice = defAnswer;
     }
 
-    moveCursor(query.size() + 1, 0);
+    moveCursor(Vec<int, 2>({(int)query.size() + 1, 0}));
     // show user input
     if (!buffer.empty()) {
       addString(buffer, Color::cyan);
@@ -214,14 +213,14 @@ Item* ConsoleYarlView::promptItem(const std::string& message,
                       [pred](Item* i) { return !pred(i); });
 
   // show prompt
-  moveAddString(0, 0, message);
+  moveAddString({0, 0}, message);
 
   std::string buffer;
 
   unsigned int index = 0;
 
   while (true) {
-    clear(message.size(), 0, width() - cursorX(), 1);
+    clear(message.size(), 0, width() - cursorPos()[0], 1);
 
     auto validItem = [&buffer](Item* i) {
       return i->desc().substr(0, buffer.size()) == buffer;
@@ -236,7 +235,7 @@ Item* ConsoleYarlView::promptItem(const std::string& message,
 
     // show user input
     if (!buffer.empty()) {
-      moveAddString(message.size() + 1, 0, buffer, Color::cyan);
+      moveAddString({(int)message.size() + 1, 0}, buffer, Color::cyan);
 
       if (item != last) {
         addString((*item)->desc().substr(buffer.size()));
@@ -289,12 +288,12 @@ void ConsoleYarlView::showItemList(std::string const& title,
                                    std::list<Item*> const& items,
                                    std::function<std::string(Item*)> decorate) {
   clear(0, 0, width(), 1);
-  moveAddString(0, 0, title);
+  moveAddString({0, 0}, title);
 
   int row = 1;
 
   for (Item* item : items) {
-    moveAddString(2, row, decorate(item));
+    moveAddString({2, row}, decorate(item));
 
     row++;
   }
@@ -303,11 +302,10 @@ void ConsoleYarlView::showItemList(std::string const& title,
   getChar();
 }
 
-boost::optional<std::pair<int, int>> ConsoleYarlView::promptCoordinates() {
+boost::optional<Vec<int, 2>> ConsoleYarlView::promptCoordinates() {
   // enable cursor
-  int x = width() / 2;
-  int y = height() / 2;
-  moveCursor(x, y);
+  Vec<int, 2> pos({width() / 2, height() / 2});
+  moveCursor(pos);
   cursor(true);
 
   // let player move the cursor
@@ -320,56 +318,21 @@ boost::optional<std::pair<int, int>> ConsoleYarlView::promptCoordinates() {
           // calulate coordinates
           Player const* const player = _world.player();
           cursor(false);
-          return std::make_pair(x + player->x() - width() / 2,
-                                y + player->y() - height() / 2);
+          return Vec<int, 2>(pos + player->pos() -
+                             Vec<int, 2>({width() / 2, height() / 2}));
         }
 
         case Command::cancel:
           cursor(false);
           return boost::none;
 
-        case Command::north:
-          y--;
-          break;
-
-        case Command::south:
-          y++;
-          break;
-
-        case Command::west:
-          x--;
-          break;
-
-        case Command::east:
-          x++;
-          break;
-
-        case Command::northWest:
-          y--;
-          x--;
-          break;
-
-        case Command::northEast:
-          y--;
-          x++;
-          break;
-
-        case Command::southWest:
-          y++;
-          x--;
-          break;
-
-        case Command::southEast:
-          y++;
-          x++;
-          break;
-
         default:
+          pos += Vec<int, 2>(cmd->second);
           break;
       }
     }
 
-    moveCursor(x, y);
+    moveCursor(pos);
     refreshScreen();
   }
 }
@@ -378,13 +341,13 @@ void ConsoleYarlView::addStatusMessage(std::string const& message) {
   _statusBar.addMessage(message);
 }
 
-void ConsoleYarlView::moveAddChar(int x, int y, char c, Color col) {
-  moveCursor(x, y);
+void ConsoleYarlView::moveAddChar(Vec<int, 2> pos, char c, Color col) {
+  moveCursor(pos);
   addChar(c, col);
 }
 
-void ConsoleYarlView::moveAddString(int x, int y, std::string s, Color col) {
-  moveCursor(x, y);
+void ConsoleYarlView::moveAddString(Vec<int, 2> pos, std::string s, Color col) {
+  moveCursor(pos);
   addString(s, col);
 }
 
@@ -447,22 +410,22 @@ void ConsoleYarlView::handleEvents() {
 void ConsoleYarlView::draw() {
   Player* player = _world.player();
 
-  int offX = width() / 2 - player->x();
-  int offY = height() / 2 - player->y();
+  Vec<int, 2> off = Vec<int, 2>({width() / 2, height() / 2}) - player->pos();
 
   // render the map
   for (int row = 0; row < height() - 1; row++) {
-    moveCursor(0, row);
+    moveCursor({0, row});
 
     for (int col = 0; col < width(); col++) {
-      Tile* t = _world.tile(col - offX, row - offY);
+      Vec<int, 2> const pos({col, row});
+      Tile* t = _world.tile(pos - off);
 
-      if (t != nullptr && player->los(col - offX, row - offY)) {
+      if (t != nullptr && player->los(pos - off)) {
         // render tiles the character has a LOS to
-        _world.setExplored(col - offX, row - offY);
+        _world.setExplored(pos - off);
 
         addChar(t->repr(), t->color());
-      } else if (t != nullptr && _world.explored(col - offX, row - offY)) {
+      } else if (t != nullptr && _world.explored(pos - off)) {
         // tiles the player has seen before are rendered in grey
         addChar(t->repr());
       } else {
@@ -472,20 +435,16 @@ void ConsoleYarlView::draw() {
   }
 
   // render entities
-  auto ents =
-      _world.entities(player->x() - width() / 2, player->y() - height() / 2,
-                      player->x() + width() / 2, player->y() + height() / 2);
+  Vec<int, 2> const mid({width() / 2, height() / 2});
+  auto ents = _world.entities(player->pos() - mid, player->pos() + mid);
 
   for (Entity* e : ents) {
     if (player->los(*e)) {
-      e->setSeen();
-      e->setLastKnownX();
-      e->setLastKnownY();
+      e->setLastKnownPos(e->pos());
 
-      moveAddChar(e->x() + offX, e->y() + offY, e->t().repr(), e->t().color());
-    } else if (e->seen() && !player->los(e->lastKnownX(), e->lastKnownY())) {
-      moveAddChar(e->lastKnownX() + offX, e->lastKnownY() + offY,
-                  e->t().repr());
+      moveAddChar(e->pos() + off, e->t().repr(), e->t().color());
+    } else if (e->seen() && !player->los(*e->lastKnownPos())) {
+      moveAddChar(*e->lastKnownPos() + off, e->t().repr());
     }
   }
 
@@ -498,7 +457,7 @@ void ConsoleYarlView::draw() {
 void ConsoleYarlView::drawStatusBar() {
   while (!_statusBar.empty()) {
     clear(0, 0, width(), 1);
-    moveAddString(0, 0, _statusBar.getLine(width()));
+    moveAddString({0, 0}, _statusBar.getLine(width()));
 
     refreshScreen();
     if (!_statusBar.empty()) {
@@ -512,13 +471,13 @@ void ConsoleYarlView::drawCharacterInfo() {
 
   // character information
   // name
-  moveAddString(0, height() - 1,
-                "foo");  //_variables["name"].tostd::string().substr(0, 9));
+  moveAddString({0, height() - 1}, "foo");
+  // TODO _variables["name"].to_string().substr(0, 9));
 
   clear(14, height() - 1, width() - 15, 1);
 
   // hp
-  moveAddString(10, height() - 1, "HP: ");
+  moveAddString({10, height() - 1}, "HP: ");
 
   Color hpCol = Color::green;
 
@@ -532,17 +491,17 @@ void ConsoleYarlView::drawCharacterInfo() {
   addString("/" + std::to_string(player->maxHp()));
 
   // ac
-  moveAddString(22, height() - 1,
+  moveAddString({22, height() - 1},
                 "AC: " + std::to_string(player->armorClass()));
 
   // load
   Character::Load l = player->load();
 
   if (l == Character::Load::medium) {
-    moveAddString(29, height() - 1, "encumbered");
+    moveAddString({29, height() - 1}, "encumbered");
   } else if (l == Character::Load::heavy) {
-    moveAddString(29, height() - 1, "burdened");
+    moveAddString({29, height() - 1}, "burdened");
   } else if (l == Character::Load::overloaded) {
-    moveAddString(29, height() - 1, "overloaded");
+    moveAddString({29, height() - 1}, "overloaded");
   }
 }

@@ -25,22 +25,22 @@
 #include <cstdlib>
 #include <cmath>  // for pow
 
-Character::Character(const Tile& t, int hp, int x, int y, double speed,
+Character::Character(const Tile& t, int hp, Position pos, double speed,
                      int visionRange,
                      const std::array<int, noOfAttributes>& attributes,
                      World& world, Attack* unarmed,
                      const std::list<Item*>& inventory, int bab,
                      Character::Size s, int naturalArmor)
-    : Entity(t, hp, x, y, world, s, naturalArmor, inventory),
+    : Entity(t, hp, pos, world, s, naturalArmor, inventory),
       _visionRange(visionRange),
       _unarmed(unarmed),
       _speed(speed),
       _bab(bab),
       _attributes(attributes) {}
 
-bool Character::move(int dx, int dy) {
-  if (world().passable(x() + dx, y() + dy)) {
-    setXY(x() + dx, y() + dy);
+bool Character::move(Position diff) {
+  if (world().passable(pos() + diff)) {
+    setPos(pos() + diff);
     return true;
   }
 
@@ -55,14 +55,12 @@ void Character::attack(Entity* target) {
   int toHitMod = _bab + attributeMod(strength) + size();
   int hitRoll = rand() % 20 + 1;
 
-  if (World::distance(x(), y(), target->x(), target->y()) <=
-          _unarmed->range() &&
+  if ((pos() - target->pos()).norm() <= _unarmed->range() &&
       hitRoll + toHitMod >= target->armorClass()) {
     bool crit = false;
     int damage = _unarmed->damage() + attributeMod(strength);
 
-    if (hitRoll >=
-        _unarmed->critRange()) {  // check if there is a potential crit
+    if (hitRoll >= _unarmed->critRange()) {  // potential crit
       crit = rand() % 20 + 1 + toHitMod >= target->armorClass();
 
       if (crit) {  // confirm crit
@@ -85,24 +83,25 @@ void Character::attack(Entity* target) {
   }
 }
 
-bool Character::los(int x, int y, double factor) const {
-  return world().los(this->x(), this->y(), x, y, _visionRange * factor);
+bool Character::los(Position pos, double factor) const {
+  return world().los(this->pos(), pos, _visionRange * factor);
 }
 
 bool Character::los(Entity const& e, double factor) const {
-  return los(e.x(), e.y(), factor);
+  return los(e.pos(), factor);
 }
 
 // returns a vector with the entities currently seen by the character
 std::vector<Entity*> Character::seenEntities() {
   std::vector<Entity*> ents;
 
-  for (Entity* e :
-       world().entities(x() - visionRange(), y() - visionRange(),
-                        x() + visionRange() + 1, y() + visionRange() + 1))
+  for (Entity* e : world().entities(
+           pos() - Position({visionRange(), visionRange()}),
+           pos() + Position({visionRange() + 1, visionRange() + 1}))) {
     if (los(*e)) {
       ents.push_back(e);
     }
+  }
 
   return ents;
 }

@@ -20,11 +20,11 @@
 #include "character.h"
 #include "world.h"
 
-Player::Player(const Tile& t, int hp, int x, int y, double speed,
+Player::Player(const Tile& t, int hp, Position pos, double speed,
                int visionRange, std::array<int, noOfAttributes>& attributes,
                World& world, Attack* unarmed, const std::list<Item*>& inventory,
                int bab, Size s, int naturalArmor)
-    : Humanoid(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
+    : Humanoid(t, hp, pos, speed, visionRange, attributes, world, unarmed,
                inventory, bab, s, naturalArmor) {}
 
 std::string Player::itemStatus(Item* i) const {

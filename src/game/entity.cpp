@@ -32,18 +32,17 @@ void Entity::setLastAttacker(Character* lastAttacker) {
 int Entity::maxHp() const { return _maxHp; }
 
 void Entity::setMaxHp(int maxHp) { _maxHp = maxHp; }
-Entity::Entity(const Tile& t, int hp, int x, int y, World& world, Size s,
+Entity::Entity(const Tile& t, int hp, Vec<int, 2> pos, World& world, Size s,
                int naturalArmor, const std::list<Item*>& inventory)
     : _t(t),
-      _x(x),
-      _y(y),
+      _pos(pos),
       _hp(hp),
       _maxHp(hp),
       _naturalArmor(naturalArmor),
       _s(s),
       _world(world),
       _inventory(inventory) {
-  _sector = world.sector(x, y);
+  _sector = world.sector(pos);
 
   if (_sector) {
     _sector->addEntity(this);
@@ -56,40 +55,15 @@ Entity::~Entity() {
   }
 }
 
+void Entity::setLastKnownPos(boost::optional<Vec<int, 2>> pos) {
+  _lastKnownPos = pos;
+}
+
 int Entity::armorClass() { return 5 + _s + _naturalArmor; }
 
-const Tile& Entity::t() const { return _t; }
-
-int Entity::x() const { return _x; }
-
-int Entity::y() const { return _y; }
-
-World& Entity::world() const { return _world; }
-
-Sector* Entity::sector() const { return _sector; }
-
-bool Entity::seen() const { return _seen; }
-
-int Entity::lastKnownX() const { return _lastKnownX; }
-
-int Entity::lastKnownY() const { return _lastKnownY; }
-
-std::string Entity::prefix() const { return _t.prefix(); }
-
-std::string Entity::desc() const { return _t.desc(); }
-
-int Entity::hp() const { return _hp; }
-
-Entity::Size Entity::size() const { return _s; }
-
-int Entity::naturalArmor() const { return _naturalArmor; }
-
-std::list<Item*>& Entity::inventory() { return _inventory; }
-
-void Entity::setXY(int x, int y) {
-  _x = x;
-  _y = y;
-  setSector(_world.sector(_x, _y));
+void Entity::setPos(Vec<int, 2> pos) {
+  _pos = pos;
+  setSector(_world.sector(pos));
 }
 
 void Entity::setSector(Sector* sector) {
@@ -104,20 +78,14 @@ void Entity::setSector(Sector* sector) {
   _sector = sector;
 }
 
-void Entity::setSeen(bool seen) { _seen = seen; }
-
-void Entity::setLastKnownX() { _lastKnownX = _x; }
-
-void Entity::setLastKnownY() { _lastKnownY = _y; }
-
 void Entity::setHp(int hp) {
   if (hp <= 0) {
     world().addEvent(std::make_unique<DeathEvent>(*this));
 
     // drop inventory
     for (Item* e : _inventory) {
-      e->setXY(_x, _y);
-      e->setSeen(false);
+      e->setPos(pos());
+      e->setLastKnownPos(boost::none);
       world().addEvent(std::make_unique<DropEvent>(*this, *e));
     }
 

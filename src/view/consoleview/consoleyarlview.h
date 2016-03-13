@@ -23,6 +23,7 @@
 #include "yarlcontroller.h"
 #include "world.h"
 #include "statusbar.h"
+#include "vec.hpp"
 #include <vector>
 #include <queue>
 #include <algorithm>
@@ -48,7 +49,7 @@ class ConsoleYarlView : public YarlView {
   void showItemList(std::string const& title, std::list<Item*> const& items,
                     std::function<std::string(Item*)> decorator);
 
-  virtual boost::optional<std::pair<int, int>> promptCoordinates();
+  virtual boost::optional<Vec<int, 2>> promptCoordinates();
 
   void addStatusMessage(std::string const& message);
 
@@ -73,8 +74,7 @@ class ConsoleYarlView : public YarlView {
   virtual void cursor(bool val) = 0;
 
   // cursor coordinates
-  virtual int cursorX() const = 0;
-  virtual int cursorY() const = 0;
+  virtual Position cursorPos() const = 0;
 
   /*!
    * \brief Adds a character to the screen.
@@ -93,11 +93,11 @@ class ConsoleYarlView : public YarlView {
   /*!
    * \brief Moves the cursor to the specified position
    */
-  virtual void moveCursor(int x, int y) = 0;
+  virtual void moveCursor(Position pos) = 0;
 
   // combined functions
-  void moveAddChar(int x, int y, char c, Color col = Color::white);
-  void moveAddString(int x, int y, std::string s, Color col = Color::white);
+  void moveAddChar(Position pos, char c, Color col = Color::white);
+  void moveAddString(Position pos, std::string s, Color col = Color::white);
 
   void handleEvents();
 

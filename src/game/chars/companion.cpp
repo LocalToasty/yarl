@@ -21,13 +21,13 @@
 #include <cstdlib>
 
 Companion::Companion(
-    const Tile& t, Character* companion, int hp, int x, int y, double speed,
+    const Tile& t, Character* companion, int hp, Position pos, double speed,
     int visionRange,
     const std::array<int, Character::noOfAttributes>& attributes, World& world,
     Attack* unarmed, const std::list<Item*>& inventory, int bab, Entity::Size s,
     int naturalArmor)
-    : NPC(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
-          inventory, bab, s, naturalArmor),
+    : NPC(t, hp, pos, speed, visionRange, attributes, world, unarmed, inventory,
+          bab, s, naturalArmor),
       _companion(companion) {}
 
 void Companion::think() {
@@ -46,41 +46,22 @@ void Companion::think() {
   }
 
   if (lastTarget() != nullptr && lastTarget()->hp() > 0 && los(*lastTarget())) {
-    _waypointX = lastTarget()->x();
-    _waypointY = lastTarget()->y();
+    _waypoint = lastTarget()->pos();
   } else if (_companion != nullptr && los(*_companion)) {
-    _waypointX = _companion->x() + (rand() % 9) - 4;
-    _waypointY = _companion->y() + (rand() % 9) - 4;
+    _waypoint =
+        _companion->pos() + Position({(rand() % 9) - 4, (rand() % 9) - 4});
   }
 
-  if (_waypointX >= 0 && _waypointY >= 0) {
-    if (World::distance(x(), y(), _waypointX, _waypointY) >
-        unarmed()->range()) {
-      auto dir = world().route(x(), y(), _waypointX, _waypointY, true);
-      Command cmd = dir.front();
+  if (_waypoint[0] >= 0 && _waypoint[0] >= 0) {
+    if ((pos() - _waypoint).norm() > unarmed()->range()) {
+      auto const dir = world().route(pos(), _waypoint, true);
+      Position const diff(dir.front());
 
-      int dx = 0;
-      int dy = 0;
+      move(diff);
 
-      if (cmd == Command::west || cmd == Command::northWest ||
-          cmd == Command::southWest) {
-        dx = -1;
-      } else if (cmd == Command::east || cmd == Command::northEast ||
-                 cmd == Command::southEast) {
-        dx = 1;
-      }
-
-      if (cmd == Command::north || cmd == Command::northWest ||
-          cmd == Command::northEast) {
-        dy = -1;
-      } else if (cmd == Command::south || cmd == Command::southWest ||
-                 cmd == Command::southEast) {
-        dy = 1;
-      }
-
-      move(dx, dy);
-      setLastAction(lastAction() +
-                    (abs(dx) + abs(dy) == 1 ? speed() : 1.5 * speed()));
+      setLastAction(lastAction() + (abs(diff[0]) + abs(diff[1]) == 1
+                                        ? speed()
+                                        : 1.5 * speed()));
     } else if (lastTarget() != nullptr && lastTarget()->hp() > 0) {
       attack(lastTarget());
       setLastAction(lastAction() + 2);

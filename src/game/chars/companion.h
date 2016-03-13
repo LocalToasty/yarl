@@ -25,11 +25,10 @@ class Companion : public NPC {
  private:
   Character* _companion;
 
-  int _waypointX{-1};
-  int _waypointY{-1};
+  Position _waypoint{-1, -1};
 
  public:
-  Companion(const Tile& t, Character* companion, int hp, int x, int y,
+  Companion(const Tile& t, Character* companion, int hp, Position pos,
             double speed, int visionRange,
             const std::array<int, noOfAttributes>& attributes, World& world,
             Attack* unarmed, const std::list<Item*>& inventory = {},

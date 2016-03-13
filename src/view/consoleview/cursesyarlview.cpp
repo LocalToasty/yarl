@@ -67,27 +67,17 @@ CursesYarlView::CursesYarlView(YarlController& controller, World& world)
 
 CursesYarlView::~CursesYarlView() { endwin(); }
 
-int CursesYarlView::width() const { return getmaxx(stdscr); }
-
-int CursesYarlView::height() const { return getmaxy(stdscr); }
-
-void CursesYarlView::cursor(bool val) { curs_set(val); }
-
-int CursesYarlView::cursorX() const { return getcurx(stdscr); }
-
-int CursesYarlView::cursorY() const { return getcury(stdscr); }
-
 void CursesYarlView::addChar(char c, Color col) {
   attrset(COLOR_PAIR(cp(col)));
   addch(c);
 }
 
-void CursesYarlView::addString(string s, Color col) {
+void CursesYarlView::addString(std::string s, Color col) {
   attrset(COLOR_PAIR(cp(col)));
   addstr(s.c_str());
 }
 
-void CursesYarlView::moveCursor(int x, int y) { move(y, x); }
+void CursesYarlView::moveCursor(Position pos) { move(pos[1], pos[0]); }
 
 char CursesYarlView::getChar() {
   if (_lastInput != 0) {
@@ -112,6 +102,16 @@ void CursesYarlView::waitForInput() {
   if (_lastInput != 0) {
     _lastInput = getChar();
   }
+}
+
+int CursesYarlView::width() const { return getmaxx(stdscr); }
+
+int CursesYarlView::height() const { return getmaxy(stdscr); }
+
+void CursesYarlView::cursor(bool val) { curs_set(val); }
+
+Position CursesYarlView::cursorPos() const {
+  return Position({getcurx(stdscr), getcury(stdscr)});
 }
 
 void CursesYarlView::clear(int x, int y, int w, int h) {

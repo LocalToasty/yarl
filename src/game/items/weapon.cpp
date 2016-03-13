@@ -19,7 +19,7 @@
 #include "weapon.h"
 
 Weapon::Weapon(const Tile& t, Attack a, bool twoHanded, double weight,
-               World& world, int hp, int x, int y, Size s)
-    : Item(t, weight, world, hp, x, y, s), Attack(a), _twoHanded(twoHanded) {}
+               World& world, int hp, Position pos, Size s)
+    : Item(t, weight, world, hp, pos, s), Attack(a), _twoHanded(twoHanded) {}
 
 bool Weapon::twoHanded() { return _twoHanded; }

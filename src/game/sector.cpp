@@ -36,14 +36,14 @@ Sector::~Sector() {
 
 // returns true if neither the terrain nor the any entities at the coordinates
 // are implassable.
-bool Sector::passable(int x, int y) {
+bool Sector::passable(Position pos) {
   // check for terrain passability
-  if (!tile(x, y)->passable()) {
+  if (!tile(pos)->passable()) {
     return false;
   }
 
   // check for entitiy passability
-  for (Entity* e : entities(x, y))
+  for (Entity* e : entities(pos))
     if (!e->t().passable()) {
       return false;
     }
@@ -72,29 +72,29 @@ void Sector::addEntity(Entity* e) {
 
 void Sector::removeEntity(Entity* e) { _entities.remove(e); }
 
-std::vector<Entity*> Sector::entities(int x, int y) const {
+std::vector<Entity*> Sector::entities(Position pos) const {
   std::vector<Entity*> ents;
 
   for (Entity* e : _entities)
-    if (e->x() == x && e->y() == y) {
+    if (e->pos() == pos) {
       ents.push_back(e);
     }
 
   return ents;
 }
 
-bool Sector::explored(int x, int y) {
-  return _explored.at(x % _size + (y % _size) * _size);
+bool Sector::explored(Position pos) const {
+  return _explored.at(pos[0] % _size + (pos[1] % _size) * _size);
 }
 
-void Sector::setExplored(int x, int y, bool explored) {
-  _explored.at(x % _size + (y % _size) * _size) = explored;
+void Sector::setExplored(Position pos, bool explored) {
+  _explored.at(pos[0] % _size + (pos[1] % _size) * _size) = explored;
 }
 
-Tile* Sector::tile(int x, int y) {
-  return _tiles.at(x % _size + (y % _size) * _size);
+Tile* Sector::tile(Position pos) {
+  return _tiles.at(pos[0] % _size + (pos[1] % _size) * _size);
 }
 
-void Sector::setTile(int x, int y, Tile* tile) {
-  _tiles.at(x % _size + (y % _size) * _size) = tile;
+void Sector::setTile(Position pos, Tile* tile) {
+  _tiles.at(pos[0] % _size + (pos[1] % _size) * _size) = tile;
 }

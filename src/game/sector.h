@@ -21,6 +21,7 @@
 
 #include "tile.h"
 #include "command.h"
+#include "vec.hpp"
 #include <vector>
 #include <list>
 
@@ -49,17 +50,17 @@ class Sector {
   static int size();
 
   const std::list<Entity*>& entities() const;
-  std::vector<Entity*> entities(int x, int y) const;
+  std::vector<Entity*> entities(Position pos) const;
   void addEntity(Entity* e);
   void removeEntity(Entity* e);
 
-  Tile* tile(int x, int y);
-  void setTile(int x, int y, Tile* tile);
+  Tile* tile(Position pos);
+  void setTile(Position pos, Tile* tile);
 
-  bool passable(int x, int y);
+  bool passable(Position pos);
 
-  bool explored(int x, int y);
-  void setExplored(int x, int y, bool explored = true);
+  bool explored(Position pos) const;
+  void setExplored(Position pos, bool explored = true);
 };
 
 #endif

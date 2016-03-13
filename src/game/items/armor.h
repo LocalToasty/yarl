@@ -31,7 +31,7 @@ class Armor : public Item {
 
  public:
   Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-        double weight, World& world, int x = -1, int y = -1,
+        double weight, World& world, Position pos = {-1, -1},
         Size s = Size::small);
 
   int ac() const;

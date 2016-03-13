@@ -18,8 +18,8 @@
 
 #include "item.h"
 
-Item::Item(const Tile& t, double weight, World& world, int hp, int x, int y,
+Item::Item(const Tile& t, double weight, World& world, int hp, Position pos,
            Size s)
-    : Entity(t, hp, x, y, world, s), _weight(weight) {}
+    : Entity(t, hp, pos, world, s), _weight(weight) {}
 
 double Item::weight() const { return _weight; }

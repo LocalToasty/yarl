@@ -20,7 +20,9 @@
 #define ENTITY_H
 
 #include "tile.h"
+#include "vec.hpp"
 #include <list>
+#include <boost/optional.hpp>
 
 class Item;
 class World;
@@ -44,8 +46,7 @@ class Entity {
  private:
   const Tile& _t;
 
-  int _x;
-  int _y;
+  Vec<int, 2> _pos;
 
   int _hp;  // hitpoints
   int _maxHp;
@@ -57,53 +58,44 @@ class Entity {
   World& _world;
   Sector* _sector;
 
-  bool _seen{false};  // has the entity been seen yet?
-  // if yes, last known coordinates
-  int _lastKnownX;
-  int _lastKnownY;
+  // last known coordinates
+  boost::optional<Vec<int, 2>> _lastKnownPos;
 
   std::list<Item*> _inventory;
 
   Character* _lastAttacker{nullptr};
 
  public:
-  Entity(const Tile& t, int hp, int x, int y, World& world,
+  Entity(const Tile& t, int hp, Vec<int, 2> pos, World& world,
          Size s = Size::medium, int naturalArmor = 0,
          const std::list<Item*>& inventory = {});
   virtual ~Entity();
 
-  const Tile& t() const;
+  const Tile& t() const { return _t; }
 
-  int x() const;
-  int y() const;
-  World& world() const;
-  Sector* sector() const;
+  Vec<int, 2> pos() const { return _pos; }
+  World& world() const { return _world; }
+  Sector* sector() const { return _sector; }
 
-  bool seen() const;
-  int lastKnownX() const;
-  int lastKnownY() const;
+  bool seen() const { return _lastKnownPos == boost::none; }
+  boost::optional<Vec<int, 2>> lastKnownPos() const { return _lastKnownPos; }
+  void setLastKnownPos(boost::optional<Vec<int, 2>> pos);
 
-  std::string prefix() const;
-  std::string desc() const;
+  std::string prefix() const { return _t.prefix(); }
+  std::string desc() const { return _t.desc(); }
 
   int maxHp() const;
   Character* lastAttacker() const;
 
-  int hp() const;
-  Size size() const;
-  int naturalArmor() const;
+  int hp() const { return _hp; }
+  Size size() const { return _s; }
+  int naturalArmor() const { return _naturalArmor; }
   virtual int armorClass();
 
-  std::list<Item*>& inventory();
+  std::list<Item*>& inventory() { return _inventory; }
 
-  void setX(int x);
-  void setY(int y);
-  void setXY(int x, int y);
+  void setPos(Vec<int, 2> pos);
   void setSector(Sector* Sector);
-
-  void setSeen(bool seen = true);
-  void setLastKnownX();
-  void setLastKnownY();
 
   void setHp(int hp);
   void doDamage(int dmg);

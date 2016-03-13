@@ -28,7 +28,7 @@ class Weapon : public Item, public Attack {
 
  public:
   Weapon(const Tile& t, Attack a, bool twoHanded, double weight, World& world,
-         int hp, int x = -1, int y = -1, Size s = Size::small);
+         int hp, Position pos = {-1, -1}, Size s = Size::small);
 
   bool twoHanded();
 };

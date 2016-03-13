@@ -30,25 +30,22 @@ class CursesYarlView : public ConsoleYarlView {
   char getChar();
   void waitForInput();
 
-  // width of the terminal screen
   int width() const;
-  // height of the terminal screen
   int height() const;
 
   // turn the cursor on or off
   void cursor(bool val);
 
   // cursor coordinates
-  int cursorX() const;
-  int cursorY() const;
+  Position cursorPos() const;
 
   // replace the character at the current cursor location
   void addChar(char c, Color col = Color::white);
   // write a string of characters
-  void addString(string s, Color col = Color::white);
+  void addString(std::string s, Color col = Color::white);
 
   // move the cursor to the given coordinates
-  void moveCursor(int x, int y);
+  void moveCursor(Position pos);
 
   void clear(int x, int y, int w, int h);
 

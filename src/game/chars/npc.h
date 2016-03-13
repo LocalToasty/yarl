@@ -27,7 +27,7 @@ class NPC : public Character {
   double _lastAction{0};
 
  public:
-  NPC(const Tile& t, int hp, int x, int y, double speed, int visionRange,
+  NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
       const std::array<int, noOfAttributes>& attributes, World& world,
       Attack* unarmed, const std::list<Item*>& inventory = {}, int bab = 0,
       Size s = Size::medium, int naturalArmor = 0);
