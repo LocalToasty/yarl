@@ -20,14 +20,12 @@
 #include "world.h"
 #include <cstdlib>
 
-using namespace std;
-
-Companion::Companion(const Tile& t, Character* companion, int hp, int x, int y,
-                     double speed, int visionRange,
-                     const array<int, Character::noOfAttributes>& attributes,
-                     World& world, Attack* unarmed,
-                     const list<Item*>& inventory, int bab, Entity::Size s,
-                     int naturalArmor)
+Companion::Companion(
+    const Tile& t, Character* companion, int hp, int x, int y, double speed,
+    int visionRange,
+    const std::array<int, Character::noOfAttributes>& attributes, World& world,
+    Attack* unarmed, const std::list<Item*>& inventory, int bab, Entity::Size s,
+    int naturalArmor)
     : NPC(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
           inventory, bab, s, naturalArmor),
       _companion(companion) {}

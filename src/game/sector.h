@@ -24,8 +24,6 @@
 #include <vector>
 #include <list>
 
-using namespace std;
-
 class Tile;
 
 // declaration to not run into recursion issiues
@@ -37,12 +35,12 @@ class Sector {
   static const int _size;
 
   // vector containing the tiles (stored linearly row for row)
-  vector<Tile*> _tiles;
-  vector<bool> _explored;
+  std::vector<Tile*> _tiles;
+  std::vector<bool> _explored;
 
   // a list of all entities in the sector (i.e. characters, items, props)
   // the bottommost entity has highest render priority
-  list<Entity*> _entities;
+  std::list<Entity*> _entities;
 
  public:
   Sector(Tile* defTile);
@@ -50,8 +48,8 @@ class Sector {
 
   static int size();
 
-  const list<Entity*>& entities() const;
-  vector<Entity*> entities(int x, int y) const;
+  const std::list<Entity*>& entities() const;
+  std::vector<Entity*> entities(int x, int y) const;
   void addEntity(Entity* e);
   void removeEntity(Entity* e);
 

@@ -56,7 +56,7 @@ class SDLYarlView : public ConsoleYarlView {
   // replace the character at the current cursor location
   void addChar(char c, Color col = Color::white);
   // write a string of characters
-  void addString(string s, Color col = Color::white);
+  void addString(std::string s, Color col = Color::white);
 
   // move the cursor to the given coordinates
   void moveCursor(int x, int y);
@@ -73,8 +73,8 @@ class SDLYarlView : public ConsoleYarlView {
   SDL_Window* _window;
   SDL_Surface* _charset;
 
-  vector<char> _characters;
-  vector<Color> _colors;
+  std::vector<char> _characters;
+  std::vector<Color> _colors;
 
   // character dimensions
   int _charWidth;

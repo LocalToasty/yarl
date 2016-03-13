@@ -24,9 +24,9 @@ void StatusBar::addMessage(std::string message) {
   _messages.push_back(message);
 }
 
-string StatusBar::getLine(size_t maxLen) {
-  string line;
-  string more = ".. ";
+std::string StatusBar::getLine(size_t maxLen) {
+  std::string line;
+  std::string more = ".. ";
 
   for (;;) {
     int addChars = 2;  // preceding + leading space

@@ -22,18 +22,16 @@
 #include <string>
 #include <list>
 
-using namespace std;
-
 class StatusBar {
  private:
-  list<string> _messages;
+  std::list<std::string> _messages;
 
  public:
   bool empty();
 
-  void addMessage(string message);
+  void addMessage(std::string message);
 
-  string getLine(size_t maxLen);
+  std::string getLine(size_t maxLen);
 };
 
 #endif

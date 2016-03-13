@@ -42,7 +42,8 @@ class ConsoleYarlView : public YarlView {
                            size_t defAnswer);
 
   Item* promptItem(std::string const& message, std::list<Item*>::iterator first,
-                   std::list<Item*>::iterator last, function<bool(Item*)> pred);
+                   std::list<Item*>::iterator last,
+                   std::function<bool(Item*)> pred);
 
   void showItemList(std::string const& title, std::list<Item*> const& items,
                     std::function<std::string(Item*)> decorator);
@@ -87,7 +88,7 @@ class ConsoleYarlView : public YarlView {
    * \param str	string to be written
    * \param col	color for the string to be written in
    */
-  virtual void addString(string s, Color col = Color::white) = 0;
+  virtual void addString(std::string s, Color col = Color::white) = 0;
 
   /*!
    * \brief Moves the cursor to the specified position
@@ -96,7 +97,7 @@ class ConsoleYarlView : public YarlView {
 
   // combined functions
   void moveAddChar(int x, int y, char c, Color col = Color::white);
-  void moveAddString(int x, int y, string s, Color col = Color::white);
+  void moveAddString(int x, int y, std::string s, Color col = Color::white);
 
   void handleEvents();
 

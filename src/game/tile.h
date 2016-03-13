@@ -22,28 +22,26 @@
 #include "yarlview.h"
 #include <string>
 
-using namespace std;
-
 class Tile {
  private:
   char _repr;
   Color _color;
 
-  string _prefix;
-  string _description;
+  std::string _prefix;
+  std::string _description;
 
   bool _transparent;
   bool _passable;
 
  public:
-  Tile(char repr = ' ', Color color = Color::black, string pref = "a",
-       string description = "", bool transparent = false,
+  Tile(char repr = ' ', Color color = Color::black, std::string pref = "a",
+       std::string description = "", bool transparent = false,
        bool passable = false);
 
   char repr() const;
   Color color() const;
-  string prefix() const;
-  string desc() const;
+  std::string prefix() const;
+  std::string desc() const;
   bool passable() const;
   bool transparent() const;
 };

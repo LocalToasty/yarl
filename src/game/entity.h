@@ -27,8 +27,6 @@ class World;
 class Sector;
 class Character;
 
-using namespace std;
-
 class Entity {
  public:
   enum Size {
@@ -64,17 +62,15 @@ class Entity {
   int _lastKnownX;
   int _lastKnownY;
 
-  list<Item*> _inventory;
+  std::list<Item*> _inventory;
 
   Character* _lastAttacker{nullptr};
 
  public:
   Entity(const Tile& t, int hp, int x, int y, World& world,
          Size s = Size::medium, int naturalArmor = 0,
-         const list<Item*>& inventory = {});
+         const std::list<Item*>& inventory = {});
   virtual ~Entity();
-
-  virtual string dieMessage();
 
   const Tile& t() const;
 
@@ -87,8 +83,8 @@ class Entity {
   int lastKnownX() const;
   int lastKnownY() const;
 
-  string prefix() const;
-  string desc() const;
+  std::string prefix() const;
+  std::string desc() const;
 
   int maxHp() const;
   Character* lastAttacker() const;
@@ -98,7 +94,7 @@ class Entity {
   int naturalArmor() const;
   virtual int armorClass();
 
-  list<Item*>& inventory();
+  std::list<Item*>& inventory();
 
   void setX(int x);
   void setY(int y);

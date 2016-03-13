@@ -32,8 +32,8 @@ class Humanoid : public Character {
 
  public:
   Humanoid(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-           const array<int, noOfAttributes>& attributes, World& world,
-           Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
+           const std::array<int, noOfAttributes>& attributes, World& world,
+           Attack* unarmed, const std::list<Item*>& inventory = {}, int bab = 0,
            Size s = Size::medium, int naturalArmor = 0);
 
   void attack(Entity* target);

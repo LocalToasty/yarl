@@ -139,12 +139,12 @@ void ConsoleYarlView::run() {
  */
 void ConsoleYarlView::quit() { _running = false; }
 
-bool ConsoleYarlView::yesNoPrompt(string query, bool defAnswer) {
+bool ConsoleYarlView::yesNoPrompt(std::string query, bool defAnswer) {
   return multipleChoiceDialog(query, {"no", "yes"}, defAnswer ? 1 : 0) == 1;
 }
 
 int ConsoleYarlView::multipleChoiceDialog(
-    const string& query, const std::vector<std::string>& possibleAnswers,
+    const std::string& query, const std::vector<std::string>& possibleAnswers,
     size_t defAnswer) {
   // show prompt
   moveAddString(0, 0, query);
@@ -204,7 +204,7 @@ int ConsoleYarlView::multipleChoiceDialog(
   return 0;
 }
 
-Item* ConsoleYarlView::promptItem(const string& message,
+Item* ConsoleYarlView::promptItem(const std::string& message,
                                   std::list<Item*>::iterator first,
                                   std::list<Item*>::iterator last,
                                   std::function<bool(Item*)> pred) {
@@ -374,7 +374,7 @@ boost::optional<std::pair<int, int>> ConsoleYarlView::promptCoordinates() {
   }
 }
 
-void ConsoleYarlView::addStatusMessage(string const& message) {
+void ConsoleYarlView::addStatusMessage(std::string const& message) {
   _statusBar.addMessage(message);
 }
 
@@ -383,7 +383,7 @@ void ConsoleYarlView::moveAddChar(int x, int y, char c, Color col) {
   addChar(c, col);
 }
 
-void ConsoleYarlView::moveAddString(int x, int y, string s, Color col) {
+void ConsoleYarlView::moveAddString(int x, int y, std::string s, Color col) {
   moveCursor(x, y);
   addString(s, col);
 }
@@ -513,7 +513,7 @@ void ConsoleYarlView::drawCharacterInfo() {
   // character information
   // name
   moveAddString(0, height() - 1,
-                "foo");  //_variables["name"].toString().substr(0, 9));
+                "foo");  //_variables["name"].tostd::string().substr(0, 9));
 
   clear(14, height() - 1, width() - 15, 1);
 
@@ -528,11 +528,12 @@ void ConsoleYarlView::drawCharacterInfo() {
     hpCol = Color::yellow;
   }
 
-  addString(to_string(player->hp()), hpCol);
-  addString("/" + to_string(player->maxHp()));
+  addString(std::to_string(player->hp()), hpCol);
+  addString("/" + std::to_string(player->maxHp()));
 
   // ac
-  moveAddString(22, height() - 1, "AC: " + to_string(player->armorClass()));
+  moveAddString(22, height() - 1,
+                "AC: " + std::to_string(player->armorClass()));
 
   // load
   Character::Load l = player->load();

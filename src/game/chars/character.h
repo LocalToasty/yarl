@@ -26,8 +26,6 @@
 #include "armor.h"
 #include <array>
 
-using namespace std;
-
 class Character : public Entity {
  public:
   enum Attribute {
@@ -55,17 +53,17 @@ class Character : public Entity {
   Entity* _lastTarget{nullptr};
 
  protected:
-  array<int, noOfAttributes> _attributes;
+  std::array<int, noOfAttributes> _attributes;
 
  public:
   Character(const Tile& t, int hp, int x, int y, double speed, int visionRange,
-            const array<int, noOfAttributes>& attributes, World& world,
-            Attack* unarmed, const list<Item*>& inventory = {}, int bab = 0,
-            Size s = Size::medium, int naturalArmor = 0);
+            const std::array<int, noOfAttributes>& attributes, World& world,
+            Attack* unarmed, const std::list<Item*>& inventory = {},
+            int bab = 0, Size s = Size::medium, int naturalArmor = 0);
 
   bool los(int x, int y, double factor = 1) const;
   bool los(const Entity& e, double factor = 1) const;
-  vector<Entity*> seenEntities();
+  std::vector<Entity*> seenEntities();
 
   bool move(int dx, int dy);
 

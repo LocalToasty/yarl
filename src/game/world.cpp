@@ -25,8 +25,6 @@
 #include <cmath>
 #include <algorithm>
 
-using namespace std;
-
 Tile World::_none = {' ', Color::black, "", "void"};
 Tile World::_mud = {'.', Color::red, "", "mud", true, true};
 Tile World::_grass = {',', Color::green, "a ", "patch of grass", true, true};
@@ -58,7 +56,7 @@ World::World(int width, int height)
     }
   }
 
-  array<int, 6> attr = {12, 12, 12, 12, 12, 12};
+  std::array<int, 6> attr = {12, 12, 12, 12, 12, 12};
   _player = new Player(_hero, 9 + rand() % 8, 42, 42, 1, 12, attr, *this,
                        new Attack([]() { return rand() % 2 + 1; }), {}, 1);
 
@@ -107,10 +105,10 @@ bool World::los(int x1, int y1, int x2, int y2, double range) {
   const int dirX = (dx > 0) ? 1 : -1;
   const int dirY = (dy > 0) ? 1 : -1;
 
-  vector<Entity*> blocking;
+  std::vector<Entity*> blocking;
 
-  for (Entity* e :
-       entities(min(x1, x2), min(y1, y2), max(x1, x2) + 1, max(y1, y2) + 1))
+  for (Entity* e : entities(std::min(x1, x2), std::min(y1, y2),
+                            std::max(x1, x2) + 1, std::max(y1, y2) + 1))
     if (!e->t().transparent()) {
       blocking.push_back(e);
     }
@@ -178,15 +176,16 @@ int heuristic(int x1, int y1, int x2, int y2) {
 
 // calculates a route from (x1, y2) to (x2, y2). If converge is true, the path
 // will only lead to a tile next to the destination.
-vector<Command> World::route(int x1, int y1, int x2, int y2, bool converge) {
+std::vector<Command> World::route(int x1, int y1, int x2, int y2,
+                                  bool converge) {
   // A* search (see http://en.wikipedia.org/wiki/A*_search_algorithm)
 
   typedef struct Node {
-    int h;             // heuristic of distance to goal
-    int g;             // cost so far
-    Command action;    // action taken to reach this node
-    Node* parent;      // previous node; nullptr if none
-    pair<int, int> c;  // coordinates
+    int h;                  // heuristic of distance to goal
+    int g;                  // cost so far
+    Command action;         // action taken to reach this node
+    Node* parent;           // previous node; nullptr if none
+    std::pair<int, int> c;  // coordinates
   } Node;
 
   // if the destination is not passable, there is no route to it.
@@ -195,13 +194,13 @@ vector<Command> World::route(int x1, int y1, int x2, int y2, bool converge) {
   }
 
   // frontier is a priority queue initialised with the starting point
-  list<Node*> frontier;
+  std::list<Node*> frontier;
 
   frontier.push_back(new Node{0, 0, Command::none, nullptr, {x1, y1}});
 
-  vector<Node*> explored;
+  std::vector<Node*> explored;
 
-  pair<int, int> goal(x2, y2);
+  std::pair<int, int> goal(x2, y2);
 
   for (;;) {                      // forever
     if (frontier.empty()) {       // failure
@@ -216,7 +215,7 @@ vector<Command> World::route(int x1, int y1, int x2, int y2, bool converge) {
     frontier.pop_front();
 
     if (node->c == goal) {  // optimal path found
-      vector<Command> directions;
+      std::vector<Command> directions;
 
       // get all commands
       for (; node->parent != nullptr; node = node->parent) {
@@ -244,7 +243,7 @@ vector<Command> World::route(int x1, int y1, int x2, int y2, bool converge) {
 
     // get all the adjacent nodes
     // I hope this wall of text can somehow be broken down...
-    vector<pair<Command, pair<int, int>>> passableNeighbours;
+    std::vector<std::pair<Command, std::pair<int, int>>> passableNeighbours;
     int x = node->c.first;
     int y = node->c.second;
 
@@ -290,7 +289,8 @@ vector<Command> World::route(int x1, int y1, int x2, int y2, bool converge) {
     if (passable(tx, ty) || (converge && tx == x2 && ty == y2))
       passableNeighbours.push_back({Command::northEast, {tx, ty}});
 
-    for (pair<Command, pair<int, int>> neighbour : passableNeighbours) {
+    for (std::pair<Command, std::pair<int, int>> neighbour :
+         passableNeighbours) {
       // if the node is in the explored set, dismiss it
       bool inExplored = false;
 
@@ -423,18 +423,18 @@ bool World::passable(int x, int y) {
   }
 }
 
-vector<Entity*> World::entities(int x, int y) {
+std::vector<Entity*> World::entities(int x, int y) {
   Sector* s = sector(x, y);
 
   if (s != nullptr) {
     return s->entities(x, y);
   } else {
-    return vector<Entity*>();
+    return std::vector<Entity*>();
   }
 }
 
-vector<Entity*> World::entities(int x1, int y1, int x2, int y2) {
-  vector<Entity*> ents;
+std::vector<Entity*> World::entities(int x1, int y1, int x2, int y2) {
+  std::vector<Entity*> ents;
 
   for (int x = x1; x < x2 + Sector::size(); x += Sector::size()) {
     for (int y = y1; y < y2 + Sector::size(); y += Sector::size()) {

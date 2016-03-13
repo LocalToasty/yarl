@@ -19,7 +19,7 @@
 #include "attack.h"
 
 Attack::Attack(int (*damage)(), int critRange, int critMultiplier,
-               string critVerb, double range)
+               std::string critVerb, double range)
     : _damage(damage),
       _range(range),
       _critRange(critRange),
@@ -34,4 +34,4 @@ int Attack::critRange() { return _critRange; }
 
 int Attack::critMultiplier() { return _critMultiplier; }
 
-string Attack::critVerb() { return _critVerb; }
+std::string Attack::critVerb() { return _critVerb; }

@@ -37,13 +37,13 @@ class YarlController {
   std::unique_ptr<World> _world;
   std::unique_ptr<YarlView> _view;
 
-  map<char, Command> _bindings;
+  std::map<char, Command> _bindings;
 
   bool init(int argc, char* argv[]);
   void render();
   bool logic();
   int cleanup();
-  void usage(ostream& out = cout);
+  void usage(std::ostream& out = std::cout);
 
  public:
   int exec(int argc, char* argv[]);

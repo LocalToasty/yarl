@@ -40,7 +40,8 @@ class World {
   static double distance(int x1, int y1, int x2, int y2);
 
   bool los(int x1, int y1, int x2, int y2, double range = -1);
-  vector<Command> route(int x1, int y1, int x2, int y2, bool converge = false);
+  std::vector<Command> route(int x1, int y1, int x2, int y2,
+                             bool converge = false);
 
   Sector* sector(int x, int y) const;
   Player* player() const;
@@ -53,8 +54,8 @@ class World {
 
   bool passable(int x, int y);
 
-  vector<Entity*> entities(int x, int y);
-  vector<Entity*> entities(int x1, int y1, int x2, int y2);
+  std::vector<Entity*> entities(int x, int y);
+  std::vector<Entity*> entities(int x1, int y1, int x2, int y2);
   void addEntitiy(Entity* e);
   void removeEntity(Entity* e);
 

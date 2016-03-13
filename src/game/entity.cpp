@@ -33,7 +33,7 @@ int Entity::maxHp() const { return _maxHp; }
 
 void Entity::setMaxHp(int maxHp) { _maxHp = maxHp; }
 Entity::Entity(const Tile& t, int hp, int x, int y, World& world, Size s,
-               int naturalArmor, const list<Item*>& inventory)
+               int naturalArmor, const std::list<Item*>& inventory)
     : _t(t),
       _x(x),
       _y(y),
@@ -58,8 +58,6 @@ Entity::~Entity() {
 
 int Entity::armorClass() { return 5 + _s + _naturalArmor; }
 
-string Entity::dieMessage() { return "The " + desc() + " is destroyed."; }
-
 const Tile& Entity::t() const { return _t; }
 
 int Entity::x() const { return _x; }
@@ -76,9 +74,9 @@ int Entity::lastKnownX() const { return _lastKnownX; }
 
 int Entity::lastKnownY() const { return _lastKnownY; }
 
-string Entity::prefix() const { return _t.prefix(); }
+std::string Entity::prefix() const { return _t.prefix(); }
 
-string Entity::desc() const { return _t.desc(); }
+std::string Entity::desc() const { return _t.desc(); }
 
 int Entity::hp() const { return _hp; }
 
@@ -86,7 +84,7 @@ Entity::Size Entity::size() const { return _s; }
 
 int Entity::naturalArmor() const { return _naturalArmor; }
 
-list<Item*>& Entity::inventory() { return _inventory; }
+std::list<Item*>& Entity::inventory() { return _inventory; }
 
 void Entity::setXY(int x, int y) {
   _x = x;

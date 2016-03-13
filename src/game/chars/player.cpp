@@ -21,13 +21,13 @@
 #include "world.h"
 
 Player::Player(const Tile& t, int hp, int x, int y, double speed,
-               int visionRange, array<int, noOfAttributes>& attributes,
-               World& world, Attack* unarmed, const list<Item*>& inventory,
+               int visionRange, std::array<int, noOfAttributes>& attributes,
+               World& world, Attack* unarmed, const std::list<Item*>& inventory,
                int bab, Size s, int naturalArmor)
     : Humanoid(t, hp, x, y, speed, visionRange, attributes, world, unarmed,
                inventory, bab, s, naturalArmor) {}
 
-string Player::itemStatus(Item* i) const {
+std::string Player::itemStatus(Item* i) const {
   std::string description = i->desc();
 
   if (i == mainHand() && i == offHand()) {

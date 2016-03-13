@@ -21,8 +21,6 @@
 
 #include <string>
 
-using namespace std;
-
 class Attack {
  private:
   int (*_damage)();  // damage function
@@ -31,17 +29,17 @@ class Attack {
   int _critRange;       // minimum result to score a critical hit
   int _critMultiplier;  // amount by which the damage is multiplied
 
-  string _critVerb;  // word used to describe a critical hit
+  std::string _critVerb;  // word used to describe a critical hit
 
  public:
   Attack(int (*damage)(), int critRange = 20, int critMultiplier = 2,
-         string critVerb = "maim", double range = 1.5);
+         std::string critVerb = "maim", double range = 1.5);
 
   int damage() const;
   double range() const;
   int critRange();
   int critMultiplier();
-  string critVerb();
+  std::string critVerb();
 };
 
 #endif

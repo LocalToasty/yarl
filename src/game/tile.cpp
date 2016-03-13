@@ -18,7 +18,7 @@
 
 #include "tile.h"
 
-Tile::Tile(char repr, Color color, string prefix, string description,
+Tile::Tile(char repr, Color color, std::string prefix, std::string description,
            bool transparent, bool passable)
     : _repr(repr),
       _color(color),
@@ -33,8 +33,8 @@ char Tile::repr() const { return _repr; }
 
 Color Tile::color() const { return _color; }
 
-string Tile::prefix() const { return _prefix; }
+std::string Tile::prefix() const { return _prefix; }
 
-string Tile::desc() const { return _description; }
+std::string Tile::desc() const { return _description; }
 
 bool Tile::passable() const { return _passable; }

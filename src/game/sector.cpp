@@ -23,8 +23,6 @@
 #include <tuple>
 #include <cmath>
 
-using namespace std;
-
 const int Sector::_size = 0x20;
 
 Sector::Sector(Tile* defTile)
@@ -55,7 +53,7 @@ bool Sector::passable(int x, int y) {
 
 int Sector::size() { return _size; }
 
-const list<Entity*>& Sector::entities() const { return _entities; }
+const std::list<Entity*>& Sector::entities() const { return _entities; }
 
 void Sector::addEntity(Entity* e) {
   // Entities which are passable should be drawn before those wich are not.
@@ -74,8 +72,8 @@ void Sector::addEntity(Entity* e) {
 
 void Sector::removeEntity(Entity* e) { _entities.remove(e); }
 
-vector<Entity*> Sector::entities(int x, int y) const {
-  vector<Entity*> ents;
+std::vector<Entity*> Sector::entities(int x, int y) const {
+  std::vector<Entity*> ents;
 
   for (Entity* e : _entities)
     if (e->x() == x && e->y() == y) {

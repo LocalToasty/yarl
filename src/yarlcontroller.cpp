@@ -36,11 +36,9 @@
 #include <sstream>
 #include <ctime>
 
-using namespace std;
-
 bool YarlController::init(int argc, char* argv[]) {
   // initialize variables
-  //	_variables = map<string, Variable> {
+  //	_variables = map<std::string, Variable> {
   //		{ "color", { "1", "enable / disable color." } },
   //		{ "showUnknown", { "0", "draw unexplored areas." } },
   //		{
@@ -52,35 +50,35 @@ bool YarlController::init(int argc, char* argv[]) {
   //		{ "name", { "Advent", "Name of your character." } }
   //	};
 
-  _bindings = map<char, Command>{{'h', Command::west},
-                                 {'l', Command::east},
-                                 {'k', Command::north},
-                                 {'j', Command::south},
-                                 {'y', Command::northWest},
-                                 {'u', Command::northEast},
-                                 {'b', Command::southWest},
-                                 {'n', Command::southEast},
+  _bindings = std::map<char, Command>{{'h', Command::west},
+                                      {'l', Command::east},
+                                      {'k', Command::north},
+                                      {'j', Command::south},
+                                      {'y', Command::northWest},
+                                      {'u', Command::northEast},
+                                      {'b', Command::southWest},
+                                      {'n', Command::southEast},
 
-                                 {'.', Command::wait},
+                                      {'.', Command::wait},
 
-                                 {'f', Command::twoWeaponFightingToggle},
+                                      {'f', Command::twoWeaponFightingToggle},
 
-                                 {'e', Command::equip},
-                                 {'t', Command::unequip},
+                                      {'e', Command::equip},
+                                      {'t', Command::unequip},
 
-                                 {',', Command::pickup},
-                                 {'d', Command::drop},
-                                 {'i', Command::inventory},
+                                      {',', Command::pickup},
+                                      {'d', Command::drop},
+                                      {'i', Command::inventory},
 
-                                 {'/', Command::examine},
+                                      {'/', Command::examine},
 
-                                 {'q', Command::quit}};
+                                      {'q', Command::quit}};
 
   // get config file path
 
   // config path can be supplied via an environment variable
   const char* cfg = getenv("YARLCONF");
-  string configFilePath;
+  std::string configFilePath;
 
   if (cfg) {
     configFilePath = cfg;
@@ -106,14 +104,14 @@ bool YarlController::init(int argc, char* argv[]) {
 
   // use user name as default character name
   if (const char* username = getenv("USERNAME")) {
-    stringstream ss(username);
-    string name;
+    std::stringstream ss(username);
+    std::string name;
     ss >> name;  // only use first name
                  //_variables["name"] = name;
   }
 
   for (int i = 0; i < argc; i++) {
-    string arg = argv[i];
+    std::string arg = argv[i];
 
     if (arg == "-h" || arg == "--help") {
       usage();
@@ -121,24 +119,24 @@ bool YarlController::init(int argc, char* argv[]) {
     }
 
     else if (arg == "-v" || arg == "--version") {
-      cout << PROJECT_NAME << " version " << VERSION_MAJOR << '.'
-           << VERSION_MINOR << '.' << VERSION_PATCH;
+      std::cout << PROJECT_NAME << " version " << VERSION_MAJOR << '.'
+                << VERSION_MINOR << '.' << VERSION_PATCH;
 
-      if (!string(VERSION_IDENTIFIER).empty()) {
-        cout << '-' << VERSION_IDENTIFIER;
+      if (!std::string(VERSION_IDENTIFIER).empty()) {
+        std::cout << '-' << VERSION_IDENTIFIER;
       }
 
-      if (!string(BUILD_TYPE).empty()) {
-        cout << " (" << BUILD_TYPE << ' ';
+      if (!std::string(BUILD_TYPE).empty()) {
+        std::cout << " (" << BUILD_TYPE << ' ';
       }
 
-      cout << "\nCopyright (C) 2015-2016 Marko van Treeck "
-              "<markovantreeck@gmail.com>\n\n"
-              "This program comes with ABSOLUTELY NO WARRANTY. "
-              "It is free software,\nand you are welcome to "
-              "redistribute it under certain conditions.\n"
-              "For further information consult the GNU GPL version 3 or "
-              "later\n<http://gnu.org/licenses/>\n";
+      std::cout << "\nCopyright (C) 2015-2016 Marko van Treeck "
+                   "<markovantreeck@gmail.com>\n\n"
+                   "This program comes with ABSOLUTELY NO WARRANTY. "
+                   "It is free software,\nand you are welcome to "
+                   "redistribute it under certain conditions.\n"
+                   "For further information consult the GNU GPL version 3 or "
+                   "later\n<http://gnu.org/licenses/>\n";
       return false;
     }
 
@@ -148,9 +146,9 @@ bool YarlController::init(int argc, char* argv[]) {
       if (i < argc) {
         configFilePath == argv[i];
       } else {
-        cerr << "Error: expected configuration file name!\n";
+        std::cerr << "Error: expected configuration file name!\n";
 
-        usage(cerr);
+        usage(std::cerr);
         return false;
       }
     }
@@ -158,79 +156,80 @@ bool YarlController::init(int argc, char* argv[]) {
 
   // if there is a potential config file, try to load it
   if (!configFilePath.empty()) {
-    ifstream config(configFilePath);
+    std::ifstream config(configFilePath);
 
     if (config.is_open()) {
-      string line;
+      std::string line;
 
       while (getline(config, line)) {
-        istringstream iss(line);
+        std::istringstream iss(line);
 
-        string cmd;
+        std::string cmd;
         iss >> cmd;
 
         if (cmd == "set") {
-          string name;
+          std::string name;
 
           if (!(iss >> name)) {
-            cerr << "Error: " << configFilePath
-                 << ": expected variable name.\n";
+            std::cerr << "Error: " << configFilePath
+                      << ": expected variable name.\n";
             return false;
           }
 
-          string val;
+          std::string val;
 
           if (!(iss >> val)) {
-            cerr << "Error: " << configFilePath
-                 << ": expected variable value after \"" << name << "\"\n";
+            std::cerr << "Error: " << configFilePath
+                      << ": expected variable value after \"" << name << "\"\n";
             return false;
           }
 
           //_variables[name] = val;
         } else if (cmd == "bind") {
-          map<string, Command> lut = {{"west", Command::west},
-                                      {"south", Command::south},
-                                      {"north", Command::north},
-                                      {"east", Command::east},
-                                      {"northEast", Command::northEast},
-                                      {"northWest", Command::northWest},
-                                      {"southEast", Command::southEast},
-                                      {"southWest", Command::southWest},
-                                      {"equip", Command::equip},
-                                      {"pickup", Command::pickup},
-                                      {"drop", Command::drop},
-                                      {"inventory", Command::inventory},
-                                      {"wait", Command::wait},
-                                      {"quit", Command::quit}};
+          std::map<std::string, Command> lut = {
+              {"west", Command::west},
+              {"south", Command::south},
+              {"north", Command::north},
+              {"east", Command::east},
+              {"northEast", Command::northEast},
+              {"northWest", Command::northWest},
+              {"southEast", Command::southEast},
+              {"southWest", Command::southWest},
+              {"equip", Command::equip},
+              {"pickup", Command::pickup},
+              {"drop", Command::drop},
+              {"inventory", Command::inventory},
+              {"wait", Command::wait},
+              {"quit", Command::quit}};
 
-          string keyS;
+          std::string keyS;
 
           if (!(iss >> keyS)) {
-            cerr << "Error: " << configFilePath << ": expected key.\n";
+            std::cerr << "Error: " << configFilePath << ": expected key.\n";
             return false;
           }
 
           char key = keyS.front();
 
-          string command;
+          std::string command;
 
           if (!(iss >> command)) {
-            cerr << "Error: " << configFilePath << ": expected command after \""
-                 << cmd << "\"\n";
+            std::cerr << "Error: " << configFilePath
+                      << ": expected command after \"" << cmd << "\"\n";
             return false;
           }
 
           _bindings[key] = lut[command];
         } else {
-          cerr << "Error: " << configFilePath << ": unknown command: \"" << cmd
-               << "\"\n";
+          std::cerr << "Error: " << configFilePath << ": unknown command: \""
+                    << cmd << "\"\n";
         }
       }
     }
   }
 
   // create test world
-  _world = make_unique<World>(5, 5);
+  _world = std::make_unique<World>(5, 5);
 
   _view = makeView(*this, *_world);
 
@@ -242,7 +241,7 @@ bool YarlController::init(int argc, char* argv[]) {
 
 int YarlController::cleanup() { return 0; }
 
-void YarlController::usage(ostream& out) {
+void YarlController::usage(std::ostream& out) {
   out << "Usage: " << PROJECT_NAME
       << " {option}\n\n"
          "Options:\n"
@@ -368,7 +367,7 @@ void YarlController::equip() {
         }
       } else {  // two handed weapon
         // check if any hands are blocked by other items
-        string items;
+        std::string items;
 
         if (player->mainHand() && player->mainHand() != item) {
           items += player->mainHand()->desc();
@@ -489,7 +488,7 @@ void YarlController::examine() {
         t = _world->tile(x, y);
       }
 
-      _view->addStatusMessage(string() + t->repr() + " - " + t->prefix() +
+      _view->addStatusMessage(std::string() + t->repr() + " - " + t->prefix() +
                               t->desc());
     } else {
       _view->addStatusMessage("Unknown");

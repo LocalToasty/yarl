@@ -25,12 +25,11 @@
 #include <cstdlib>
 #include <cmath>  // for pow
 
-using namespace std;
-
 Character::Character(const Tile& t, int hp, int x, int y, double speed,
                      int visionRange,
-                     const array<int, noOfAttributes>& attributes, World& world,
-                     Attack* unarmed, const list<Item*>& inventory, int bab,
+                     const std::array<int, noOfAttributes>& attributes,
+                     World& world, Attack* unarmed,
+                     const std::list<Item*>& inventory, int bab,
                      Character::Size s, int naturalArmor)
     : Entity(t, hp, x, y, world, s, naturalArmor, inventory),
       _visionRange(visionRange),
@@ -95,8 +94,8 @@ bool Character::los(Entity const& e, double factor) const {
 }
 
 // returns a vector with the entities currently seen by the character
-vector<Entity*> Character::seenEntities() {
-  vector<Entity*> ents;
+std::vector<Entity*> Character::seenEntities() {
+  std::vector<Entity*> ents;
 
   for (Entity* e :
        world().entities(x() - visionRange(), y() - visionRange(),

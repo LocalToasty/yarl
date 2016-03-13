@@ -68,18 +68,20 @@ Uint32 SDLYarlView::color(Color col) {
 SDLYarlView::SDLYarlView(YarlController& controller, World& world)
     : ConsoleYarlView(controller, world), _cursorOn(false), _useColor(true) {
   const char* charset = "charset.bmp";
-  _characters = vector<char>(_width * _height, ' ');
-  _colors = vector<Color>(_width * _height, Color::white);
+  _characters = std::vector<char>(_width * _height, ' ');
+  _colors = std::vector<Color>(_width * _height, Color::white);
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
-    cerr << "Error while initializing SDL: " << SDL_GetError() << endl;
+    std::cerr << "Error while initializing SDL: " << SDL_GetError()
+              << std::endl;
     return;  // TODO
   }
 
   SDL_Surface* tmpCharset = SDL_LoadBMP(charset);
 
   if (tmpCharset == nullptr) {
-    cerr << "Error while trying to open char set: " << SDL_GetError() << endl;
+    std::cerr << "Error while trying to open char set: " << SDL_GetError()
+              << std::endl;
     return;  // TODO
   }
 
@@ -92,7 +94,7 @@ SDLYarlView::SDLYarlView(YarlController& controller, World& world)
                        SDL_WINDOW_SHOWN);
 
   if (_window == nullptr) {
-    cerr << "Error while opening window: " << SDL_GetError() << endl;
+    std::cerr << "Error while opening window: " << SDL_GetError() << std::endl;
     return;  // TODO
   }
 
@@ -143,7 +145,7 @@ void SDLYarlView::addChar(char c, Color col) {
   }
 }
 
-void SDLYarlView::addString(string s, Color col) {
+void SDLYarlView::addString(std::string s, Color col) {
   for (char c : s) {
     addChar(c, col);
   }
