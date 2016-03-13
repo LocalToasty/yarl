@@ -334,17 +334,17 @@ void YarlController::equip() {
           player->inventory().end(), [](Item* i) {
             return dynamic_cast<Armor*>(i) || dynamic_cast<Weapon*>(i);
           })) {
-    Armor* a = dynamic_cast<Armor*>(*item);
-    Weapon* w = dynamic_cast<Weapon*>(*item);
+    Armor* armor = dynamic_cast<Armor*>(*item);
+    Weapon* weapon = dynamic_cast<Weapon*>(*item);
 
-    if (a && !a->isShield()) {  // item is armor
+    if (armor && !armor->isShield()) {  // item is armor
       if (player->armor()) {
         _view->addStatusMessage("You are already wearing armor.");
       } else {
-        player->setArmor(a);
+        player->setArmor(armor);
       }
-    } else if (a || w) {  // the item is a shield or a weapon
-      if (w && !w->twoHanded()) {
+    } else if (armor || weapon) {  // the item is a shield or a weapon
+      if ((weapon && !weapon->twoHanded()) || armor) {
         enum { main_hand = 0, off_hand = 1, both_hands = 2 };
         int hand = _view->multipleChoiceDialog(
             "What hand do you want to equip it in?",
@@ -352,15 +352,15 @@ void YarlController::equip() {
 
         switch (hand) {
           case main_hand:
-            player->setMainHand(w);
+            player->setMainHand(*item);
             break;
 
           case off_hand:
-            player->setOffHand(w);
+            player->setOffHand(*item);
             break;
 
           case both_hands:
-            player->setBothHands(w);
+            player->setBothHands(*item);
             break;
 
           default:
