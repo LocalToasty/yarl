@@ -501,7 +501,9 @@ void ConsoleYarlView::drawStatusBar() {
     moveAddString(0, 0, _statusBar.getLine(width()));
 
     refreshScreen();
-    waitForInput();
+    if (!_statusBar.empty()) {
+      getChar();
+    }
   }
 }
 
