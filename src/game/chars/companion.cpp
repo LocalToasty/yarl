@@ -24,8 +24,8 @@ Companion::Companion(
     const Tile& t, Character* companion, int hp, Position pos, double speed,
     int visionRange,
     const std::array<int, Character::noOfAttributes>& attributes, World& world,
-    Attack* unarmed, const std::list<Item*>& inventory, int bab, Entity::Size s,
-    int naturalArmor)
+    Attack* unarmed, const std::vector<Item*>& inventory, int bab,
+    Entity::Size s, int naturalArmor)
     : NPC(t, hp, pos, speed, visionRange, attributes, world, unarmed, inventory,
           bab, s, naturalArmor),
       _companion(companion) {}

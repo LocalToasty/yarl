@@ -21,12 +21,10 @@
 #include "world.h"
 #include "attackevent.h"
 
-Humanoid::Humanoid(const Tile& t, int hp, Position pos, double speed,
-                   int visionRange,
-                   const std::array<int, noOfAttributes>& attributes,
-                   World& world, Attack* unarmed,
-                   const std::list<Item*>& inventory, int bab, Size s,
-                   int naturalArmor)
+Humanoid::Humanoid(Tile const& t, int hp, Position pos, double speed,
+                   int visionRange, const Attributes& attributes, World& world,
+                   Attack* unarmed, std::vector<Item*> const& inventory,
+                   int bab, Size s, int naturalArmor)
     : Character(t, hp, pos, speed, visionRange, attributes, world, unarmed,
                 inventory, bab, s, naturalArmor) {}
 
@@ -139,7 +137,7 @@ int Humanoid::armorClass() {
   return ac;
 }
 
-int Humanoid::attributeMod(Character::Attribute attribute) {
+int Humanoid::attributeMod(Character::Attribute attribute) const {
   int bonus = (_attributes[attribute] - 10) / 2;
 
   if (attribute == dexterity || attribute == strength) {

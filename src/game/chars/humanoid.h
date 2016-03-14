@@ -32,18 +32,17 @@ class Humanoid : public Character {
 
  public:
   Humanoid(const Tile& t, int hp, Position pos, double speed, int visionRange,
-           const std::array<int, noOfAttributes>& attributes, World& world,
-           Attack* unarmed, const std::list<Item*>& inventory = {}, int bab = 0,
+           const Attributes& attributes, World& world, Attack* unarmed,
+           const std::vector<Item*>& inventory = {}, int bab = 0,
            Size s = Size::medium, int naturalArmor = 0);
 
   void attack(Entity* target);
   int armorClass();
-  int attributeMod(Attribute attribute);
+  int attributeMod(Attribute attribute) const;
 
   bool twoWeaponFighting() const;
   void setTwoWeaponFighting(bool twoWeaponFighting);
 
-  //	string equip
   Item* mainHand() const;
   void setMainHand(Item* i);
   Item* offHand() const;

@@ -17,24 +17,26 @@
  */
 
 #include "yarlcontroller.h"
-#include "yarlview.h"
-#include "yarlviewfactory.h"
-#include "yarlconfig.h"
-#include "item.h"
+
 #include "character.h"
+#include "dropevent.h"
+#include "item.h"
+#include "npc.h"
 #include "player.h"
 #include "world.h"
-#include "npc.h"
-#include "dropevent.h"
-#include <boost/range/adaptor/reversed.hpp>
-#include <stdexcept>
-#include <functional>
+#include "yarlconfig.h"
+#include "yarlview.h"
+#include "yarlviewfactory.h"
 #include <algorithm>
+#include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/algorithm/remove.hpp>
 #include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <ctime>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 bool YarlController::init(int argc, char* argv[]) {
   // initialize variables
@@ -407,7 +409,7 @@ void YarlController::unequip() {
 }
 
 void YarlController::drop() {
-  auto player = _world->player();
+  Player* player = _world->player();
   auto inventory = player->inventory();
   if (Item* item =
           _view->promptItem("What item do you want to drop?", inventory.begin(),
@@ -429,7 +431,7 @@ void YarlController::drop() {
       Character::Load before = player->load();
 
       item->setPos(player->pos());
-      player->inventory().remove(item);
+      boost::remove(player->inventory(), item);
 
       Character::Load after = player->load();
 

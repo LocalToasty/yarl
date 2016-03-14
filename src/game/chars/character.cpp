@@ -22,14 +22,14 @@
 #include "yarlconfig.h"
 #include "player.h"
 #include <attackevent.h>
+#include <boost/range/numeric.hpp>
 #include <cstdlib>
 #include <cmath>  // for pow
 
 Character::Character(const Tile& t, int hp, Position pos, double speed,
-                     int visionRange,
-                     const std::array<int, noOfAttributes>& attributes,
+                     int visionRange, Attributes const& attributes,
                      World& world, Attack* unarmed,
-                     const std::list<Item*>& inventory, int bab,
+                     std::vector<Item*> const& inventory, int bab,
                      Character::Size s, int naturalArmor)
     : Entity(t, hp, pos, world, s, naturalArmor, inventory),
       _visionRange(visionRange),
@@ -83,13 +83,11 @@ void Character::attack(Entity* target) {
   }
 }
 
-bool Character::los(Position pos, double factor) const {
-  return world().los(this->pos(), pos, _visionRange * factor);
+bool Character::los(Position pos) const {
+  return world().los(this->pos(), pos, _visionRange);
 }
 
-bool Character::los(Entity const& e, double factor) const {
-  return los(e.pos(), factor);
-}
+bool Character::los(Entity const& e) const { return los(e.pos()); }
 
 // returns a vector with the entities currently seen by the character
 std::vector<Entity*> Character::seenEntities() {
@@ -106,7 +104,7 @@ std::vector<Entity*> Character::seenEntities() {
   return ents;
 }
 
-int Character::armorClass() {
+int Character::armorClass() const {
   return 10 + attributeMod(dexterity) + size() + naturalArmor() +
          (_armor == nullptr ? 0 : _armor->ac());
 }
@@ -117,11 +115,11 @@ Armor* Character::armor() const { return _armor; }
 
 void Character::setArmor(Armor* armor) { _armor = armor; }
 
-int Character::attribute(Character::Attribute attribute) {
+int Character::attribute(Character::Attribute attribute) const {
   return _attributes[attribute];
 }
 
-int Character::attributeMod(Character::Attribute attribute) {
+int Character::attributeMod(Character::Attribute attribute) const {
   int bonus = (_attributes[attribute] - 10) / 2;
 
   if (_armor) {
@@ -151,21 +149,11 @@ int Character::visionRange() const { return _visionRange; }
 
 double Character::speed() const { return _speed; }
 
-double Character::inventoryWeight() {
-  double weight = 0;
+double Character::lightLoad() const { return heavyLoad() / 3; }
 
-  for (Item* i : inventory()) {
-    weight += i->weight();
-  }
+double Character::mediumLoad() const { return heavyLoad() * 2 / 3; }
 
-  return weight;
-}
-
-double Character::lightLoad() { return heavyLoad() / 3; }
-
-double Character::mediumLoad() { return heavyLoad() * 2 / 3; }
-
-double Character::heavyLoad() {
+double Character::heavyLoad() const {
   if (attribute(strength) <= 10) {
     return 10 * attribute(strength);
   } else {
@@ -173,8 +161,9 @@ double Character::heavyLoad() {
   }
 }
 
-Character::Load Character::load() {
-  double weight = inventoryWeight();
+Character::Load Character::load() const {
+  double weight = boost::accumulate(
+      inventory(), 0, [](double i, Item* j) { return i + j->weight(); });
 
   if (weight > heavyLoad()) {
     return Load::overloaded;
@@ -187,7 +176,7 @@ Character::Load Character::load() {
   }
 }
 
-int Character::loadMaxDexBon() {
+int Character::loadMaxDexBon() const {
   switch (load()) {
     default:
     case Load::light:
@@ -204,7 +193,7 @@ int Character::loadMaxDexBon() {
   }
 }
 
-int Character::loadCheckPenalty() {
+int Character::loadCheckPenalty() const {
   switch (load()) {
     default:
     case Load::light:

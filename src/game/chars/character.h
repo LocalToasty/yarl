@@ -38,7 +38,51 @@ class Character : public Entity {
     noOfAttributes
   };
 
+  using Attributes = std::array<int, noOfAttributes>;
+
   enum class Load { light, medium, heavy, overloaded };
+
+  Character(const Tile& t, int hp, Position pos, double speed, int visionRange,
+            const Attributes& attributes, World& world, Attack* unarmed,
+            const std::vector<Item*>& inventory = {}, int bab = 0,
+            Size s = Size::medium, int naturalArmor = 0);
+
+  bool los(Position pos) const;
+  bool los(const Entity& e) const;
+
+  bool move(Position diff);
+
+  virtual void attack(Entity* target);
+
+  int armorClass() const;
+
+  Attack* unarmed();
+
+  Armor* armor() const;
+  void setArmor(Armor* armor);
+
+  int attribute(Attribute attribute) const;
+  void setAttribute(Attribute attribute, int value);
+  virtual int attributeMod(Attribute attribute) const;
+
+  std::vector<Entity*> seenEntities();
+
+  int visionRange() const;
+  double speed() const;
+
+  double lightLoad() const;
+  double mediumLoad() const;
+  double heavyLoad() const;
+
+  Load load() const;
+
+  int loadMaxDexBon() const;
+  int loadCheckPenalty() const;
+
+  Entity* lastTarget() const;
+  void setLastTarget(Entity* lastTarget);
+
+  int bab();
 
  private:
   int _visionRange;
@@ -53,51 +97,7 @@ class Character : public Entity {
   Entity* _lastTarget{nullptr};
 
  protected:
-  std::array<int, noOfAttributes> _attributes;
-
- public:
-  Character(const Tile& t, int hp, Position pos, double speed, int visionRange,
-            const std::array<int, noOfAttributes>& attributes, World& world,
-            Attack* unarmed, const std::list<Item*>& inventory = {},
-            int bab = 0, Size s = Size::medium, int naturalArmor = 0);
-
-  bool los(Position pos, double factor = 1) const;
-  bool los(const Entity& e, double factor = 1) const;
-  std::vector<Entity*> seenEntities();
-
-  bool move(Position diff);
-
-  virtual void attack(Entity* target);
-
-  int armorClass();
-
-  Attack* unarmed();
-
-  Armor* armor() const;
-  void setArmor(Armor* armor);
-
-  int attribute(Attribute attribute);
-  void setAttribute(Attribute attribute, int value);
-  virtual int attributeMod(Attribute attribute);
-
-  int visionRange() const;
-  double speed() const;
-
-  double inventoryWeight();
-
-  double lightLoad();
-  double mediumLoad();
-  double heavyLoad();
-
-  Load load();
-
-  int loadMaxDexBon();
-  int loadCheckPenalty();
-
-  Entity* lastTarget() const;
-  void setLastTarget(Entity* lastTarget);
-
-  int bab();
+  Attributes _attributes;
 };
 
 #endif

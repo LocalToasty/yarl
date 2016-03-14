@@ -20,9 +20,8 @@
 #include "character.h"
 
 NPC::NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
-         const std::array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const std::list<Item*>& inventory, int bab, Size s,
-         int naturalArmor)
+         const Attributes& attributes, World& world, Attack* unarmed,
+         const std::vector<Item*>& inventory, int bab, Size s, int naturalArmor)
     : Character(t, hp, pos, speed, visionRange, attributes, world, unarmed,
                 inventory, bab, s, naturalArmor) {}
 

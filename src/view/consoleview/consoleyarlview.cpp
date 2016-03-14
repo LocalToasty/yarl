@@ -204,8 +204,8 @@ int ConsoleYarlView::multipleChoiceDialog(
 }
 
 Item* ConsoleYarlView::promptItem(const std::string& message,
-                                  std::list<Item*>::iterator first,
-                                  std::list<Item*>::iterator last,
+                                  std::vector<Item*>::iterator first,
+                                  std::vector<Item*>::iterator last,
                                   std::function<bool(Item*)> pred) {
   // filter all valid items
   std::vector<Item*> possibleItems;
@@ -285,7 +285,7 @@ Item* ConsoleYarlView::promptItem(const std::string& message,
 }
 
 void ConsoleYarlView::showItemList(std::string const& title,
-                                   std::list<Item*> const& items,
+                                   const std::vector<Item*>& items,
                                    std::function<std::string(Item*)> decorate) {
   clear(0, 0, width(), 1);
   moveAddString({0, 0}, title);

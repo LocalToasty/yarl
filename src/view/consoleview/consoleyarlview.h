@@ -42,11 +42,12 @@ class ConsoleYarlView : public YarlView {
                            std::vector<std::string> const& possibleAnswers,
                            size_t defAnswer);
 
-  Item* promptItem(std::string const& message, std::list<Item*>::iterator first,
-                   std::list<Item*>::iterator last,
+  Item* promptItem(std::string const& message,
+                   std::vector<Item*>::iterator first,
+                   std::vector<Item*>::iterator last,
                    std::function<bool(Item*)> pred);
 
-  void showItemList(std::string const& title, std::list<Item*> const& items,
+  void showItemList(std::string const& title, std::vector<Item*> const& items,
                     std::function<std::string(Item*)> decorator);
 
   virtual boost::optional<Vec<int, 2>> promptCoordinates();

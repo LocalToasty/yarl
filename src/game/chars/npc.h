@@ -28,8 +28,8 @@ class NPC : public Character {
 
  public:
   NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
-      const std::array<int, noOfAttributes>& attributes, World& world,
-      Attack* unarmed, const std::list<Item*>& inventory = {}, int bab = 0,
+      const Attributes& attributes, World& world, Attack* unarmed,
+      const std::vector<Item*>& inventory = {}, int bab = 0,
       Size s = Size::medium, int naturalArmor = 0);
 
   virtual void think() = 0;

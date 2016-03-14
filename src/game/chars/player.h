@@ -25,9 +25,9 @@
 
 class Player : public Humanoid {
  public:
-  Player(const Tile& t, int hp, Position pos, double speed, int visionRange,
-         std::array<int, noOfAttributes>& attributes, World& world,
-         Attack* unarmed, const std::list<Item*>& inventory = {}, int bab = 0,
+  Player(Tile const& t, int hp, Position pos, double speed, int visionRange,
+         Attributes& attributes, World& world, Attack* unarmed,
+         std::vector<Item*> const& inventory = {}, int bab = 0,
          Size s = Size::medium, int naturalArmor = 0);
 
   std::string itemStatus(Item* i) const;

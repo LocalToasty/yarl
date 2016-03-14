@@ -65,8 +65,8 @@ class YarlView {
    * \returns a pointer to the selected Item, or none if no item was chosen.
    */
   virtual Item* promptItem(std::string const& message,
-                           std::list<Item*>::iterator first,
-                           std::list<Item*>::iterator last,
+                           std::vector<Item*>::iterator first,
+                           std::vector<Item*>::iterator last,
                            std::function<bool(Item*)> pred) = 0;
 
   /*!
@@ -77,7 +77,7 @@ class YarlView {
   virtual boost::optional<Position> promptCoordinates() = 0;
 
   virtual void showItemList(std::string const& title,
-                            std::list<Item*> const& items,
+                            std::vector<Item*> const& items,
                             std::function<std::string(Item*)> decorate) = 0;
 
   virtual void addStatusMessage(std::string const& message) = 0;

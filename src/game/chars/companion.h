@@ -29,10 +29,10 @@ class Companion : public NPC {
 
  public:
   Companion(const Tile& t, Character* companion, int hp, Position pos,
-            double speed, int visionRange,
-            const std::array<int, noOfAttributes>& attributes, World& world,
-            Attack* unarmed, const std::list<Item*>& inventory = {},
-            int bab = 0, Size s = Size::medium, int naturalArmor = 0);
+            double speed, int visionRange, const Attributes& attributes,
+            World& world, Attack* unarmed,
+            const std::vector<Item*>& inventory = {}, int bab = 0,
+            Size s = Size::medium, int naturalArmor = 0);
 
   void think();
 };

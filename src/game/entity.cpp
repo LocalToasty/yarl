@@ -25,6 +25,12 @@
 
 Character* Entity::lastAttacker() const { return _lastAttacker; }
 
+int Entity::hp() const { return _hp; }
+
+Entity::Size Entity::size() const { return _s; }
+
+int Entity::naturalArmor() const { return _naturalArmor; }
+
 void Entity::setLastAttacker(Character* lastAttacker) {
   _lastAttacker = lastAttacker;
 }
@@ -32,8 +38,8 @@ void Entity::setLastAttacker(Character* lastAttacker) {
 int Entity::maxHp() const { return _maxHp; }
 
 void Entity::setMaxHp(int maxHp) { _maxHp = maxHp; }
-Entity::Entity(const Tile& t, int hp, Vec<int, 2> pos, World& world, Size s,
-               int naturalArmor, const std::list<Item*>& inventory)
+Entity::Entity(Tile const& t, int hp, Position pos, World& world, Size s,
+               int naturalArmor, std::vector<Item*> const& inventory)
     : _t(t),
       _pos(pos),
       _hp(hp),
@@ -55,11 +61,31 @@ Entity::~Entity() {
   }
 }
 
-void Entity::setLastKnownPos(boost::optional<Vec<int, 2>> pos) {
+const Tile& Entity::t() const { return _t; }
+
+Position Entity::pos() const { return _pos; }
+
+World& Entity::world() const { return _world; }
+
+Sector* Entity::sector() const { return _sector; }
+
+bool Entity::seen() const { return _lastKnownPos == boost::none; }
+
+boost::optional<Position> Entity::lastKnownPos() const { return _lastKnownPos; }
+
+void Entity::setLastKnownPos(boost::optional<Position> pos) {
   _lastKnownPos = pos;
 }
 
-int Entity::armorClass() { return 5 + _s + _naturalArmor; }
+std::string Entity::prefix() const { return t().prefix(); }
+
+std::string Entity::desc() const { return _t.desc(); }
+
+int Entity::armorClass() const { return 5 + _s + _naturalArmor; }
+
+std::vector<Item*>& Entity::inventory() { return _inventory; }
+
+const std::vector<Item*>& Entity::inventory() const { return _inventory; }
 
 void Entity::setPos(Vec<int, 2> pos) {
   _pos = pos;
