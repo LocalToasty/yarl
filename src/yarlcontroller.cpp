@@ -129,7 +129,7 @@ bool YarlController::init(int argc, char* argv[]) {
       }
 
       if (!std::string(BUILD_TYPE).empty()) {
-        std::cout << " (" << BUILD_TYPE << ' ';
+        std::cout << " (" << BUILD_TYPE << ')';
       }
 
       std::cout << "\nCopyright (C) 2015-2016 Marko van Treeck "
