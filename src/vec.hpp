@@ -2,12 +2,13 @@
 #define VEC_HPP
 
 #include "command.h"
-#include <array>
-#include <initializer_list>
 #include <algorithm>
-#include <iterator>
-#include <cstddef>
+#include <array>
+#include <boost/optional.hpp>
 #include <cmath>
+#include <cstddef>
+#include <initializer_list>
+#include <iterator>
 
 template <typename T, size_t dim>
 class Vec {
@@ -55,8 +56,30 @@ class Vec {
 
   Vec<T, dim> normalize() const { return *this / this->norm(); }
 
-  bool operator==(Vec<T, dim> const& rhs) {
+  bool operator==(Vec<T, dim> const& rhs) const {
     return _elems == rhs._elems;
+  }
+
+  boost::optional<Command> asDirection() const {
+    if (at(0) < 0 && at(1) < 0) {
+      return Command::northWest;
+    } else if (at(0) == 0 && at(1) < 0) {
+      return Command::north;
+    } else if (at(0) > 0 && at(1) < 0) {
+      return Command::northEast;
+    } else if (at(0) > 0 && at(1) == 0) {
+      return Command::east;
+    } else if (at(0) > 0 && at(1) > 0) {
+      return Command::southEast;
+    } else if (at(0) == 0 && at(1) > 0) {
+      return Command::south;
+    } else if (at(0) < 0 && at(1) > 0) {
+      return Command::southWest;
+    } else if (at(0) < 0 && at(1) == 0) {
+      return Command::west;
+    } else {
+      return boost::none;
+    }
   }
 
  private:

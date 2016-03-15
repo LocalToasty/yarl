@@ -17,6 +17,7 @@
  */
 
 #include "world.h"
+
 #include "sector.h"
 #include "character.h"
 #include "player.h"
@@ -164,11 +165,32 @@ int min(int x, int y) { return (x < y) ? x : y; }
 
 int max(int x, int y) { return (x > y) ? x : y; }
 
-int heuristic(int x1, int y1, int x2, int y2) {
-  int dx = abs(x2 - x1);
-  int dy = abs(y2 - y1);
+int heuristic(Position from, Position to) {
+  int dx = abs(to[0] - from[0]);
+  int dy = abs(to[1] - from[1]);
 
   return min(dx, dy) + 2 * max(dx, dy);
+}
+
+/*! Finds all passable neighbors of the given tile */
+std::vector<Position> passableNeighbours(World const& world, Position pos,
+                                         Position dest, bool converge) {
+  std::vector<Position> res;
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      if (x == 0 && y == 0) {
+        continue;
+      }
+
+      Position const p = pos + Position({x, y});
+
+      if (world.passable(p) || (converge && p == dest)) {
+        res.push_back(p);
+      }
+    }
+  }
+
+  return res;
 }
 
 // calculates a route from (x1, y2) to (x2, y2). If converge is true, the path
@@ -177,35 +199,36 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
   // A* search (see http://en.wikipedia.org/wiki/A*_search_algorithm)
 
   struct Node {
-    int h;           // heuristic of distance to goal
-    int g;           // cost so far
-    Command action;  // action taken to reach this node
-    Node* parent;    // previous node; nullptr if none
-    Position pos;    // coordinates
+    int h;                            // heuristic of distance to goal
+    int g;                            // cost so far
+    boost::optional<Command> action;  // action taken to reach this node
+    std::shared_ptr<Node> parent;     // previous node; nullptr if none
+    Position pos;                     // coordinates
+
+    Node(int h, int g, boost::optional<Command> action,
+         std::shared_ptr<Node> parent, Position pos)
+        : h(h), g(g), action(action), parent(parent), pos(pos) {}
   };
 
   // if the destination is not passable, there is no route to it.
   if (!passable(dest) && !converge) {
-    return {Command::none};
+    return {};
   }
 
   // frontier is a priority queue initialised with the starting point
-  std::list<Node*> frontier;
+  std::list<std::shared_ptr<Node>> frontier;
 
-  frontier.push_back(new Node{0, 0, Command::none, nullptr, from});
+  frontier.emplace_back(
+      std::make_shared<Node>(0, 0, boost::none, nullptr, from));
 
-  std::vector<Node*> explored;
+  std::vector<std::shared_ptr<Node>> explored;
 
-  for (;;) {                      // forever
-    if (frontier.empty()) {       // failure
-      for (Node* n : explored) {  // cleanup
-        delete n;
-      }
-
-      return {Command::none};
+  while (true) {
+    if (frontier.empty()) {  // failure
+      return {};
     }
 
-    Node* node = frontier.front();
+    std::shared_ptr<Node> node = frontier.front();
     frontier.pop_front();
 
     if (node->pos == dest) {  // optimal path found
@@ -213,82 +236,27 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
 
       // get all commands
       for (; node->parent != nullptr; node = node->parent) {
-        directions.push_back(node->action);
+        if (auto action = node->action) {
+          directions.push_back(*action);
+        }
       }
 
       // bring them into the right order
       reverse(directions.begin(), directions.end());
-
-      // cleanup
-      for (Node* n : frontier) {
-        delete n;
-      }
-
-      for (Node* n : explored) {
-        delete n;
-      }
-
-      if (directions.empty()) return {Command::none};
 
       return directions;
     }
 
     explored.push_back(node);
 
-    // get all the adjacent nodes
-    // I hope this wall of text can somehow be broken down...
-    std::vector<std::pair<Command, Position>> passableNeighbours;
-    int x = node->pos[0];
-    int y = node->pos[1];
+    auto successors = passableNeighbours(*this, node->pos, dest, converge);
 
-    // north
-    int ty = y - 1;
-
-    if (passable({x, ty}) || (converge && x == dest[0] && ty == dest[1]))
-      passableNeighbours.push_back({Command::north, {x, ty}});
-
-    int tx = x - 1;
-
-    // north west
-    if (passable({tx, ty}) || (converge && tx == dest[0] && ty == dest[1]))
-      passableNeighbours.push_back({Command::northWest, {tx, ty}});
-
-    // west
-    if (passable({tx, y}) || (converge && tx == dest[0] && y == dest[1]))
-      passableNeighbours.push_back({Command::west, {tx, y}});
-
-    ty = y + 1;
-
-    // south west
-    if (passable({tx, ty}) || (converge && tx == dest[0] && ty == dest[1]))
-      passableNeighbours.push_back({Command::southWest, {tx, ty}});
-
-    // south
-    if (passable({x, ty}) || (converge && x == dest[0] && ty == dest[1]))
-      passableNeighbours.push_back({Command::south, {x, ty}});
-
-    tx = x + 1;
-
-    // south east
-    if (passable({tx, ty}) || (converge && tx == dest[0] && ty == dest[1]))
-      passableNeighbours.push_back({Command::southEast, {tx, ty}});
-
-    // east
-    if (passable({tx, y}) || (converge && tx == dest[0] && y == dest[1]))
-      passableNeighbours.push_back({Command::east, {tx, y}});
-
-    ty = y - 1;
-
-    // north east
-    if (passable({tx, ty}) || (converge && tx == dest[0] && ty == dest[1]))
-      passableNeighbours.push_back({Command::northEast, {tx, ty}});
-
-    for (std::pair<Command, Position> neighbour : passableNeighbours) {
+    for (Position neighbour : successors) {
       // if the node is in the explored set, dismiss it
       bool inExplored = false;
 
-      for (Node* n : explored) {
-        if (n->pos == neighbour.second) {
+      for (std::shared_ptr<Node> n : explored) {
+        if (n->pos == neighbour) {
           inExplored = true;
           break;
         }
@@ -296,7 +264,8 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
 
       int movementCost = node->g;
 
-      switch (neighbour.first) {
+      Command const direction = *(neighbour - node->pos).asDirection();
+      switch (direction) {
         case Command::north:
         case Command::south:
         case Command::west:
@@ -315,27 +284,23 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
           break;
       }
 
-      int h = heuristic(neighbour.second[0], neighbour.second[1], dest[0],
-                        dest[1]) +
-              movementCost;
+      int h = heuristic(neighbour, dest) + movementCost;
 
-      auto comp = [](const Node* l, const Node* r) { return l->h < r->h; };
+      auto comp = [](std::shared_ptr<Node> const l,
+                     std::shared_ptr<Node> const r) { return l->h < r->h; };
 
       bool inFrontier = false;
 
-      for (Node* n : frontier) {
-        if (n->pos == neighbour.second) {
+      for (std::shared_ptr<Node> n : frontier) {
+        if (n->pos == neighbour) {
           inFrontier = true;
 
           // node was already found earlier, but the newly found path
           // to node is shorter
           if (n->g > movementCost) {
             // replace the old node
-            delete n;
-            frontier.remove(n);
-
-            n = new Node{h, movementCost, neighbour.first, node,
-                         neighbour.second};
+            n = std::make_shared<Node>(h, movementCost, direction, node,
+                                       neighbour);
 
             auto pos = lower_bound(frontier.begin(), frontier.end(), n, comp);
 
@@ -348,8 +313,8 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
       // if the node is not yet in the frontier and nor has been found
       // yet, add it to the frontier
       if (!inExplored && !inFrontier) {
-        Node* n =
-            new Node{h, movementCost, neighbour.first, node, neighbour.second};
+        auto n =
+            std::make_shared<Node>(h, movementCost, direction, node, neighbour);
 
         auto pos = lower_bound(frontier.begin(), frontier.end(), n, comp);
 
@@ -359,7 +324,7 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
   }
 }
 
-Sector* World::sector(Vec<int, 2> pos) const {
+Sector* World::sector(Position pos) const {
   if (pos[0] >= 0 && pos[1] >= 0 && pos[0] < _width * Sector::size() &&
       pos[1] < _height * Sector::size()) {
     return _sectors.at(pos[0] / Sector::size() +
@@ -371,7 +336,7 @@ Sector* World::sector(Vec<int, 2> pos) const {
 
 Player* World::player() const { return _player; }
 
-Tile* World::tile(Vec<int, 2> pos) const {
+Tile* World::tile(Position pos) const {
   Sector* s = sector(pos);
 
   if (s) {
@@ -381,7 +346,7 @@ Tile* World::tile(Vec<int, 2> pos) const {
   }
 }
 
-void World::setTile(Vec<int, 2> pos, Tile* t) {
+void World::setTile(Position pos, Tile* t) {
   Sector* s = sector(pos);
 
   if (s != nullptr) {
@@ -389,7 +354,7 @@ void World::setTile(Vec<int, 2> pos, Tile* t) {
   }
 }
 
-bool World::explored(Vec<int, 2> pos) const {
+bool World::explored(Position pos) const {
   Sector* s = sector(pos);
 
   if (s) {
@@ -399,7 +364,7 @@ bool World::explored(Vec<int, 2> pos) const {
   }
 }
 
-void World::setExplored(Vec<int, 2> pos, bool explored) {
+void World::setExplored(Position pos, bool explored) {
   Sector* s = sector(pos);
 
   if (s != nullptr) {
@@ -407,7 +372,7 @@ void World::setExplored(Vec<int, 2> pos, bool explored) {
   }
 }
 
-bool World::passable(Vec<int, 2> pos) {
+bool World::passable(Position pos) const {
   Sector* s = sector(pos);
 
   if (s != nullptr) {

@@ -54,14 +54,17 @@ void Companion::think() {
 
   if (_waypoint[0] >= 0 && _waypoint[0] >= 0) {
     if ((pos() - _waypoint).norm() > unarmed()->range()) {
-      auto const dir = world().route(pos(), _waypoint, true);
-      Position const diff(dir.front());
+      auto const route = world().route(pos(), _waypoint, true);
 
-      move(diff);
+      if (!route.empty()) {
+        Position const diff(route.front());
 
-      setLastAction(lastAction() + (abs(diff[0]) + abs(diff[1]) == 1
-                                        ? speed()
-                                        : 1.5 * speed()));
+        move(diff);
+
+        setLastAction(lastAction() + (abs(diff[0]) + abs(diff[1]) == 1
+                                          ? speed()
+                                          : 1.5 * speed()));
+      }
     } else if (lastTarget() != nullptr && lastTarget()->hp() > 0) {
       attack(lastTarget());
       setLastAction(lastAction() + 2);

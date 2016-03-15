@@ -32,7 +32,6 @@ enum class Command {
   MOVEMENT_END,
 
   wait,
-  none,  // TODO replace with optional
 
   equip,
   unequip,

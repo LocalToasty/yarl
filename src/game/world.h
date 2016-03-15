@@ -53,7 +53,7 @@ class World {
   bool explored(Position pos) const;
   void setExplored(Position pos, bool explored = true);
 
-  bool passable(Position pos);
+  bool passable(Position pos) const;
 
   std::vector<Entity*> entities(Position pos) const;
   std::vector<Entity*> entities(Position topLeft, Position botRight);
