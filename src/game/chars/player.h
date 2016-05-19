@@ -19,9 +19,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <string>
 #include "humanoid.h"
 #include "weapon.h"
-#include <string>
 
 class Player : public Humanoid {
  public:

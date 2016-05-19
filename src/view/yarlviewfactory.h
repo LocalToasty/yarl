@@ -19,10 +19,10 @@
 #ifndef YARLVIEWFACTORY_H
 #define YARLVIEWFACTORY_H
 
-#include "yarlview.h"
-#include "yarlcontroller.h"
-#include "world.h"
 #include <memory>
+#include "world.h"
+#include "yarlcontroller.h"
+#include "yarlview.h"
 
 std::unique_ptr<YarlView> makeView(YarlController& controller, World& world);
 

@@ -17,14 +17,14 @@
  */
 
 #include "character.h"
-#include "world.h"
-#include "sector.h"
-#include "yarlconfig.h"
-#include "player.h"
 #include <attackevent.h>
 #include <boost/range/numeric.hpp>
-#include <cstdlib>
 #include <cmath>  // for pow
+#include <cstdlib>
+#include "player.h"
+#include "sector.h"
+#include "world.h"
+#include "yarlconfig.h"
 
 Character::Character(const Tile& t, int hp, Position pos, double speed,
                      int visionRange, Attributes const& attributes,

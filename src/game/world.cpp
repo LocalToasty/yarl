@@ -18,13 +18,13 @@
 
 #include "world.h"
 
-#include "sector.h"
+#include <algorithm>
+#include <cmath>
 #include "character.h"
-#include "player.h"
 #include "companion.h"
 #include "item.h"
-#include <cmath>
-#include <algorithm>
+#include "player.h"
+#include "sector.h"
 
 Tile World::_none = {' ', Color::black, "", "void"};
 Tile World::_mud = {'.', Color::red, "", "mud", true, true};

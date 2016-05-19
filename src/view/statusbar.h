@@ -19,8 +19,8 @@
 #ifndef STATUSBAR_H
 #define STATUSBAR_H
 
-#include <string>
 #include <list>
+#include <string>
 
 class StatusBar {
  private:

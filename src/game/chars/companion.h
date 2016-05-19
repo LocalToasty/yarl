@@ -19,13 +19,21 @@
 #ifndef COMPANION_H
 #define COMPANION_H
 
+#include <boost/optional.hpp>
 #include "npc.h"
 
+/**
+ * @brief An NPC who helps another character.
+ *
+ * Companion NPCs try to assist another character as much as possible.
+ * They follow them around and attack any enemies which attack their friend,
+ * or which are attacked by them.
+ */
 class Companion : public NPC {
  private:
   Character* _companion;
 
-  Position _waypoint{-1, -1};
+  boost::optional<Position> _waypoint;
 
  public:
   Companion(const Tile& t, Character* companion, int hp, Position pos,

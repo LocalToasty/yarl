@@ -18,8 +18,8 @@
 
 #include "humanoid.h"
 #include "armor.h"
-#include "world.h"
 #include "attackevent.h"
+#include "world.h"
 
 Humanoid::Humanoid(Tile const& t, int hp, Position pos, double speed,
                    int visionRange, const Attributes& attributes, World& world,

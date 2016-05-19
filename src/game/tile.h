@@ -19,8 +19,8 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include "yarlview.h"
 #include <string>
+#include "yarlview.h"
 
 class Tile {
  private:

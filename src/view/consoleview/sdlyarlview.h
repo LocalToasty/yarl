@@ -19,15 +19,15 @@
 #ifndef SDLYARLVIEW_H
 #define SDLYARLVIEW_H
 
-#include "consoleyarlview.h"
-#include "statusbar.h"
-#include "vec.hpp"
 #include <SDL2/SDL.h>
-#include <vector>
-#include <queue>
 #include <algorithm>
 #include <functional>
 #include <limits>
+#include <queue>
+#include <vector>
+#include "consoleyarlview.h"
+#include "statusbar.h"
+#include "vec.hpp"
 
 class YarlController;
 class World;

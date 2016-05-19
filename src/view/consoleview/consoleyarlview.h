@@ -19,15 +19,15 @@
 #ifndef CONSOLEYARLVIEW_H
 #define CONSOLEYARLVIEW_H
 
-#include "yarlview.h"
-#include "yarlcontroller.h"
-#include "world.h"
-#include "statusbar.h"
-#include "vec.hpp"
-#include <vector>
-#include <queue>
 #include <algorithm>
 #include <functional>
+#include <queue>
+#include <vector>
+#include "statusbar.h"
+#include "vec.hpp"
+#include "world.h"
+#include "yarlcontroller.h"
+#include "yarlview.h"
 
 class ConsoleYarlView : public YarlView {
  public:

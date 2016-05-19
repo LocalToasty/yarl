@@ -17,12 +17,12 @@
  */
 
 #include "sdlyarlview.h"
-#include "yarlcontroller.h"
-#include "player.h"
-#include "command.h"
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <map>
+#include "command.h"
+#include "player.h"
+#include "yarlcontroller.h"
 
 const int SDLYarlView::_defaultWidth = 80;
 const int SDLYarlView::_defaultHeight = 50;

@@ -17,11 +17,11 @@
  */
 
 #include "entity.h"
-#include "world.h"
-#include "sector.h"
-#include "item.h"
 #include "deathevent.h"
 #include "dropevent.h"
+#include "item.h"
+#include "sector.h"
+#include "world.h"
 
 Character* Entity::lastAttacker() const { return _lastAttacker; }
 

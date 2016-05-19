@@ -19,11 +19,11 @@
 #ifndef SECTOR_H
 #define SECTOR_H
 
-#include "tile.h"
-#include "command.h"
-#include "vec.hpp"
-#include <vector>
 #include <list>
+#include <vector>
+#include "command.h"
+#include "tile.h"
+#include "vec.hpp"
 
 class Tile;
 

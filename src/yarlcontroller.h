@@ -19,16 +19,16 @@
 #ifndef YARL_H
 #define YARL_H
 
-#include "sector.h"
-#include "tile.h"
-#include "statusbar.h"
-#include "command.h"
-#include "world.h"
-#include "yarlview.h"
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
-#include <map>
+#include "command.h"
+#include "sector.h"
+#include "statusbar.h"
+#include "tile.h"
+#include "world.h"
+#include "yarlview.h"
 
 class Player;
 

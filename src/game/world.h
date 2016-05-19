@@ -19,15 +19,15 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "command.h"
-#include "tile.h"
-#include "weapon.h"
-#include "armor.h"
-#include "event.h"
-#include "vec.hpp"
-#include <vector>
-#include <queue>
 #include <memory>
+#include <queue>
+#include <vector>
+#include "armor.h"
+#include "command.h"
+#include "event.h"
+#include "tile.h"
+#include "vec.hpp"
+#include "weapon.h"
 
 class Sector;
 class Character;

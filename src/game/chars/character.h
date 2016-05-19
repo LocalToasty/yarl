@@ -19,12 +19,12 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include "entity.h"
-#include "tile.h"
-#include "sector.h"
-#include "weapon.h"
-#include "armor.h"
 #include <array>
+#include "armor.h"
+#include "entity.h"
+#include "sector.h"
+#include "tile.h"
+#include "weapon.h"
 
 class Character : public Entity {
  public:

@@ -17,16 +17,16 @@
  */
 
 #include "consoleyarlview.h"
-#include "yarlcontroller.h"
-#include "player.h"
-#include "command.h"
-#include "attackevent.h"
-#include "deathevent.h"
-#include "dropevent.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <iostream>
-#include <memory>
 #include <map>
+#include <memory>
+#include "attackevent.h"
+#include "command.h"
+#include "deathevent.h"
+#include "dropevent.h"
+#include "player.h"
+#include "yarlcontroller.h"
 
 ConsoleYarlView::ConsoleYarlView(YarlController& controller, World& world)
     : _controller(controller), _world(world) {}

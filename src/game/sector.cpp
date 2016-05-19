@@ -18,10 +18,10 @@
 
 #include "sector.h"
 
-#include "entity.h"
 #include <algorithm>
-#include <tuple>
 #include <cmath>
+#include <tuple>
+#include "entity.h"
 
 const int Sector::_size = 0x20;
 

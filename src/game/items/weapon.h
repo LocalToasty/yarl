@@ -19,8 +19,8 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include "item.h"
 #include "attack.h"
+#include "item.h"
 
 class Weapon : public Item, public Attack {
  private:

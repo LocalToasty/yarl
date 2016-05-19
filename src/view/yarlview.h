@@ -19,12 +19,12 @@
 #ifndef YARLVIEW_H
 #define YARLVIEW_H
 
-#include "vec.hpp"
-#include <string>
-#include <list>
-#include <functional>
-#include <vector>
 #include <boost/optional.hpp>
+#include <functional>
+#include <list>
+#include <string>
+#include <vector>
+#include "vec.hpp"
 
 class Item;
 

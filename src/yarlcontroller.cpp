@@ -18,15 +18,6 @@
 
 #include "yarlcontroller.h"
 
-#include "character.h"
-#include "dropevent.h"
-#include "item.h"
-#include "npc.h"
-#include "player.h"
-#include "world.h"
-#include "yarlconfig.h"
-#include "yarlview.h"
-#include "yarlviewfactory.h"
 #include <algorithm>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/algorithm/remove.hpp>
@@ -37,6 +28,15 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include "character.h"
+#include "dropevent.h"
+#include "item.h"
+#include "npc.h"
+#include "player.h"
+#include "world.h"
+#include "yarlconfig.h"
+#include "yarlview.h"
+#include "yarlviewfactory.h"
 
 bool YarlController::init(int argc, char* argv[]) {
   // initialize variables

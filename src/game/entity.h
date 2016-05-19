@@ -19,9 +19,9 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <boost/optional.hpp>
 #include "tile.h"
 #include "vec.hpp"
-#include <boost/optional.hpp>
 
 class Item;
 class World;
