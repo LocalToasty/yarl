@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <numeric>
 
 template <typename T, size_t dim>
 class Vec {
