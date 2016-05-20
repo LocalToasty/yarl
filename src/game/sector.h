@@ -31,18 +31,6 @@ class Tile;
 class Entity;
 
 class Sector {
- private:
-  // size of a sector has to be hardwired so they can be tiled
-  static const int _size;
-
-  // vector containing the tiles (stored linearly row for row)
-  std::vector<Tile*> _tiles;
-  std::vector<bool> _explored;
-
-  // a list of all entities in the sector (i.e. characters, items, props)
-  // the bottommost entity has highest render priority
-  std::list<Entity*> _entities;
-
  public:
   Sector(Tile* defTile);
   ~Sector();
@@ -54,7 +42,6 @@ class Sector {
   void addEntity(Entity* e);
   void removeEntity(Entity* e);
 
-  Tile* tile(Position pos);
   Tile const* tile(Position pos) const;
   void setTile(Position pos, Tile* tile);
 
@@ -62,6 +49,18 @@ class Sector {
 
   bool explored(Position pos) const;
   void setExplored(Position pos, bool explored = true);
+
+ private:
+  // size of a sector has to be hardwired so they can be tiled
+  static const int _size;
+
+  // vector containing the tiles (stored linearly row for row)
+  std::vector<Tile const*> _tiles;
+  std::vector<bool> _explored;
+
+  // a list of all entities in the sector (i.e. characters, items, props)
+  // the bottommost entity has highest render priority
+  std::list<Entity*> _entities;
 };
 
 #endif

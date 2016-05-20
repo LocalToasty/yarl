@@ -105,7 +105,7 @@ bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
   for (Entity* e :
        entities({std::min(from[0], to[0]), std::min(from[1], to[1])},
                 {std::max(from[0], to[0]) + 1, std::max(from[1], to[1]) + 1})) {
-    if (!e->t().transparent()) {
+    if (!e->t().transparent) {
       blocking.push_back(e);
     }
   }
@@ -121,7 +121,7 @@ bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
       }
 
       // check if LOS is broken
-      if (!tile({x, y})->transparent()) {
+      if (!tile({x, y})->transparent) {
         return false;
       }
 
@@ -145,7 +145,7 @@ bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
       }
 
       // check if LOS is broken
-      if (!tile({x, y})->transparent()) {
+      if (!tile({x, y})->transparent) {
         return false;
       }
 
@@ -349,7 +349,7 @@ Sector* World::sector(Position pos) {
 Player const* World::player() const { return _player; }
 Player* World::player() { return _player; }
 
-Tile* World::tile(Position pos) {
+Tile const* World::tile(Position pos) {
   Sector* s = sector(pos);
 
   if (s) {

@@ -418,16 +418,16 @@ void ConsoleYarlView::draw() {
 
     for (int col = 0; col < width(); col++) {
       Vec<int, 2> const pos({col, row});
-      Tile* t = _world.tile(pos - off);
+      Tile const* t = _world.tile(pos - off);
 
       if (t != nullptr && player->los(pos - off)) {
         // render tiles the character has a LOS to
         _world.setExplored(pos - off);
 
-        addChar(t->repr(), t->color());
+        addChar(t->repr, t->color);
       } else if (t != nullptr && _world.explored(pos - off)) {
         // tiles the player has seen before are rendered in grey
-        addChar(t->repr());
+        addChar(t->repr);
       } else {
         addChar(' ');
       }
@@ -442,9 +442,9 @@ void ConsoleYarlView::draw() {
     if (player->los(*e)) {
       e->setLastKnownPos(e->pos());
 
-      moveAddChar(e->pos() + off, e->t().repr(), e->t().color());
+      moveAddChar(e->pos() + off, e->t().repr, e->t().color);
     } else if (e->seen() && !player->los(*e->lastKnownPos())) {
-      moveAddChar(*e->lastKnownPos() + off, e->t().repr());
+      moveAddChar(*e->lastKnownPos() + off, e->t().repr);
     }
   }
 

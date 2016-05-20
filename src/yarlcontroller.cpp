@@ -471,8 +471,8 @@ void YarlController::examine() {
         t = _world->tile(*pos);
       }
 
-      _view->addStatusMessage(std::string() + t->repr() + " - " + t->prefix() +
-                              t->desc());
+      _view->addStatusMessage(std::string() + t->repr + " - " + t->prefix +
+                              t->description);
     } else {
       _view->addStatusMessage("Unknown");
     }

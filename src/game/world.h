@@ -49,7 +49,7 @@ class World {
   Player* player();
   Player const* player() const;
 
-  Tile* tile(Position pos);
+  const Tile* tile(Position pos);
   void setTile(Position pos, Tile* t);
 
   bool explored(Position pos) const;

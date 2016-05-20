@@ -38,13 +38,13 @@ Sector::~Sector() {
 // are implassable.
 bool Sector::passable(Position pos) const {
   // check for terrain passability
-  if (!tile(pos)->passable()) {
+  if (!tile(pos)->passable) {
     return false;
   }
 
   // check for entitiy passability
   for (Entity* e : entities(pos))
-    if (!e->t().passable()) {
+    if (!e->t().passable) {
       return false;
     }
 
@@ -61,8 +61,8 @@ void Sector::addEntity(Entity* e) {
   // This is to ensure that the impassable / opaque entities are drawn on
   // top.
   auto comp = [](Entity* element, Entity* value) {
-    return (element->t().passable() && !value->t().passable()) ||
-           (element->t().transparent() && !value->t().transparent());
+    return (element->t().passable && !value->t().passable) ||
+           (element->t().transparent && !value->t().transparent);
   };
 
   auto pos = std::upper_bound(_entities.begin(), _entities.end(), e, comp);
@@ -89,10 +89,6 @@ bool Sector::explored(Position pos) const {
 
 void Sector::setExplored(Position pos, bool explored) {
   _explored.at(pos[0] % _size + (pos[1] % _size) * _size) = explored;
-}
-
-Tile* Sector::tile(Position pos) {
-  return _tiles.at(pos[0] % _size + (pos[1] % _size) * _size);
 }
 
 Tile const* Sector::tile(Position pos) const {

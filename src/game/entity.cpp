@@ -77,9 +77,9 @@ void Entity::setLastKnownPos(boost::optional<Position> pos) {
   _lastKnownPos = pos;
 }
 
-std::string Entity::prefix() const { return t().prefix(); }
+std::string Entity::prefix() const { return t().prefix; }
 
-std::string Entity::desc() const { return _t.desc(); }
+std::string Entity::desc() const { return _t.description; }
 
 int Entity::armorClass() const { return 5 + _s + _naturalArmor; }
 
