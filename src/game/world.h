@@ -44,10 +44,12 @@ class World {
   std::vector<Command> route(Position from, Position dest,
                              bool converge = false);
 
-  Sector* sector(Position pos) const;
-  Player* player() const;
+  Sector* sector(Position pos);
+  Sector const* sector(Position pos) const;
+  Player* player();
+  Player const* player() const;
 
-  Tile* tile(Position pos) const;
+  Tile* tile(Position pos);
   void setTile(Position pos, Tile* t);
 
   bool explored(Position pos) const;
@@ -72,7 +74,7 @@ class World {
   int _width;
   int _height;
 
-  std::vector<Sector*> _sectors;
+  std::vector<std::unique_ptr<Sector>> _sectors;
 
   Player* _player;
 

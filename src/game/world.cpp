@@ -43,8 +43,8 @@ Tile World::_buckler = {'[',  Color::red, "a ", "light wooden shield",
 
 World::World(int width, int height)
     : _width(width), _height(height), _sectors(width * height) {
-  for (Sector*& s : _sectors) {
-    s = new Sector(&_grass);
+  for (auto& s : _sectors) {
+    s = std::make_unique<Sector>(&_grass);
 
     for (int x = 0; x < Sector::size(); x++) {
       for (int y = 0; y < Sector::size(); y++) {
@@ -324,19 +324,32 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
   }
 }
 
-Sector* World::sector(Position pos) const {
+Sector const* World::sector(Position pos) const {
   if (pos[0] >= 0 && pos[1] >= 0 && pos[0] < _width * Sector::size() &&
       pos[1] < _height * Sector::size()) {
-    return _sectors.at(pos[0] / Sector::size() +
-                       pos[1] / Sector::size() * _width);
+    return _sectors
+        .at(pos[0] / Sector::size() + pos[1] / Sector::size() * _width)
+        .get();
   } else {
     return nullptr;
   }
 }
 
-Player* World::player() const { return _player; }
+Sector* World::sector(Position pos) {
+  if (pos[0] >= 0 && pos[1] >= 0 && pos[0] < _width * Sector::size() &&
+      pos[1] < _height * Sector::size()) {
+    return _sectors
+        .at(pos[0] / Sector::size() + pos[1] / Sector::size() * _width)
+        .get();
+  } else {
+    return nullptr;
+  }
+}
 
-Tile* World::tile(Position pos) const {
+Player const* World::player() const { return _player; }
+Player* World::player() { return _player; }
+
+Tile* World::tile(Position pos) {
   Sector* s = sector(pos);
 
   if (s) {
@@ -355,7 +368,7 @@ void World::setTile(Position pos, Tile* t) {
 }
 
 bool World::explored(Position pos) const {
-  Sector* s = sector(pos);
+  Sector const* s = sector(pos);
 
   if (s) {
     return s->explored(pos);
@@ -373,7 +386,7 @@ void World::setExplored(Position pos, bool explored) {
 }
 
 bool World::passable(Position pos) const {
-  Sector* s = sector(pos);
+  Sector const* s = sector(pos);
 
   if (s != nullptr) {
     return s->passable(pos);
@@ -383,7 +396,7 @@ bool World::passable(Position pos) const {
 }
 
 std::vector<Entity*> World::entities(Vec<int, 2> pos) const {
-  Sector* s = sector(pos);
+  Sector const* s = sector(pos);
 
   if (s != nullptr) {
     return s->entities(pos);

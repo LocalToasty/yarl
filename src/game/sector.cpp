@@ -36,7 +36,7 @@ Sector::~Sector() {
 
 // returns true if neither the terrain nor the any entities at the coordinates
 // are implassable.
-bool Sector::passable(Position pos) {
+bool Sector::passable(Position pos) const {
   // check for terrain passability
   if (!tile(pos)->passable()) {
     return false;
@@ -92,6 +92,10 @@ void Sector::setExplored(Position pos, bool explored) {
 }
 
 Tile* Sector::tile(Position pos) {
+  return _tiles.at(pos[0] % _size + (pos[1] % _size) * _size);
+}
+
+Tile const* Sector::tile(Position pos) const {
   return _tiles.at(pos[0] % _size + (pos[1] % _size) * _size);
 }
 

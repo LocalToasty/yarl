@@ -55,9 +55,10 @@ class Sector {
   void removeEntity(Entity* e);
 
   Tile* tile(Position pos);
+  Tile const* tile(Position pos) const;
   void setTile(Position pos, Tile* tile);
 
-  bool passable(Position pos);
+  bool passable(Position pos) const;
 
   bool explored(Position pos) const;
   void setExplored(Position pos, bool explored = true);
