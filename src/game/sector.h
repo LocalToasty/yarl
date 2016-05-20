@@ -21,13 +21,9 @@
 
 #include <list>
 #include <vector>
-#include "command.h"
-#include "tile.h"
 #include "vec.hpp"
 
 class Tile;
-
-// declaration to not run into recursion issiues
 class Entity;
 
 class Sector {
@@ -43,7 +39,7 @@ class Sector {
   void removeEntity(Entity* e);
 
   Tile const* tile(Position pos) const;
-  void setTile(Position pos, Tile* tile);
+  void setTile(Position pos, Tile const* tile);
 
   bool passable(Position pos) const;
 

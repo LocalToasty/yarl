@@ -20,11 +20,13 @@
 #define CHARACTER_H
 
 #include <array>
-#include "armor.h"
 #include "entity.h"
-#include "sector.h"
-#include "tile.h"
-#include "weapon.h"
+
+class Attack;
+class Weapon;
+class Armor;
+class Tile;
+class Sector;
 
 class Character : public Entity {
  public:

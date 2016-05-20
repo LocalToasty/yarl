@@ -28,11 +28,13 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include "armor.h"
 #include "character.h"
 #include "dropevent.h"
 #include "item.h"
 #include "npc.h"
 #include "player.h"
+#include "weapon.h"
 #include "world.h"
 #include "yarlconfig.h"
 #include "yarlview.h"

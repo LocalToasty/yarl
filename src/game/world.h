@@ -22,17 +22,17 @@
 #include <memory>
 #include <queue>
 #include <vector>
-#include "armor.h"
 #include "command.h"
 #include "event.h"
-#include "tile.h"
 #include "vec.hpp"
-#include "weapon.h"
 
 class Sector;
 class Character;
 class Entity;
 class Player;
+class Weapon;
+class Tile;
+class Armor;
 
 class World {
  public:
@@ -50,7 +50,7 @@ class World {
   Player const* player() const;
 
   const Tile* tile(Position pos);
-  void setTile(Position pos, Tile* t);
+  void setTile(Position pos, Tile const* t);
 
   bool explored(Position pos) const;
   void setExplored(Position pos, bool explored = true);

@@ -18,6 +18,7 @@
 
 #include "companion.h"
 #include <cstdlib>
+#include "attack.h"
 #include "world.h"
 
 Companion::Companion(

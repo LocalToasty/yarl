@@ -25,6 +25,7 @@
 #include "command.h"
 #include "deathevent.h"
 #include "dropevent.h"
+#include "item.h"
 #include "player.h"
 #include "yarlcontroller.h"
 

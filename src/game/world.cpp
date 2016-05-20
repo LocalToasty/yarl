@@ -20,11 +20,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include "armor.h"
+#include "attack.h"
 #include "character.h"
 #include "companion.h"
 #include "item.h"
 #include "player.h"
 #include "sector.h"
+#include "weapon.h"
 
 Tile World::_none = {' ', Color::black, "", "void"};
 Tile World::_mud = {'.', Color::red, "", "mud", true, true};
@@ -359,7 +362,7 @@ Tile const* World::tile(Position pos) {
   }
 }
 
-void World::setTile(Position pos, Tile* t) {
+void World::setTile(Position pos, Tile const* t) {
   Sector* s = sector(pos);
 
   if (s != nullptr) {

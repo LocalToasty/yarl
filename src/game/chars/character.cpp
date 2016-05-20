@@ -21,6 +21,8 @@
 #include <boost/range/numeric.hpp>
 #include <cmath>  // for pow
 #include <cstdlib>
+#include "armor.h"
+#include "attack.h"
 #include "player.h"
 #include "sector.h"
 #include "world.h"

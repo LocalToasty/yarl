@@ -81,7 +81,7 @@ class Entity {
   void setMaxHp(int maxHp);
 
  private:
-  const Tile& _t;
+  Tile const& _t;
 
   Position _pos;
 

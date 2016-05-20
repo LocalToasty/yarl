@@ -20,7 +20,6 @@
 #define NPC_H
 
 #include "character.h"
-#include "command.h"
 
 class NPC : public Character {
  private:

@@ -25,12 +25,8 @@
 #include <string>
 #include "command.h"
 #include "sector.h"
-#include "statusbar.h"
-#include "tile.h"
 #include "world.h"
 #include "yarlview.h"
-
-class Player;
 
 class YarlController {
  private:

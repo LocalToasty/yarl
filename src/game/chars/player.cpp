@@ -18,6 +18,7 @@
 
 #include "player.h"
 #include "character.h"
+#include "item.h"
 #include "world.h"
 
 Player::Player(Tile const& t, int hp, Position pos, double speed,
@@ -36,7 +37,7 @@ std::string Player::itemStatus(Item* i) const {
     description += " (in main hand)";
   } else if (i == offHand()) {
     description += " (in off hand)";
-  } else if (i == armor()) {
+  } else if (i == (Item*)armor()) {
     description += " (worn)";
   }
 

@@ -21,7 +21,6 @@
 
 #include <string>
 #include "humanoid.h"
-#include "weapon.h"
 
 class Player : public Humanoid {
  public:

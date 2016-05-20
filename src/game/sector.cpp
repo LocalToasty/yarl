@@ -95,6 +95,6 @@ Tile const* Sector::tile(Position pos) const {
   return _tiles.at(pos[0] % _size + (pos[1] % _size) * _size);
 }
 
-void Sector::setTile(Position pos, Tile* tile) {
+void Sector::setTile(Position pos, Tile const* tile) {
   _tiles.at(pos[0] % _size + (pos[1] % _size) * _size) = tile;
 }
