@@ -40,8 +40,8 @@ Character::Character(const Tile& t, int hp, Position pos, double speed,
       _attributes(attributes) {}
 
 bool Character::move(Position diff) {
-  if (world()->passable(pos() + diff)) {
-    setPos(pos() + diff);
+  if (world()->passable(*pos() + diff)) {
+    setPos(*pos() + diff);
     return true;
   }
 
@@ -57,7 +57,7 @@ void Character::attack(std::shared_ptr<Entity> target) {
   int toHitMod = _bab + attributeMod(strength) + size();
   int hitRoll = rand() % 20 + 1;
 
-  if ((pos() - target->pos()).norm() <= _unarmed->range() &&
+  if ((*pos() - *target->pos()).norm() <= _unarmed->range() &&
       hitRoll + toHitMod >= target->armorClass()) {
     bool crit = false;
     int damage = _unarmed->damage() + attributeMod(strength);
@@ -86,18 +86,18 @@ void Character::attack(std::shared_ptr<Entity> target) {
 }
 
 bool Character::los(Position pos) const {
-  return world()->los(this->pos(), pos, _visionRange);
+  return world()->los(*this->pos(), pos, _visionRange);
 }
 
-bool Character::los(Entity const& e) const { return los(e.pos()); }
+bool Character::los(Entity const& ent) const { return los(*ent.pos()); }
 
 // returns a vector with the entities currently seen by the character
 std::vector<std::shared_ptr<Entity const>> Character::seenEntities() const {
   std::vector<std::shared_ptr<Entity const>> ents;
 
   for (auto ent : world()->entities(
-           pos() - Position({visionRange(), visionRange()}),
-           pos() + Position({visionRange() + 1, visionRange() + 1}))) {
+           *pos() - Position({visionRange(), visionRange()}),
+           *pos() + Position({visionRange() + 1, visionRange() + 1}))) {
     if (los(*ent)) {
       ents.push_back(ent);
     }

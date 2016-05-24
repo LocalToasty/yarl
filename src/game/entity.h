@@ -51,7 +51,7 @@ class Entity {
 
   const Tile& t() const;
 
-  Position pos() const;
+  boost::optional<Position> pos() const;
   World* world();
   World const* world() const;
 
@@ -73,7 +73,7 @@ class Entity {
   std::vector<Item*>& inventory();
   std::vector<Item*> const& inventory() const;
 
-  void setPos(Position pos);
+  void setPos(boost::optional<Position> pos, World* world = nullptr);
 
   void setHp(int hp);
   void doDamage(int dmg);
@@ -84,7 +84,7 @@ class Entity {
  private:
   Tile const& _t;
 
-  Position _pos;
+  boost::optional<Position> _pos;
 
   int _hp;  // hitpoints
   int _maxHp;

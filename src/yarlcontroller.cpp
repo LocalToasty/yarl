@@ -283,7 +283,7 @@ void YarlController::moveCommand(Command direction) {
   Vec<int, 2> diff(direction);
 
   if (!player->move(diff)) {  // an entity is blocking
-    auto ents = _world->entities(player->pos() + diff);
+    auto ents = _world->entities(*player->pos() + diff);
 
     if (!ents.empty()) {
       _world->letTimePass(2);
@@ -293,7 +293,7 @@ void YarlController::moveCommand(Command direction) {
     _world->letTimePass((abs(diff[0]) + abs(diff[1]) == 1)
                             ? player->speed()
                             : 1.5 * player->speed());
-    auto ents = _world->entities(player->pos());
+    auto ents = _world->entities(*player->pos());
 
     // always at least 1 because player stands here
     if (ents.size() > 1) {
@@ -493,7 +493,7 @@ void YarlController::pickup() {
   Character::Load before = player->load();
 
   // search for entities in reach of the player
-  for (auto ent : _world->entities(player->pos())) {
+  for (auto ent : _world->entities(*player->pos())) {
     if (dynamic_cast<Item*>(ent.get()) != nullptr) {
       _world->removeEntity(ent.get());
       ent->setPos(Position({-1, -1}));

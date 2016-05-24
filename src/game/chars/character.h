@@ -51,7 +51,7 @@ class Character : public Entity {
             Size s = Size::medium, int naturalArmor = 0);
 
   bool los(Position pos) const;
-  bool los(const Entity& e) const;
+  bool los(Entity const& e) const;
 
   bool move(Position diff);
 

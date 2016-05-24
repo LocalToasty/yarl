@@ -56,14 +56,14 @@ void Companion::think() {
   if (target && target->hp() > 0 && los(*target)) {
     _waypoint = target->pos();
   } else if (comp && los(*comp)) {
-    _waypoint = comp->pos() + Position({(rand() % 9) - 4, (rand() % 9) - 4});
+    _waypoint = *comp->pos() + Position({(rand() % 9) - 4, (rand() % 9) - 4});
   }
 
   if (_waypoint) {
     // a waypoint is set
-    if ((pos() - *_waypoint).norm() > unarmed()->range()) {
+    if ((*pos() - *_waypoint).norm() > unarmed()->range()) {
       // target is not in attack range
-      auto const route = world()->route(pos(), *_waypoint, true);
+      auto const route = world()->route(*pos(), *_waypoint, true);
 
       if (!route.empty()) {
         Position const diff(route.front());

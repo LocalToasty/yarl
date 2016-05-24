@@ -51,7 +51,7 @@ void Entity::setMaxHp(int maxHp) { _maxHp = maxHp; }
 
 const Tile& Entity::t() const { return _t; }
 
-Position Entity::pos() const { return _pos; }
+boost::optional<Position> Entity::pos() const { return _pos; }
 
 World* Entity::world() { return _world; }
 
@@ -75,11 +75,19 @@ std::vector<Item*>& Entity::inventory() { return _inventory; }
 
 const std::vector<Item*>& Entity::inventory() const { return _inventory; }
 
-void Entity::setPos(Position pos) {
+/**
+ * @brief Sets an entities position.
+ *
+ * If pos is boost::none, the entity will be removed from the world.
+ */
+void Entity::setPos(boost::optional<Position> pos, World* world) {
   _pos = pos;
 
-  if (_world) {
+  if (world && _pos) {
+    _world = world;
     _world->updateEntity(this);
+  } else if (!pos) {
+    _world->removeEntity(this);
   }
 }
 

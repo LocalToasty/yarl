@@ -319,7 +319,7 @@ boost::optional<Position> ConsoleYarlView::promptCoordinates() {
           // calulate coordinates
           auto player = _world.player();
           cursor(false);
-          return Vec<int, 2>(pos + player->pos() -
+          return Vec<int, 2>(pos + *player->pos() -
                              Vec<int, 2>({width() / 2, height() / 2}));
         }
 
@@ -411,7 +411,7 @@ void ConsoleYarlView::handleEvents() {
 void ConsoleYarlView::draw() {
   auto const player = _world.player();
 
-  Vec<int, 2> off = Vec<int, 2>({width() / 2, height() / 2}) - player->pos();
+  Vec<int, 2> off = Vec<int, 2>({width() / 2, height() / 2}) - *player->pos();
 
   // render the map
   for (int row = 0; row < height() - 1; row++) {
@@ -437,15 +437,15 @@ void ConsoleYarlView::draw() {
 
   // render entities
   Vec<int, 2> const mid({width() / 2, height() / 2});
-  auto ents = _world.entities(player->pos() - mid, player->pos() + mid);
+  auto ents = _world.entities(*player->pos() - mid, *player->pos() + mid);
 
-  for (auto e : ents) {
-    if (player->los(*e)) {
-      e->setLastKnownPos(e->pos());
+  for (auto ent : ents) {
+    if (player->los(*ent)) {
+      ent->setLastKnownPos(ent->pos());
 
-      moveAddChar(e->pos() + off, e->t().repr, e->t().color);
-    } else if (e->seen() && !player->los(*e->lastKnownPos())) {
-      moveAddChar(*e->lastKnownPos() + off, e->t().repr);
+      moveAddChar(*ent->pos() + off, ent->t().repr, ent->t().color);
+    } else if (ent->seen() && !player->los(*ent->lastKnownPos())) {
+      moveAddChar(*ent->lastKnownPos() + off, ent->t().repr);
     }
   }
 

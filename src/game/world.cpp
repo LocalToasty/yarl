@@ -446,8 +446,10 @@ std::vector<std::shared_ptr<Entity>> World::entities(Position topLeft,
 
       if (s) {
         for (auto ent : s->entities()) {
-          if (ent->pos()[0] >= topLeft[0] && ent->pos()[0] < botRight[0] &&
-              ent->pos()[1] >= topLeft[1] && ent->pos()[1] < botRight[1]) {
+          if ((*ent->pos())[0] >= topLeft[0] &&
+              (*ent->pos())[0] < botRight[0] &&
+              (*ent->pos())[1] >= topLeft[1] &&
+              (*ent->pos())[1] < botRight[1]) {
             ents.push_back(ent);
           }
         }
@@ -470,8 +472,10 @@ std::vector<std::shared_ptr<Entity const>> World::entities(
 
       if (s) {
         for (auto ent : s->entities()) {
-          if (ent->pos()[0] >= topLeft[0] && ent->pos()[0] < botRight[0] &&
-              ent->pos()[1] >= topLeft[1] && ent->pos()[1] < botRight[1]) {
+          if ((*ent->pos())[0] >= topLeft[0] &&
+              (*ent->pos())[0] < botRight[0] &&
+              (*ent->pos())[1] >= topLeft[1] &&
+              (*ent->pos())[1] < botRight[1]) {
             ents.push_back(ent);
           }
         }
@@ -489,7 +493,7 @@ std::vector<std::shared_ptr<Entity const>> World::entities(
  * behaviour may occur.
  */
 void World::addEntitiy(std::shared_ptr<Entity> ent) {
-  if (Sector* s = sector(ent->pos())) {  // check if the position is valid
+  if (Sector* s = sector(*ent->pos())) {  // check if the position is valid
     s->addEntity(ent);
     ent->_world = this;
     _entityLocation[ent.get()] = s;
@@ -512,7 +516,7 @@ void World::updateEntity(Entity* ent) {
 
     // move entity
     Sector* oldSector = it->second;
-    Sector* newSector = sector(ent->pos());
+    Sector* newSector = sector(*ent->pos());
     auto tmp = oldSector->entity(ent);
     oldSector->removeEntity(ent);
     newSector->addEntity(tmp);
@@ -543,10 +547,11 @@ double World::time() { return _time; }
 void World::letTimePass(double time) { _time += time; }
 
 void World::think() {
-  for (auto e : entities(
-           _player->pos() - Vec<int, 2>({(int)Sector::size, (int)Sector::size}),
-           _player->pos() +
-               Vec<int, 2>({(int)Sector::size, (int)Sector::size}))) {
+  for (auto e :
+       entities(*_player->pos() -
+                    Vec<int, 2>({(int)Sector::size, (int)Sector::size}),
+                *_player->pos() +
+                    Vec<int, 2>({(int)Sector::size, (int)Sector::size}))) {
     if (NPC* n = dynamic_cast<NPC*>(e.get())) {
       double lastAction;
 
