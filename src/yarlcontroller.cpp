@@ -233,7 +233,7 @@ bool YarlController::init(int argc, char* argv[]) {
   }
 
   // create test world
-  _world = std::make_unique<World>(5, 5);
+  _world = std::make_unique<World>(2, 2);
 
   _view = makeView(*this, *_world);
 
@@ -279,7 +279,7 @@ void YarlController::moveCommand(Command direction) {
     return;
   }
 
-  Player* player = _world->player();
+  auto player = _world->player();
   Vec<int, 2> diff(direction);
 
   if (!player->move(diff)) {  // an entity is blocking
@@ -297,9 +297,9 @@ void YarlController::moveCommand(Command direction) {
 
     // always at least 1 because player stands here
     if (ents.size() > 1) {
-      for (Entity* e : boost::adaptors::reverse(ents)) {
-        if (e != player) {
-          _view->addStatusMessage("You see a " + e->desc() + " here.");
+      for (auto ent : boost::adaptors::reverse(ents)) {
+        if (ent != player) {
+          _view->addStatusMessage("You see a " + ent->desc() + " here.");
         }
       }
     }
@@ -307,7 +307,7 @@ void YarlController::moveCommand(Command direction) {
 }
 
 void YarlController::showInventory() {
-  Player const* const player = _world->player();
+  auto player = _world->player();
   _view->showItemList("Inventory", _world->player()->inventory(),
                       [player](Item* i) { return player->itemStatus(i); });
 }
@@ -411,7 +411,7 @@ void YarlController::unequip() {
 }
 
 void YarlController::drop() {
-  Player* player = _world->player();
+  auto player = _world->player();
   auto inventory = player->inventory();
   if (Item* item =
           _view->promptItem("What item do you want to drop?", inventory.begin(),
@@ -489,17 +489,17 @@ void YarlController::twoWeaponFightingToggle() {
 }
 
 void YarlController::pickup() {
-  Player* player = _world->player();
+  auto player = _world->player();
   Character::Load before = player->load();
 
   // search for entities in reach of the player
-  for (Entity* e : _world->entities(player->pos())) {
-    if (dynamic_cast<Item*>(e) != nullptr) {
-      _world->removeEntity(e);
-      e->setPos(Vec<int, 2>({-1, -1}));
-      player->inventory().push_back((Item*)e);
+  for (auto ent : _world->entities(player->pos())) {
+    if (dynamic_cast<Item*>(ent.get()) != nullptr) {
+      _world->removeEntity(ent.get());
+      ent->setPos(Position({-1, -1}));
+      player->inventory().push_back((Item*)ent.get());
 
-      _view->addStatusMessage("You pick up the " + e->desc() + '.');
+      _view->addStatusMessage("You pick up the " + ent->desc() + '.');
       _world->letTimePass(2);
     }
   }

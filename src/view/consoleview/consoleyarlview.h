@@ -50,7 +50,7 @@ class ConsoleYarlView : public YarlView {
   void showItemList(std::string const& title, std::vector<Item*> const& items,
                     std::function<std::string(Item*)> decorator);
 
-  virtual boost::optional<Vec<int, 2>> promptCoordinates();
+  virtual boost::optional<Position> promptCoordinates();
 
   void addStatusMessage(std::string const& message);
 

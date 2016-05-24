@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include "armor.h"
 #include "attack.h"
 #include "character.h"
@@ -49,8 +50,8 @@ World::World(int width, int height)
   for (auto& s : _sectors) {
     s = std::make_unique<Sector>(&_grass);
 
-    for (int x = 0; x < Sector::size(); x++) {
-      for (int y = 0; y < Sector::size(); y++) {
+    for (int x = 0; (std::size_t)x < Sector::size; x++) {
+      for (int y = 0; (std::size_t)y < Sector::size; y++) {
         if (rand() % 16 == 0) {
           s->setTile({x, y}, &_tree);
         } else if (rand() % 8 == 0) {
@@ -61,41 +62,40 @@ World::World(int width, int height)
   }
 
   std::array<int, 6> attr = {12, 12, 12, 12, 12, 12};
-  _player = new Player(_hero, 9 + rand() % 8, {42, 42}, 1, 12, attr, *this,
-                       new Attack([]() { return rand() % 2 + 1; }), {}, 1);
+  _player = std::make_shared<Player>(
+      Player(_hero, 9 + rand() % 8, {42, 42}, 1, 12, attr,
+             new Attack([]() { return rand() % 2 + 1; }), {}, 1));
+  addEntitiy(_player);
 
-  Weapon* weap =
-      new Weapon(_shortSword, {[]() { return rand() % 6 + 1; }, 19, 2}, false,
-                 2, *this, 5);
-  _player->inventory().push_back(weap);
-  _player->setMainHand(weap);
-  _player->setOffHand(weap);
+  // Weapon* weap =
+  //    new Weapon(_shortSword, {[]() { return rand() % 6 + 1; }, 19, 2}, false,
+  //               2, 5);
+  //_player->inventory().push_back(weap);
+  //_player->setMainHand(weap);
+  //_player->setOffHand(weap);
 
-  Armor* arm = new Armor(_leatherArmor, 2, 6, 0, false, 15, *this);
-  _player->inventory().push_back(arm);
-  _player->setArmor(arm);
+  // Armor* arm = new Armor(_leatherArmor, 2, 6, 0, false, 15);
+  //_player->inventory().push_back(arm);
+  //_player->setArmor(arm);
 
-  new Armor(_buckler, 1, 999, -1, true, 5, *this, {43, 43});
-  new Weapon(_claymore, {[]() { return rand() % 10 + 1; }, 19, 2, "smite"},
-             true, 8, *this, 5, {42, 43});
+  // new Armor(_buckler, 1, 999, -1, true, 5, {43, 43});
+  // new Weapon(_claymore, {[]() { return rand() % 10 + 1; }, 19, 2, "smite"},
+  //           true, 8, 5, {42, 43});
 
-  attr = {13, 13, 15, 2, 12, 6};
-  new Companion(
-      _dog, _player, rand() % 8 + 3, {45, 46}, (double)3 / 4, 12, attr, *this,
-      new Attack([]() { return rand() % 4 + 2; }),
-      {new Item(_dogCorpse, 40, *this, -1, {-1, 1}, Entity::Size::small)}, 2,
-      Entity::Size::small, 1);
+  // attr = {13, 13, 15, 2, 12, 6};
+  // new Companion(_dog, _player, rand() % 8 + 3, {45, 46}, (double)3 / 4, 12,
+  //              attr, new Attack([]() { return rand() % 4 + 2; }),
+  //              {new Item(_dogCorpse, 40, -1, {-1, 1}, Entity::Size::small)},
+  //              2,
+  //              Entity::Size::small, 1);
 
-  attr = {11, 15, 12, 10, 9, 6};
-  new Character(_goblin, 1000, {44, 43}, 1, 1, attr, *this,
-                new Attack([]() { return rand() % 2 + 1; }));
-  new Companion(_goblin, nullptr, rand() % 10 + 2, {45, 45}, 1, 12, attr, *this,
-                new Attack([]() { return rand() % 2 + 1; }), {}, 1,
-                Entity::Size::small);
+  // attr = {11, 15, 12, 10, 9, 6};
+  // new Companion(_goblin, nullptr, 1000, {44, 43}, 1, 1, attr,
+  //              new Attack([]() { return rand() % 2 + 1; }));
 }
 
 // TODO simplify
-bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
+bool World::los(Position from, Position to, double range) const {
   if (range > 0 && (from - to).norm() > range) {
     return false;
   }
@@ -103,13 +103,13 @@ bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
   Vec<int, 2> const diff({to[0] - from[0], to[1] - from[1]});
   Vec<int, 2> const dir({diff[0] > 0 ? 1 : -1, diff[1] > 0 ? 1 : -1});
 
-  std::vector<Entity*> blocking;
+  std::vector<std::shared_ptr<Entity const>> blocking;
 
-  for (Entity* e :
+  for (auto ent :
        entities({std::min(from[0], to[0]), std::min(from[1], to[1])},
                 {std::max(from[0], to[0]) + 1, std::max(from[1], to[1]) + 1})) {
-    if (!e->t().transparent) {
-      blocking.push_back(e);
+    if (!ent->t().transparent) {
+      blocking.push_back(ent);
     }
   }
 
@@ -129,7 +129,7 @@ bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
       }
 
       // check if an entity blocks the Line of sight
-      for (Entity* e : blocking) {
+      for (auto e : blocking) {
         if (e->pos() == Vec<int, 2>({x, y})) {
           return false;
         }
@@ -152,7 +152,7 @@ bool World::los(Vec<int, 2> from, Vec<int, 2> to, double range) {
         return false;
       }
 
-      for (Entity* e : blocking) {
+      for (auto e : blocking) {
         if (e->pos() == Vec<int, 2>({x, y})) {
           return false;
         }
@@ -328,10 +328,10 @@ std::vector<Command> World::route(Position from, Position dest, bool converge) {
 }
 
 Sector const* World::sector(Position pos) const {
-  if (pos[0] >= 0 && pos[1] >= 0 && pos[0] < _width * Sector::size() &&
-      pos[1] < _height * Sector::size()) {
-    return _sectors
-        .at(pos[0] / Sector::size() + pos[1] / Sector::size() * _width)
+  if (pos[0] >= 0 && pos[1] >= 0 && (size_t)pos[0] < _width * Sector::size &&
+      (size_t)pos[1] < _height * Sector::size) {
+    // position is within bounds
+    return _sectors.at(pos[0] / Sector::size + pos[1] / Sector::size * _width)
         .get();
   } else {
     return nullptr;
@@ -339,21 +339,20 @@ Sector const* World::sector(Position pos) const {
 }
 
 Sector* World::sector(Position pos) {
-  if (pos[0] >= 0 && pos[1] >= 0 && pos[0] < _width * Sector::size() &&
-      pos[1] < _height * Sector::size()) {
-    return _sectors
-        .at(pos[0] / Sector::size() + pos[1] / Sector::size() * _width)
+  if (pos[0] >= 0 && pos[1] >= 0 && (size_t)pos[0] < _width * Sector::size &&
+      (size_t)pos[1] < _height * Sector::size) {
+    return _sectors.at(pos[0] / Sector::size + pos[1] / Sector::size * _width)
         .get();
   } else {
     return nullptr;
   }
 }
 
-Player const* World::player() const { return _player; }
-Player* World::player() { return _player; }
+std::shared_ptr<Player const> World::player() const { return _player; }
+std::shared_ptr<Player> World::player() { return _player; }
 
-Tile const* World::tile(Position pos) {
-  Sector* s = sector(pos);
+Tile const* World::tile(Position pos) const {
+  Sector const* s = sector(pos);
 
   if (s) {
     return s->tile(pos);
@@ -398,49 +397,144 @@ bool World::passable(Position pos) const {
   }
 }
 
-std::vector<Entity*> World::entities(Vec<int, 2> pos) const {
+/**
+ * @brief Gets the shared pointer of an Entity
+ */
+std::shared_ptr<Entity> World::entity(Entity* ent) {
+  auto it = _entityLocation.find(ent);
+
+  if (it != _entityLocation.end()) {
+    return it->second->entity(ent);
+  } else {
+    return std::shared_ptr<Entity>();
+  }
+}
+
+std::vector<std::shared_ptr<Entity>> World::entities(Position pos) {
+  Sector* s = sector(pos);
+
+  if (s != nullptr) {
+    return s->entities(pos);
+  } else {
+    return std::vector<std::shared_ptr<Entity>>();
+  }
+}
+
+std::vector<std::shared_ptr<Entity const>> World::entities(Position pos) const {
   Sector const* s = sector(pos);
 
   if (s != nullptr) {
     return s->entities(pos);
   } else {
-    return std::vector<Entity*>();
+    return std::vector<std::shared_ptr<Entity const>>();
   }
 }
 
-std::vector<Entity*> World::entities(Vec<int, 2> topLeft,
-                                     Vec<int, 2> botRight) {
-  std::vector<Entity*> ents;
+/**
+ * @brief Collects all entities positioned within the given boundaries
+ * @returns a vector containing the entries
+ */
+std::vector<std::shared_ptr<Entity>> World::entities(Position topLeft,
+                                                     Position botRight) {
+  std::vector<std::shared_ptr<Entity>> ents;
 
-  for (int x = topLeft[0]; x < botRight[0] + Sector::size();
-       x += Sector::size()) {
-    for (int y = topLeft[1]; y < botRight[1] + Sector::size();
-         y += Sector::size()) {
-      Sector* s = sector(Vec<int, 2>({x, y}));
+  for (int x = topLeft[0]; x < botRight[0] + (int)Sector::size;
+       x += Sector::size) {
+    for (int y = topLeft[1]; y < botRight[1] + (int)Sector::size;
+         y += Sector::size) {
+      Sector* s = sector(Vec<int, 2>({(int)x, (int)y}));
 
-      if (s)
-        for (Entity* e : s->entities())
-          if (e->pos()[0] >= topLeft[0] && e->pos()[0] < botRight[0] &&
-              e->pos()[1] >= topLeft[1] && e->pos()[1] < botRight[1]) {
-            ents.push_back(e);
+      if (s) {
+        for (auto ent : s->entities()) {
+          if (ent->pos()[0] >= topLeft[0] && ent->pos()[0] < botRight[0] &&
+              ent->pos()[1] >= topLeft[1] && ent->pos()[1] < botRight[1]) {
+            ents.push_back(ent);
           }
+        }
+      }
     }
   }
 
   return ents;
 }
 
-void World::addEntitiy(Entity* e) {
-  Sector* s = sector(e->pos());
+std::vector<std::shared_ptr<Entity const>> World::entities(
+    Position topLeft, Position botRight) const {
+  std::vector<std::shared_ptr<Entity const>> ents;
 
-  if (s != nullptr) {
-    s->addEntity(e);
+  for (size_t x = topLeft[0]; x < botRight[0] + Sector::size;
+       x += Sector::size) {
+    for (size_t y = topLeft[1]; y < botRight[1] + Sector::size;
+         y += Sector::size) {
+      Sector const* s = sector(Position({(int)x, (int)y}));
+
+      if (s) {
+        for (auto ent : s->entities()) {
+          if (ent->pos()[0] >= topLeft[0] && ent->pos()[0] < botRight[0] &&
+              ent->pos()[1] >= topLeft[1] && ent->pos()[1] < botRight[1]) {
+            ents.push_back(ent);
+          }
+        }
+      }
+    }
+  }
+
+  return ents;
+}
+
+/**
+ * @brief Adds an Entity to the world.
+ *
+ * The Entity mustn't be in the world before being added, else undefined
+ * behaviour may occur.
+ */
+void World::addEntitiy(std::shared_ptr<Entity> ent) {
+  if (Sector* s = sector(ent->pos())) {  // check if the position is valid
+    s->addEntity(ent);
+    ent->_world = this;
+    _entityLocation[ent.get()] = s;
+  } else {
+    // TODO throw error
   }
 }
 
-void World::removeEntity(Entity* e) {
-  if (e->sector() != nullptr) {
-    e->sector()->removeEntity(e);
+/**
+ * @brief Updates an Entities storage location.
+ *
+ * Whenever an Entity changes its location, World::updateEntity() must
+ * be called.  Not doing so can result in undefined behaviour.
+ */
+void World::updateEntity(Entity* ent) {
+  auto it = _entityLocation.find(ent);
+
+  if (it != _entityLocation.end()) {
+    // entity already exists in this world
+
+    // move entity
+    Sector* oldSector = it->second;
+    Sector* newSector = sector(ent->pos());
+    auto tmp = oldSector->entity(ent);
+    oldSector->removeEntity(ent);
+    newSector->addEntity(tmp);
+
+    // update entity location table
+    it->second = newSector;
+  } else {
+    // TODO throw error
+  }
+}
+
+/**
+ * @brief Removes an Entity from the world.
+ */
+void World::removeEntity(Entity* ent) {
+  auto it = _entityLocation.find(ent);
+
+  if (it != _entityLocation.end()) {
+    // entity is known to the world
+    Sector* s = it->second;
+    s->removeEntity(ent);
+    _entityLocation.erase(ent);
   }
 }
 
@@ -449,10 +543,11 @@ double World::time() { return _time; }
 void World::letTimePass(double time) { _time += time; }
 
 void World::think() {
-  for (Entity* e : entities(
-           _player->pos() - Vec<int, 2>({Sector::size(), Sector::size()}),
-           _player->pos() + Vec<int, 2>({Sector::size(), Sector::size()}))) {
-    if (NPC* n = dynamic_cast<NPC*>(e)) {
+  for (auto e : entities(
+           _player->pos() - Vec<int, 2>({(int)Sector::size, (int)Sector::size}),
+           _player->pos() +
+               Vec<int, 2>({(int)Sector::size, (int)Sector::size}))) {
+    if (NPC* n = dynamic_cast<NPC*>(e.get())) {
       double lastAction;
 
       do {

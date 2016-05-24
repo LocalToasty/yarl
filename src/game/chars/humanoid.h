@@ -32,11 +32,11 @@ class Humanoid : public Character {
 
  public:
   Humanoid(const Tile& t, int hp, Position pos, double speed, int visionRange,
-           const Attributes& attributes, World& world, Attack* unarmed,
+           const Attributes& attributes, Attack* unarmed,
            const std::vector<Item*>& inventory = {}, int bab = 0,
            Size s = Size::medium, int naturalArmor = 0);
 
-  void attack(Entity* target);
+  void attack(std::shared_ptr<Entity> target);
   int armorClass();
   int attributeMod(Attribute attribute) const;
 

@@ -23,15 +23,16 @@
 #include "world.h"
 
 Humanoid::Humanoid(Tile const& t, int hp, Position pos, double speed,
-                   int visionRange, const Attributes& attributes, World& world,
+                   int visionRange, const Attributes& attributes,
                    Attack* unarmed, std::vector<Item*> const& inventory,
                    int bab, Size s, int naturalArmor)
-    : Character(t, hp, pos, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+    : Character(t, hp, pos, speed, visionRange, attributes, unarmed, inventory,
+                bab, s, naturalArmor) {}
 
-void Humanoid::attack(Entity* target) {
+void Humanoid::attack(std::shared_ptr<Entity> target) {
   setLastTarget(target);
-  target->setLastAttacker(this);
+  target->setLastAttacker(
+      std::static_pointer_cast<Character>(world()->entity(this)));
 
   Weapon* w1 = dynamic_cast<Weapon*>(_mainHand);
   Weapon* w2 = dynamic_cast<Weapon*>(_offHand);
@@ -70,14 +71,14 @@ void Humanoid::attack(Entity* target) {
         }
       }
 
-      world().addEvent(std::make_unique<AttackEvent>(*this, *target, true));
+      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, true));
       if (damage <= 0) {
         damage = 1;
       }
 
       target->doDamage(damage);
     } else {  // miss
-      world().addEvent(std::make_unique<AttackEvent>(*this, *target, false));
+      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, false));
     }
   }
 
@@ -107,11 +108,11 @@ void Humanoid::attack(Entity* target) {
         }
       }
 
-      world().addEvent(std::make_unique<AttackEvent>(*this, *target, true));
+      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, true));
 
       target->doDamage(damage);
     } else {
-      world().addEvent(std::make_unique<AttackEvent>(*this, *target, false));
+      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, false));
     }
   }
 

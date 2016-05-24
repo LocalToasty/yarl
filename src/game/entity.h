@@ -20,6 +20,7 @@
 #define ENTITY_H
 
 #include <boost/optional.hpp>
+#include <memory>
 #include "tile.h"
 #include "vec.hpp"
 
@@ -29,6 +30,8 @@ class Sector;
 class Character;
 
 class Entity {
+  friend class World;
+
  public:
   enum Size {
     colossal = -8,
@@ -42,16 +45,15 @@ class Entity {
     fine = 8
   };
 
-  Entity(Tile const& t, int hp, Position pos, World& world,
-         Size s = Size::medium, int naturalArmor = 0,
-         std::vector<Item*> const& inventory = {});
-  virtual ~Entity();
+  Entity(Tile const& t, int hp, Position pos, Size s = Size::medium,
+         int naturalArmor = 0, std::vector<Item*> const& inventory = {});
+  virtual ~Entity() {}
 
   const Tile& t() const;
 
   Position pos() const;
-  World& world() const;
-  Sector* sector() const;
+  World* world();
+  World const* world() const;
 
   bool seen() const;
   boost::optional<Position> lastKnownPos() const;
@@ -61,7 +63,7 @@ class Entity {
   std::string desc() const;
 
   int maxHp() const;
-  Character* lastAttacker() const;
+  std::weak_ptr<Character> lastAttacker() const;
 
   int hp() const;
   Size size() const;
@@ -71,13 +73,12 @@ class Entity {
   std::vector<Item*>& inventory();
   std::vector<Item*> const& inventory() const;
 
-  void setPos(Vec<int, 2> pos);
-  void setSector(Sector* Sector);
+  void setPos(Position pos);
 
   void setHp(int hp);
   void doDamage(int dmg);
 
-  void setLastAttacker(Character* lastAttacker);
+  void setLastAttacker(std::weak_ptr<Character> lastAttacker);
   void setMaxHp(int maxHp);
 
  private:
@@ -92,15 +93,14 @@ class Entity {
 
   Size _s;
 
-  World& _world;
-  Sector* _sector;
+  World* _world;
 
   // last known coordinates
   boost::optional<Position> _lastKnownPos;
 
   std::vector<Item*> _inventory;
 
-  Character* _lastAttacker{nullptr};
+  std::weak_ptr<Character> _lastAttacker{};
 };
 
 #endif

@@ -25,7 +25,7 @@
 class Player : public Humanoid {
  public:
   Player(Tile const& t, int hp, Position pos, double speed, int visionRange,
-         Attributes& attributes, World& world, Attack* unarmed,
+         Attributes& attributes, Attack* unarmed,
          std::vector<Item*> const& inventory = {}, int bab = 0,
          Size s = Size::medium, int naturalArmor = 0);
 

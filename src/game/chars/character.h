@@ -20,6 +20,7 @@
 #define CHARACTER_H
 
 #include <array>
+#include <memory>
 #include "entity.h"
 
 class Attack;
@@ -45,7 +46,7 @@ class Character : public Entity {
   enum class Load { light, medium, heavy, overloaded };
 
   Character(const Tile& t, int hp, Position pos, double speed, int visionRange,
-            const Attributes& attributes, World& world, Attack* unarmed,
+            const Attributes& attributes, Attack* unarmed,
             const std::vector<Item*>& inventory = {}, int bab = 0,
             Size s = Size::medium, int naturalArmor = 0);
 
@@ -54,7 +55,7 @@ class Character : public Entity {
 
   bool move(Position diff);
 
-  virtual void attack(Entity* target);
+  virtual void attack(std::shared_ptr<Entity> target);
 
   int armorClass() const;
 
@@ -67,7 +68,7 @@ class Character : public Entity {
   void setAttribute(Attribute attribute, int value);
   virtual int attributeMod(Attribute attribute) const;
 
-  std::vector<Entity*> seenEntities();
+  std::vector<std::shared_ptr<Entity const> > seenEntities() const;
 
   int visionRange() const;
   double speed() const;
@@ -81,8 +82,8 @@ class Character : public Entity {
   int loadMaxDexBon() const;
   int loadCheckPenalty() const;
 
-  Entity* lastTarget() const;
-  void setLastTarget(Entity* lastTarget);
+  std::weak_ptr<Entity> lastTarget() const;
+  void setLastTarget(std::weak_ptr<Entity> lastTarget);
 
   int bab();
 
@@ -96,7 +97,7 @@ class Character : public Entity {
 
   int _bab;  // base attack bonus
 
-  Entity* _lastTarget{nullptr};
+  std::weak_ptr<Entity> _lastTarget{};
 
  protected:
   Attributes _attributes;

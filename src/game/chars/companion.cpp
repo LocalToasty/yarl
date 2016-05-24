@@ -22,46 +22,48 @@
 #include "world.h"
 
 Companion::Companion(
-    const Tile& t, Character* companion, int hp, Position pos, double speed,
-    int visionRange,
-    const std::array<int, Character::noOfAttributes>& attributes, World& world,
+    const Tile& t, std::weak_ptr<Character const> companion, int hp,
+    Position pos, double speed, int visionRange,
+    const std::array<int, Character::noOfAttributes>& attributes,
     Attack* unarmed, const std::vector<Item*>& inventory, int bab,
     Entity::Size s, int naturalArmor)
-    : NPC(t, hp, pos, speed, visionRange, attributes, world, unarmed, inventory,
-          bab, s, naturalArmor),
+    : NPC(t, hp, pos, speed, visionRange, attributes, unarmed, inventory, bab,
+          s, naturalArmor),
       _companion(companion) {}
 
 void Companion::think() {
-  if (lastAttacker() != nullptr) {
+  if (auto attacker = lastAttacker().lock()) {
     // if something attacked, attack back
-    setLastTarget(lastAttacker());
+    setLastTarget(attacker);
 
-    if (lastTarget() == _companion) {
+    if (lastTarget().lock() == _companion.lock()) {
       // if it was the companion who attacked, the companionship is over
-      _companion = nullptr;
+      _companion = std::weak_ptr<Character const>();
     }
-  } else if (_companion != nullptr) {
-    // help companion
-    if (_companion->lastTarget() != nullptr) {
-      setLastTarget(_companion->lastTarget());
-    } else if (_companion->lastAttacker() != nullptr) {
-      setLastTarget(_companion->lastAttacker());
+  } else if (auto const comp = _companion.lock()) {
+    // help companion by attacking either their last target or their last
+    // attacker
+    if (auto target = comp->lastTarget().lock()) {
+      setLastTarget(target);
+    } else if (auto target = comp->lastAttacker().lock()) {
+      setLastTarget(target);
     }
   }
 
   // if the current target is not within reach, move towards it
-  if (lastTarget() != nullptr && lastTarget()->hp() > 0 && los(*lastTarget())) {
-    _waypoint = lastTarget()->pos();
-  } else if (_companion != nullptr && los(*_companion)) {
-    _waypoint =
-        _companion->pos() + Position({(rand() % 9) - 4, (rand() % 9) - 4});
+  auto target = lastTarget().lock();
+  auto comp = _companion.lock();
+  if (target && target->hp() > 0 && los(*target)) {
+    _waypoint = target->pos();
+  } else if (comp && los(*comp)) {
+    _waypoint = comp->pos() + Position({(rand() % 9) - 4, (rand() % 9) - 4});
   }
 
   if (_waypoint) {
     // a waypoint is set
     if ((pos() - *_waypoint).norm() > unarmed()->range()) {
       // target is not in attack range
-      auto const route = world().route(pos(), *_waypoint, true);
+      auto const route = world()->route(pos(), *_waypoint, true);
 
       if (!route.empty()) {
         Position const diff(route.front());
@@ -72,13 +74,13 @@ void Companion::think() {
                                           ? speed()
                                           : 1.5 * speed()));
       }
-    } else if (lastTarget() != nullptr && lastTarget()->hp() > 0) {
+    } else if (target && target->hp() > 0) {
       // target is in attack range
-      attack(lastTarget());
+      attack(target);
       setLastAction(lastAction() + 2);
     }
   } else {
     // do nothing
-    setLastAction(world().time());
+    setLastAction(world()->time());
   }
 }

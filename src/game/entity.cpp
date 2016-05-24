@@ -23,7 +23,17 @@
 #include "sector.h"
 #include "world.h"
 
-Character* Entity::lastAttacker() const { return _lastAttacker; }
+Entity::Entity(Tile const& t, int hp, Position pos, Size s, int naturalArmor,
+               std::vector<Item*> const& inventory)
+    : _t(t),
+      _pos(pos),
+      _hp(hp),
+      _maxHp(hp),
+      _naturalArmor(naturalArmor),
+      _s(s),
+      _inventory(inventory) {}
+
+std::weak_ptr<Character> Entity::lastAttacker() const { return _lastAttacker; }
 
 int Entity::hp() const { return _hp; }
 
@@ -31,43 +41,21 @@ Entity::Size Entity::size() const { return _s; }
 
 int Entity::naturalArmor() const { return _naturalArmor; }
 
-void Entity::setLastAttacker(Character* lastAttacker) {
+void Entity::setLastAttacker(std::weak_ptr<Character> lastAttacker) {
   _lastAttacker = lastAttacker;
 }
 
 int Entity::maxHp() const { return _maxHp; }
 
 void Entity::setMaxHp(int maxHp) { _maxHp = maxHp; }
-Entity::Entity(Tile const& t, int hp, Position pos, World& world, Size s,
-               int naturalArmor, std::vector<Item*> const& inventory)
-    : _t(t),
-      _pos(pos),
-      _hp(hp),
-      _maxHp(hp),
-      _naturalArmor(naturalArmor),
-      _s(s),
-      _world(world),
-      _inventory(inventory) {
-  _sector = world.sector(pos);
-
-  if (_sector) {
-    _sector->addEntity(this);
-  }
-}
-
-Entity::~Entity() {
-  if (_sector) {
-    _sector->removeEntity(this);
-  }
-}
 
 const Tile& Entity::t() const { return _t; }
 
 Position Entity::pos() const { return _pos; }
 
-World& Entity::world() const { return _world; }
+World* Entity::world() { return _world; }
 
-Sector* Entity::sector() const { return _sector; }
+World const* Entity::world() const { return _world; }
 
 bool Entity::seen() const { return _lastKnownPos == boost::none; }
 
@@ -87,35 +75,27 @@ std::vector<Item*>& Entity::inventory() { return _inventory; }
 
 const std::vector<Item*>& Entity::inventory() const { return _inventory; }
 
-void Entity::setPos(Vec<int, 2> pos) {
+void Entity::setPos(Position pos) {
   _pos = pos;
-  setSector(_world.sector(pos));
-}
 
-void Entity::setSector(Sector* sector) {
-  if (_sector != nullptr) {
-    _sector->removeEntity(this);
+  if (_world) {
+    _world->updateEntity(this);
   }
-
-  if (sector != nullptr) {
-    sector->addEntity(this);
-  }
-
-  _sector = sector;
 }
 
 void Entity::setHp(int hp) {
   if (hp <= 0) {
-    world().addEvent(std::make_unique<DeathEvent>(*this));
+    // Entity is dead
+    world()->addEvent(std::make_unique<DeathEvent>(*this));
 
     // drop inventory
     for (Item* e : _inventory) {
       e->setPos(pos());
       e->setLastKnownPos(boost::none);
-      world().addEvent(std::make_unique<DropEvent>(*this, *e));
+      world()->addEvent(std::make_unique<DropEvent>(*this, *e));
     }
 
-    _sector->removeEntity(this);
+    _world->removeEntity(this);
   }
 
   _hp = hp;

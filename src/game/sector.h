@@ -20,6 +20,7 @@
 #define SECTOR_H
 
 #include <list>
+#include <memory>
 #include <vector>
 #include "vec.hpp"
 
@@ -28,14 +29,15 @@ class Entity;
 
 class Sector {
  public:
-  Sector(Tile* defTile);
-  ~Sector();
+  Sector(Tile const* defTile);
 
-  static int size();
-
-  const std::list<Entity*>& entities() const;
-  std::vector<Entity*> entities(Position pos) const;
-  void addEntity(Entity* e);
+  std::shared_ptr<Entity> entity(Entity const* ent);
+  std::shared_ptr<Entity const> entity(Entity const* ent) const;
+  std::vector<std::shared_ptr<Entity>> entities();
+  std::vector<std::shared_ptr<Entity const>> entities() const;
+  std::vector<std::shared_ptr<Entity>> entities(Position pos);
+  std::vector<std::shared_ptr<Entity const>> entities(Position pos) const;
+  void addEntity(std::shared_ptr<Entity> ent);
   void removeEntity(Entity* e);
 
   Tile const* tile(Position pos) const;
@@ -46,17 +48,17 @@ class Sector {
   bool explored(Position pos) const;
   void setExplored(Position pos, bool explored = true);
 
- private:
   // size of a sector has to be hardwired so they can be tiled
-  static const int _size;
+  std::size_t const static size;
 
+ private:
   // vector containing the tiles (stored linearly row for row)
   std::vector<Tile const*> _tiles;
   std::vector<bool> _explored;
 
   // a list of all entities in the sector (i.e. characters, items, props)
   // the bottommost entity has highest render priority
-  std::list<Entity*> _entities;
+  std::list<std::shared_ptr<Entity>> _entities;
 };
 
 #endif

@@ -19,6 +19,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <map>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -40,16 +41,16 @@ class World {
 
   static double distance(Position from, Position to);
 
-  bool los(Position from, Position to, double range = -1);
+  bool los(Position from, Position to, double range = -1) const;
   std::vector<Command> route(Position from, Position dest,
                              bool converge = false);
 
   Sector* sector(Position pos);
   Sector const* sector(Position pos) const;
-  Player* player();
-  Player const* player() const;
+  std::shared_ptr<Player> player();
+  std::shared_ptr<Player const> player() const;
 
-  const Tile* tile(Position pos);
+  const Tile* tile(Position pos) const;
   void setTile(Position pos, Tile const* t);
 
   bool explored(Position pos) const;
@@ -57,10 +58,16 @@ class World {
 
   bool passable(Position pos) const;
 
-  std::vector<Entity*> entities(Position pos) const;
-  std::vector<Entity*> entities(Position topLeft, Position botRight);
-  void addEntitiy(Entity* e);
-  void removeEntity(Entity* e);
+  std::shared_ptr<Entity> entity(Entity* ent);
+  std::vector<std::shared_ptr<Entity>> entities(Position pos);
+  std::vector<std::shared_ptr<Entity const>> entities(Position pos) const;
+  std::vector<std::shared_ptr<Entity>> entities(Position topLeft,
+                                                Position botRight);
+  std::vector<std::shared_ptr<Entity const>> entities(Position topLeft,
+                                                      Position botRight) const;
+  void addEntitiy(std::shared_ptr<Entity> ent);
+  void removeEntity(Entity* ent);
+  void updateEntity(Entity* ent);
 
   double time();
   void letTimePass(double time);
@@ -76,11 +83,14 @@ class World {
 
   std::vector<std::unique_ptr<Sector>> _sectors;
 
-  Player* _player;
+  std::shared_ptr<Player> _player;
 
   double _time{0};
 
   std::queue<std::unique_ptr<Event>> _events;
+
+  //! Maps each entity to the sector which last owned it.
+  std::map<Entity*, Sector*> _entityLocation;
 
   static Tile _grass;
   static Tile _mud;

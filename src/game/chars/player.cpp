@@ -22,11 +22,11 @@
 #include "world.h"
 
 Player::Player(Tile const& t, int hp, Position pos, double speed,
-               int visionRange, Attributes& attributes, World& world,
-               Attack* unarmed, std::vector<Item*> const& inventory, int bab,
-               Size s, int naturalArmor)
-    : Humanoid(t, hp, pos, speed, visionRange, attributes, world, unarmed,
-               inventory, bab, s, naturalArmor) {}
+               int visionRange, Attributes& attributes, Attack* unarmed,
+               std::vector<Item*> const& inventory, int bab, Size s,
+               int naturalArmor)
+    : Humanoid(t, hp, pos, speed, visionRange, attributes, unarmed, inventory,
+               bab, s, naturalArmor) {}
 
 std::string Player::itemStatus(Item* i) const {
   std::string description = i->desc();

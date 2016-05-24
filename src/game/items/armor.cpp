@@ -19,8 +19,8 @@
 #include "armor.h"
 
 Armor::Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-             double weight, World& world, Position pos, Size s)
-    : Item(t, weight, world, ac * 5, pos, s),
+             double weight, Position pos, Size s)
+    : Item(t, weight, ac * 5, pos, s),
       _ac(ac),
       _maxDexBon(maxDexBon),
       _checkPenalty(checkPenalty),

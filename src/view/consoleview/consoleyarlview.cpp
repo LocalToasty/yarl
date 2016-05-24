@@ -303,7 +303,7 @@ void ConsoleYarlView::showItemList(std::string const& title,
   getChar();
 }
 
-boost::optional<Vec<int, 2>> ConsoleYarlView::promptCoordinates() {
+boost::optional<Position> ConsoleYarlView::promptCoordinates() {
   // enable cursor
   Vec<int, 2> pos({width() / 2, height() / 2});
   moveCursor(pos);
@@ -317,7 +317,7 @@ boost::optional<Vec<int, 2>> ConsoleYarlView::promptCoordinates() {
       switch (cmd->second) {
         case Command::wait: {
           // calulate coordinates
-          Player const* const player = _world.player();
+          auto player = _world.player();
           cursor(false);
           return Vec<int, 2>(pos + player->pos() -
                              Vec<int, 2>({width() / 2, height() / 2}));
@@ -355,17 +355,17 @@ void ConsoleYarlView::moveAddString(Vec<int, 2> pos, std::string s, Color col) {
 void ConsoleYarlView::handleEvents() {
   while (_world.eventAvailable()) {
     std::unique_ptr<Event> event = _world.getEvent();
-    Player const* const player = _world.player();
+    auto const player = _world.player();
 
     // event is an attack
     if (AttackEvent* attack = dynamic_cast<AttackEvent*>(event.get())) {
       // player attacks
-      if (&attack->attacker == player) {
+      if (&attack->attacker == player.get()) {
         addStatusMessage(std::string("You ") + (attack->hit ? "hit" : "miss") +
                          " the " + attack->target.desc() + '.');
       }
       // player is attacked
-      else if (&attack->target == player) {
+      else if (&attack->target == player.get()) {
         addStatusMessage("The " + attack->attacker.desc() +
                          (attack->hit ? " hits" : " misses") + " you.");
       }
@@ -379,7 +379,7 @@ void ConsoleYarlView::handleEvents() {
 
     // entity "dies"
     else if (DeathEvent* death = dynamic_cast<DeathEvent*>(event.get())) {
-      if (&death->victim == player) {
+      if (&death->victim == player.get()) {
         addStatusMessage("You die.");
         _running = false;
       } else if (player->los(death->victim)) {
@@ -394,7 +394,7 @@ void ConsoleYarlView::handleEvents() {
     // somebody dropped something
     else if (DropEvent* drop = dynamic_cast<DropEvent*>(event.get())) {
       if (drop->dropper.hp() > 0) {
-        if (&drop->dropper == player) {
+        if (&drop->dropper == player.get()) {
           addStatusMessage("You dropped your " + drop->item.desc() + '.');
         } else if (player->los(drop->dropper)) {
           addStatusMessage("The " + drop->dropper.desc() + " dropped " +
@@ -409,7 +409,7 @@ void ConsoleYarlView::handleEvents() {
  * \brief Renders the main screen.
  */
 void ConsoleYarlView::draw() {
-  Player* player = _world.player();
+  auto const player = _world.player();
 
   Vec<int, 2> off = Vec<int, 2>({width() / 2, height() / 2}) - player->pos();
 
@@ -439,7 +439,7 @@ void ConsoleYarlView::draw() {
   Vec<int, 2> const mid({width() / 2, height() / 2});
   auto ents = _world.entities(player->pos() - mid, player->pos() + mid);
 
-  for (Entity* e : ents) {
+  for (auto e : ents) {
     if (player->los(*e)) {
       e->setLastKnownPos(e->pos());
 
@@ -468,7 +468,7 @@ void ConsoleYarlView::drawStatusBar() {
 }
 
 void ConsoleYarlView::drawCharacterInfo() {
-  Player* player = _world.player();
+  auto const player = _world.player();
 
   // character information
   // name

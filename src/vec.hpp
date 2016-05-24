@@ -1,7 +1,6 @@
 #ifndef VEC_HPP
 #define VEC_HPP
 
-#include "command.h"
 #include <algorithm>
 #include <array>
 #include <boost/optional.hpp>
@@ -10,6 +9,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <numeric>
+#include "command.h"
 
 template <typename T, size_t dim>
 class Vec {
@@ -57,9 +57,7 @@ class Vec {
 
   Vec<T, dim> normalize() const { return *this / this->norm(); }
 
-  bool operator==(Vec<T, dim> const& rhs) const {
-    return _elems == rhs._elems;
-  }
+  bool operator==(Vec<T, dim> const& rhs) const { return _elems == rhs._elems; }
 
   boost::optional<Command> asDirection() const {
     if (at(0) < 0 && at(1) < 0) {
@@ -91,16 +89,14 @@ using Position = Vec<int, 2>;
 
 template <typename T, size_t dim>
 Vec<T, dim>& operator+=(Vec<T, dim>& lhs, Vec<T, dim> const& rhs) {
-  for (size_t i = 0; i < dim; i++)
-    lhs.at(i) += rhs.at(i);
+  for (size_t i = 0; i < dim; i++) lhs.at(i) += rhs.at(i);
 
   return lhs;
 }
 
 template <typename T, size_t dim>
 Vec<T, dim>& operator-=(Vec<T, dim>& lhs, Vec<T, dim> const& rhs) {
-  for (size_t i = 0; i < dim; i++)
-    lhs.at(i) -= rhs.at(i);
+  for (size_t i = 0; i < dim; i++) lhs.at(i) -= rhs.at(i);
 
   return lhs;
 }

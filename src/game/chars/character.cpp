@@ -30,10 +30,9 @@
 
 Character::Character(const Tile& t, int hp, Position pos, double speed,
                      int visionRange, Attributes const& attributes,
-                     World& world, Attack* unarmed,
-                     std::vector<Item*> const& inventory, int bab,
-                     Character::Size s, int naturalArmor)
-    : Entity(t, hp, pos, world, s, naturalArmor, inventory),
+                     Attack* unarmed, std::vector<Item*> const& inventory,
+                     int bab, Character::Size size, int naturalArmor)
+    : Entity(t, hp, pos, size, naturalArmor, inventory),
       _visionRange(visionRange),
       _unarmed(unarmed),
       _speed(speed),
@@ -41,7 +40,7 @@ Character::Character(const Tile& t, int hp, Position pos, double speed,
       _attributes(attributes) {}
 
 bool Character::move(Position diff) {
-  if (world().passable(pos() + diff)) {
+  if (world()->passable(pos() + diff)) {
     setPos(pos() + diff);
     return true;
   }
@@ -49,9 +48,10 @@ bool Character::move(Position diff) {
   return false;
 }
 
-void Character::attack(Entity* target) {
+void Character::attack(std::shared_ptr<Entity> target) {
   _lastTarget = target;
-  target->setLastAttacker(this);
+  target->setLastAttacker(
+      std::static_pointer_cast<Character>(world()->entity(this)));
 
   // hit roll
   int toHitMod = _bab + attributeMod(strength) + size();
@@ -72,7 +72,7 @@ void Character::attack(Entity* target) {
       }
     }
 
-    world().addEvent(std::make_unique<AttackEvent>(*this, *target, true));
+    world()->addEvent(std::make_unique<AttackEvent>(*this, *target, true));
 
     if (damage <= 0) {  // hits inflict at least 1 hp damage
       damage = 1;
@@ -81,25 +81,25 @@ void Character::attack(Entity* target) {
     target->setHp(target->hp() - damage);
     return;
   } else {  // don't do any damage on miss
-    world().addEvent(std::make_unique<AttackEvent>(*this, *target, false));
+    world()->addEvent(std::make_unique<AttackEvent>(*this, *target, false));
   }
 }
 
 bool Character::los(Position pos) const {
-  return world().los(this->pos(), pos, _visionRange);
+  return world()->los(this->pos(), pos, _visionRange);
 }
 
 bool Character::los(Entity const& e) const { return los(e.pos()); }
 
 // returns a vector with the entities currently seen by the character
-std::vector<Entity*> Character::seenEntities() {
-  std::vector<Entity*> ents;
+std::vector<std::shared_ptr<Entity const>> Character::seenEntities() const {
+  std::vector<std::shared_ptr<Entity const>> ents;
 
-  for (Entity* e : world().entities(
+  for (auto ent : world()->entities(
            pos() - Position({visionRange(), visionRange()}),
            pos() + Position({visionRange() + 1, visionRange() + 1}))) {
-    if (los(*e)) {
-      ents.push_back(e);
+    if (los(*ent)) {
+      ents.push_back(ent);
     }
   }
 
@@ -210,8 +210,10 @@ int Character::loadCheckPenalty() const {
   }
 }
 
-Entity* Character::lastTarget() const { return _lastTarget; }
+std::weak_ptr<Entity> Character::lastTarget() const { return _lastTarget; }
 
-void Character::setLastTarget(Entity* lastTarget) { _lastTarget = lastTarget; }
+void Character::setLastTarget(std::weak_ptr<Entity> lastTarget) {
+  _lastTarget = lastTarget;
+}
 
 int Character::bab() { return _bab; }

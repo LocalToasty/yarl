@@ -20,6 +20,7 @@
 #define COMPANION_H
 
 #include <boost/optional.hpp>
+#include <memory>
 #include "npc.h"
 
 /**
@@ -31,14 +32,14 @@
  */
 class Companion : public NPC {
  private:
-  Character* _companion;
+  std::weak_ptr<Character const> _companion;
 
   boost::optional<Position> _waypoint;
 
  public:
-  Companion(const Tile& t, Character* companion, int hp, Position pos,
-            double speed, int visionRange, const Attributes& attributes,
-            World& world, Attack* unarmed,
+  Companion(const Tile& t, std::weak_ptr<Character const> companion, int hp,
+            Position pos, double speed, int visionRange,
+            const Attributes& attributes, Attack* unarmed,
             const std::vector<Item*>& inventory = {}, int bab = 0,
             Size s = Size::medium, int naturalArmor = 0);
 

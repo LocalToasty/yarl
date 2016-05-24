@@ -27,7 +27,7 @@ class NPC : public Character {
 
  public:
   NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
-      const Attributes& attributes, World& world, Attack* unarmed,
+      const Attributes& attributes, Attack* unarmed,
       const std::vector<Item*>& inventory = {}, int bab = 0,
       Size s = Size::medium, int naturalArmor = 0);
 

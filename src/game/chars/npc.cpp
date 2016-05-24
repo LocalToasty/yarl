@@ -20,10 +20,10 @@
 #include "character.h"
 
 NPC::NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
-         const Attributes& attributes, World& world, Attack* unarmed,
+         const Attributes& attributes, Attack* unarmed,
          const std::vector<Item*>& inventory, int bab, Size s, int naturalArmor)
-    : Character(t, hp, pos, speed, visionRange, attributes, world, unarmed,
-                inventory, bab, s, naturalArmor) {}
+    : Character(t, hp, pos, speed, visionRange, attributes, unarmed, inventory,
+                bab, s, naturalArmor) {}
 
 double NPC::lastAction() const { return _lastAction; }
 
