@@ -19,11 +19,7 @@
 #include "npc.h"
 #include "character.h"
 
-NPC::NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
-         const Attributes& attributes, Attack* unarmed,
-         const std::vector<Item*>& inventory, int bab, Size s, int naturalArmor)
-    : Character(t, hp, pos, speed, visionRange, attributes, unarmed, inventory,
-                bab, s, naturalArmor) {}
+NPC::NPC(Character&& c) : Character(c) {}
 
 double NPC::lastAction() const { return _lastAction; }
 

@@ -22,6 +22,7 @@
 #include <boost/optional.hpp>
 #include <functional>
 #include <list>
+#include <memory>
 #include <string>
 #include <vector>
 #include "vec.hpp"
@@ -64,10 +65,11 @@ class YarlView {
    *
    * \returns a pointer to the selected Item, or none if no item was chosen.
    */
-  virtual Item* promptItem(std::string const& message,
-                           std::vector<Item*>::iterator first,
-                           std::vector<Item*>::iterator last,
-                           std::function<bool(Item*)> pred) = 0;
+  virtual std::shared_ptr<Item> promptItem(
+      std::string const& message,
+      std::vector<std::shared_ptr<Item>>::iterator first,
+      std::vector<std::shared_ptr<Item>>::iterator last,
+      std::function<bool(std::shared_ptr<Item> const&)> pred) = 0;
 
   /*!
    * \brief Prompts the user for a location, usually by letting him select a
@@ -76,9 +78,9 @@ class YarlView {
    */
   virtual boost::optional<Position> promptCoordinates() = 0;
 
-  virtual void showItemList(std::string const& title,
-                            std::vector<Item*> const& items,
-                            std::function<std::string(Item*)> decorate) = 0;
+  virtual void showItemList(
+      std::string const& title, std::vector<std::shared_ptr<Item>> const& items,
+      std::function<std::string(std::shared_ptr<Item> const&)> decorate) = 0;
 
   virtual void addStatusMessage(std::string const& message) = 0;
 };

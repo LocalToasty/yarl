@@ -204,14 +204,14 @@ int ConsoleYarlView::multipleChoiceDialog(
   return 0;
 }
 
-Item* ConsoleYarlView::promptItem(const std::string& message,
-                                  std::vector<Item*>::iterator first,
-                                  std::vector<Item*>::iterator last,
-                                  std::function<bool(Item*)> pred) {
+std::shared_ptr<Item> ConsoleYarlView::promptItem(
+    const std::string& message,
+    std::vector<std::shared_ptr<Item>>::iterator first,
+    std::vector<std::shared_ptr<Item>>::iterator last,
+    std::function<bool(std::shared_ptr<Item> const&)> pred) {
   // filter all valid items
-  std::vector<Item*> possibleItems;
-  std::remove_copy_if(first, last, std::back_inserter(possibleItems),
-                      [pred](Item* i) { return !pred(i); });
+  std::vector<std::shared_ptr<Item>> possibleItems;
+  std::copy_if(first, last, std::back_inserter(possibleItems), pred);
 
   // show prompt
   moveAddString({0, 0}, message);
@@ -223,8 +223,8 @@ Item* ConsoleYarlView::promptItem(const std::string& message,
   while (true) {
     clear(message.size(), 0, width() - cursorPos()[0], 1);
 
-    auto validItem = [&buffer](Item* i) {
-      return i->desc().substr(0, buffer.size()) == buffer;
+    auto validItem = [&buffer](auto item) {
+      return item->desc().substr(0, buffer.size()) == buffer;
     };
 
     // get a matching item
@@ -261,8 +261,8 @@ Item* ConsoleYarlView::promptItem(const std::string& message,
         break;
 
       case '\t':
-        if (std::find_if(++item, last, [&buffer](Item* i) {
-              return i->desc().substr(0, buffer.size()) == buffer;
+        if (std::find_if(++item, last, [&buffer](auto item) {
+              return item->desc().substr(0, buffer.size()) == buffer;
             }) != last) {
           index++;
         } else {
@@ -285,15 +285,15 @@ Item* ConsoleYarlView::promptItem(const std::string& message,
   return nullptr;
 }
 
-void ConsoleYarlView::showItemList(std::string const& title,
-                                   const std::vector<Item*>& items,
-                                   std::function<std::string(Item*)> decorate) {
+void ConsoleYarlView::showItemList(
+    std::string const& title, std::vector<std::shared_ptr<Item>> const& items,
+    std::function<std::string(std::shared_ptr<Item> const&)> decorate) {
   clear(0, 0, width(), 1);
   moveAddString({0, 0}, title);
 
   int row = 1;
 
-  for (Item* item : items) {
+  for (auto& item : items) {
     moveAddString({2, row}, decorate(item));
 
     row++;

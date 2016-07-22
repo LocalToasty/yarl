@@ -45,15 +45,16 @@ class Entity {
     fine = 8
   };
 
-  Entity(Tile const& t, int hp, Position pos, Size s = Size::medium,
-         int naturalArmor = 0, std::vector<Item*> const& inventory = {});
-  virtual ~Entity() {}
+  Entity(Tile const& t, int hp, World& world,
+         boost::optional<Position> pos = boost::none, Size s = Size::medium,
+         int naturalArmor = 0);
+  virtual ~Entity();
 
   const Tile& t() const;
 
   boost::optional<Position> pos() const;
-  World* world();
-  World const* world() const;
+  World& world();
+  World const& world() const;
 
   bool seen() const;
   boost::optional<Position> lastKnownPos() const;
@@ -70,10 +71,10 @@ class Entity {
   int naturalArmor() const;
   virtual int armorClass() const;
 
-  std::vector<Item*>& inventory();
-  std::vector<Item*> const& inventory() const;
+  std::vector<std::shared_ptr<Item>>& inventory();
+  std::vector<std::shared_ptr<Item>> const& inventory() const;
 
-  void setPos(boost::optional<Position> pos, World* world = nullptr);
+  void setPos(boost::optional<Position> pos);
 
   void setHp(int hp);
   void doDamage(int dmg);
@@ -93,12 +94,12 @@ class Entity {
 
   Size _s;
 
-  World* _world;
+  World& _world;
 
   // last known coordinates
   boost::optional<Position> _lastKnownPos;
 
-  std::vector<Item*> _inventory;
+  std::vector<std::shared_ptr<Item>> _inventory;
 
   std::weak_ptr<Character> _lastAttacker{};
 };

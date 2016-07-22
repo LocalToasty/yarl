@@ -23,15 +23,17 @@
 #include "sector.h"
 #include "world.h"
 
-Entity::Entity(Tile const& t, int hp, Position pos, Size s, int naturalArmor,
-               std::vector<Item*> const& inventory)
+Entity::Entity(Tile const& t, int hp, World& world,
+               boost::optional<Position> pos, Size s, int naturalArmor)
     : _t(t),
       _pos(pos),
       _hp(hp),
       _maxHp(hp),
       _naturalArmor(naturalArmor),
       _s(s),
-      _inventory(inventory) {}
+      _world(world) {}
+
+Entity::~Entity() {}
 
 std::weak_ptr<Character> Entity::lastAttacker() const { return _lastAttacker; }
 
@@ -53,9 +55,9 @@ const Tile& Entity::t() const { return _t; }
 
 boost::optional<Position> Entity::pos() const { return _pos; }
 
-World* Entity::world() { return _world; }
+World& Entity::world() { return _world; }
 
-World const* Entity::world() const { return _world; }
+const World& Entity::world() const { return _world; }
 
 bool Entity::seen() const { return _lastKnownPos == boost::none; }
 
@@ -71,39 +73,40 @@ std::string Entity::desc() const { return _t.description; }
 
 int Entity::armorClass() const { return 5 + _s + _naturalArmor; }
 
-std::vector<Item*>& Entity::inventory() { return _inventory; }
+std::vector<std::shared_ptr<Item>>& Entity::inventory() { return _inventory; }
 
-const std::vector<Item*>& Entity::inventory() const { return _inventory; }
+std::vector<std::shared_ptr<Item>> const& Entity::inventory() const {
+  return _inventory;
+}
 
 /**
  * @brief Sets an entities position.
  *
  * If pos is boost::none, the entity will be removed from the world.
  */
-void Entity::setPos(boost::optional<Position> pos, World* world) {
+void Entity::setPos(boost::optional<Position> pos) {
   _pos = pos;
 
-  if (world && _pos) {
-    _world = world;
-    _world->updateEntity(this);
-  } else if (!pos) {
-    _world->removeEntity(this);
+  if (_pos) {
+    _world.updateEntity(this);
+  } else {
+    _world.removeEntity(this);
   }
 }
 
 void Entity::setHp(int hp) {
   if (hp <= 0) {
     // Entity is dead
-    world()->addEvent(std::make_unique<DeathEvent>(*this));
+    world().addEvent(std::make_unique<DeathEvent>(*this));
 
     // drop inventory
-    for (Item* e : _inventory) {
-      e->setPos(pos());
-      e->setLastKnownPos(boost::none);
-      world()->addEvent(std::make_unique<DropEvent>(*this, *e));
+    for (auto ent : _inventory) {
+      ent->setPos(pos());
+      ent->setLastKnownPos(boost::none);
+      world().addEvent(std::make_unique<DropEvent>(*this, *ent));
     }
 
-    _world->removeEntity(this);
+    _world.removeEntity(this);
   }
 
   _hp = hp;

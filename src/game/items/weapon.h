@@ -27,8 +27,7 @@ class Weapon : public Item, public Attack {
   bool _twoHanded;
 
  public:
-  Weapon(const Tile& t, Attack a, bool twoHanded, double weight, int hp,
-         Position pos = {-1, -1}, Size s = Size::small);
+  Weapon(Item&& item, Attack&& a, bool twoHanded);
 
   bool twoHanded();
 };

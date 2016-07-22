@@ -18,13 +18,15 @@
 
 #include "armor.h"
 
-Armor::Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-             double weight, Position pos, Size s)
-    : Item(t, weight, ac * 5, pos, s),
+Armor::Armor(Item item, int ac, int maxDexBon, int checkPenalty, bool shield)
+    : Item(item),
       _ac(ac),
       _maxDexBon(maxDexBon),
       _checkPenalty(checkPenalty),
-      _shield(shield) {}
+      _shield(shield) {
+  setMaxHp(ac * 5);
+  setHp(ac * 5);
+}
 
 int Armor::ac() const { return _ac; }
 

@@ -18,8 +18,7 @@
 
 #include "weapon.h"
 
-Weapon::Weapon(const Tile& t, Attack a, bool twoHanded, double weight, int hp,
-               Position pos, Size s)
-    : Item(t, weight, hp, pos, s), Attack(a), _twoHanded(twoHanded) {}
+Weapon::Weapon(Item&& item, Attack&& a, bool twoHanded)
+    : Item(item), Attack(a), _twoHanded(twoHanded) {}
 
 bool Weapon::twoHanded() { return _twoHanded; }

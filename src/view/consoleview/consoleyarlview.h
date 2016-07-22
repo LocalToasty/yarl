@@ -42,13 +42,15 @@ class ConsoleYarlView : public YarlView {
                            std::vector<std::string> const& possibleAnswers,
                            size_t defAnswer);
 
-  Item* promptItem(std::string const& message,
-                   std::vector<Item*>::iterator first,
-                   std::vector<Item*>::iterator last,
-                   std::function<bool(Item*)> pred);
+  std::shared_ptr<Item> promptItem(
+      std::string const& message,
+      std::vector<std::shared_ptr<Item>>::iterator first,
+      std::vector<std::shared_ptr<Item>>::iterator last,
+      std::function<bool(const std::shared_ptr<Item>&)> pred);
 
-  void showItemList(std::string const& title, std::vector<Item*> const& items,
-                    std::function<std::string(Item*)> decorator);
+  void showItemList(
+      std::string const& title, std::vector<std::shared_ptr<Item>> const& items,
+      std::function<std::string(std::shared_ptr<Item> const&)> decorate);
 
   virtual boost::optional<Position> promptCoordinates();
 

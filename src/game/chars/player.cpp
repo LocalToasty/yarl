@@ -21,23 +21,18 @@
 #include "item.h"
 #include "world.h"
 
-Player::Player(Tile const& t, int hp, Position pos, double speed,
-               int visionRange, Attributes& attributes, Attack* unarmed,
-               std::vector<Item*> const& inventory, int bab, Size s,
-               int naturalArmor)
-    : Humanoid(t, hp, pos, speed, visionRange, attributes, unarmed, inventory,
-               bab, s, naturalArmor) {}
+Player::Player(Humanoid&& h) : Humanoid(h) {}
 
-std::string Player::itemStatus(Item* i) const {
-  std::string description = i->desc();
+std::string Player::itemStatus(Item const* item) const {
+  std::string description = item->desc();
 
-  if (i == mainHand() && i == offHand()) {
+  if (item == mainHand() && item == offHand()) {
     description += " (in both hands)";
-  } else if (i == mainHand()) {
+  } else if (item == mainHand()) {
     description += " (in main hand)";
-  } else if (i == offHand()) {
+  } else if (item == offHand()) {
     description += " (in off hand)";
-  } else if (i == (Item*)armor()) {
+  } else if (item == (Item*)armor()) {
     description += " (worn)";
   }
 

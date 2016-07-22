@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <memory>
 #include "armor.h"
 #include "attack.h"
@@ -38,12 +39,27 @@ Tile World::_hero = {'@', Color::yellow, "", "you", true, false};
 Tile World::_goblin = {'g', Color::green, "a ", "goblin", true, false};
 Tile World::_dog = {'d', Color::red, "a ", "dog", true, false};
 Tile World::_dogCorpse = {'%', Color::red, "a ", "dog corpse", true, true};
-Tile World::_shortSword = {'(', Color::white, "a ", "short sword", true, true};
 Tile World::_claymore = {'(', Color::white, "a ", "claymore", true, true};
-Tile World::_leatherArmor = {'[',  Color::yellow, "a ", "leather armor",
-                             true, true};
 Tile World::_buckler = {'[',  Color::red, "a ", "light wooden shield",
                         true, true};
+
+std::shared_ptr<Weapon> makeShortSword(World& world) {
+  Tile const static shortSword = {'(',           Color::white, "a ",
+                                  "short sword", true,         true};
+  auto sword = std::make_shared<Weapon>(
+      Weapon(Item(Entity(shortSword, 5, world), 2),
+             Attack([]() { return rand() % 6 + 1; }, 19, 2), false));
+  return sword;
+}
+
+std::shared_ptr<Armor> makeLeatherArmor(World& world) {
+  Tile const static leatherArmor = {'[',  Color::yellow, "a ", "leather armor",
+                                    true, true};
+  auto armor = std::make_shared<Armor>(Item(Entity(leatherArmor, 2, world), 15),
+                                       2, 6, -2, false);
+
+  return armor;
+}
 
 World::World(int width, int height)
     : _width(width), _height(height), _sectors(width * height) {
@@ -62,18 +78,16 @@ World::World(int width, int height)
   }
 
   std::array<int, 6> attr = {12, 12, 12, 12, 12, 12};
-  _player = std::make_shared<Player>(
-      Player(_hero, 9 + rand() % 8, {42, 42}, 1, 12, attr,
-             new Attack([]() { return rand() % 2 + 1; }), {}, 1));
-  addEntitiy(_player);
+  _player = std::make_shared<Player>(Player(Humanoid(
+      Character(Entity(_hero, 9 + rand() % 8, *this, Position({42, 42})), 1, 12,
+                attr, new Attack([]() { return rand() % 2 + 1; }), 1))));
+  addEntity(_player);
 
-  // Weapon* weap =
-  //    new Weapon(_shortSword, {[]() { return rand() % 6 + 1; }, 19, 2}, false,
-  //               2, 5);
-  //_player->inventory().push_back(weap);
-  //_player->setMainHand(weap);
-  //_player->setOffHand(weap);
+  auto sword = makeShortSword(*this);
+  sword->setPos(Position({43, 43}));
+  addEntity(sword);
 
+  auto leatherArmor = makeLeatherArmor(*this);
   // Armor* arm = new Armor(_leatherArmor, 2, 6, 0, false, 15);
   //_player->inventory().push_back(arm);
   //_player->setArmor(arm);
@@ -492,12 +506,16 @@ std::vector<std::shared_ptr<Entity const>> World::entities(
  * The Entity mustn't be in the world before being added, else undefined
  * behaviour may occur.
  */
-void World::addEntitiy(std::shared_ptr<Entity> ent) {
-  if (Sector* s = sector(*ent->pos())) {  // check if the position is valid
-    s->addEntity(ent);
-    ent->_world = this;
-    _entityLocation[ent.get()] = s;
+void World::addEntity(std::shared_ptr<Entity> ent) {
+  // check if the position is valid
+  if (ent->pos() != boost::none) {
+    if (Sector* s = sector(*ent->pos())) {
+      s->addEntity(ent);
+      _entityLocation[ent.get()] = s;
+    }
   } else {
+    std::cerr << "Tried to add " << ent->desc() << " with no position"
+              << std::endl;
     // TODO throw error
   }
 }

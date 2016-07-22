@@ -30,8 +30,7 @@ class Armor : public Item {
   bool _shield;
 
  public:
-  Armor(Tile& t, int ac, int maxDexBon, int checkPenalty, bool shield,
-        double weight, Position pos = {-1, -1}, Size s = Size::small);
+  Armor(Item item, int ac, int maxDexBon, int checkPenalty, bool shield);
 
   int ac() const;
   int maxDexBon() const;

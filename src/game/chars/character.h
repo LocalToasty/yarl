@@ -45,10 +45,8 @@ class Character : public Entity {
 
   enum class Load { light, medium, heavy, overloaded };
 
-  Character(const Tile& t, int hp, Position pos, double speed, int visionRange,
-            const Attributes& attributes, Attack* unarmed,
-            const std::vector<Item*>& inventory = {}, int bab = 0,
-            Size s = Size::medium, int naturalArmor = 0);
+  Character(Entity&& ent, double speed, int visionRange,
+            const Attributes& attributes, Attack* unarmed, int bab = 0);
 
   bool los(Position pos) const;
   bool los(Entity const& e) const;
@@ -61,7 +59,8 @@ class Character : public Entity {
 
   Attack* unarmed();
 
-  Armor* armor() const;
+  Armor* armor();
+  Armor const* armor() const;
   void setArmor(Armor* armor);
 
   int attribute(Attribute attribute) const;
@@ -91,7 +90,7 @@ class Character : public Entity {
   int _visionRange;
 
   Attack* _unarmed;
-  Armor* _armor{nullptr};
+  Armor* _armor{};
 
   double _speed;
 

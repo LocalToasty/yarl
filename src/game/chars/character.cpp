@@ -28,11 +28,9 @@
 #include "world.h"
 #include "yarlconfig.h"
 
-Character::Character(const Tile& t, int hp, Position pos, double speed,
-                     int visionRange, Attributes const& attributes,
-                     Attack* unarmed, std::vector<Item*> const& inventory,
-                     int bab, Character::Size size, int naturalArmor)
-    : Entity(t, hp, pos, size, naturalArmor, inventory),
+Character::Character(Entity&& ent, double speed, int visionRange,
+                     Attributes const& attributes, Attack* unarmed, int bab)
+    : Entity(ent),
       _visionRange(visionRange),
       _unarmed(unarmed),
       _speed(speed),
@@ -40,7 +38,7 @@ Character::Character(const Tile& t, int hp, Position pos, double speed,
       _attributes(attributes) {}
 
 bool Character::move(Position diff) {
-  if (world()->passable(*pos() + diff)) {
+  if (world().passable(*pos() + diff)) {
     setPos(*pos() + diff);
     return true;
   }
@@ -51,7 +49,7 @@ bool Character::move(Position diff) {
 void Character::attack(std::shared_ptr<Entity> target) {
   _lastTarget = target;
   target->setLastAttacker(
-      std::static_pointer_cast<Character>(world()->entity(this)));
+      std::static_pointer_cast<Character>(world().entity(this)));
 
   // hit roll
   int toHitMod = _bab + attributeMod(strength) + size();
@@ -72,7 +70,7 @@ void Character::attack(std::shared_ptr<Entity> target) {
       }
     }
 
-    world()->addEvent(std::make_unique<AttackEvent>(*this, *target, true));
+    world().addEvent(std::make_unique<AttackEvent>(*this, *target, true));
 
     if (damage <= 0) {  // hits inflict at least 1 hp damage
       damage = 1;
@@ -81,12 +79,12 @@ void Character::attack(std::shared_ptr<Entity> target) {
     target->setHp(target->hp() - damage);
     return;
   } else {  // don't do any damage on miss
-    world()->addEvent(std::make_unique<AttackEvent>(*this, *target, false));
+    world().addEvent(std::make_unique<AttackEvent>(*this, *target, false));
   }
 }
 
 bool Character::los(Position pos) const {
-  return world()->los(*this->pos(), pos, _visionRange);
+  return world().los(*this->pos(), pos, _visionRange);
 }
 
 bool Character::los(Entity const& ent) const { return los(*ent.pos()); }
@@ -95,7 +93,7 @@ bool Character::los(Entity const& ent) const { return los(*ent.pos()); }
 std::vector<std::shared_ptr<Entity const>> Character::seenEntities() const {
   std::vector<std::shared_ptr<Entity const>> ents;
 
-  for (auto ent : world()->entities(
+  for (auto ent : world().entities(
            *pos() - Position({visionRange(), visionRange()}),
            *pos() + Position({visionRange() + 1, visionRange() + 1}))) {
     if (los(*ent)) {
@@ -108,12 +106,13 @@ std::vector<std::shared_ptr<Entity const>> Character::seenEntities() const {
 
 int Character::armorClass() const {
   return 10 + attributeMod(dexterity) + size() + naturalArmor() +
-         (_armor == nullptr ? 0 : _armor->ac());
+         (armor() ? armor()->ac() : 0);
 }
 
 Attack* Character::unarmed() { return _unarmed; }
 
-Armor* Character::armor() const { return _armor; }
+Armor* Character::armor() { return _armor; }
+Armor const* Character::armor() const { return _armor; }
 
 void Character::setArmor(Armor* armor) { _armor = armor; }
 
@@ -122,29 +121,29 @@ int Character::attribute(Character::Attribute attribute) const {
 }
 
 int Character::attributeMod(Character::Attribute attribute) const {
-  int bonus = (_attributes[attribute] - 10) / 2;
+  int mod = (_attributes[attribute] - 10) / 2;
+
+  if (attribute == strength || attribute == dexterity) {
+    mod += loadCheckPenalty();
+  }
 
   if (_armor) {
-    if ((attribute == dexterity || attribute == strength)) {
-      if (_armor) {
-        bonus += _armor->checkPenalty();
-      }
-
-      bonus += loadCheckPenalty();
+    if (attribute == dexterity || attribute == strength) {
+      mod += armor()->checkPenalty();
     }
 
     if (attribute == dexterity) {
-      if (bonus > _armor->maxDexBon()) {
-        bonus = _armor->maxDexBon();
+      if (mod > armor()->maxDexBon()) {
+        mod = armor()->maxDexBon();
       }
 
-      if (bonus > loadMaxDexBon()) {
-        bonus = loadMaxDexBon();
+      if (mod > loadMaxDexBon()) {
+        mod = loadMaxDexBon();
       }
     }
   }
 
-  return bonus;
+  return mod;
 }
 
 int Character::visionRange() const { return _visionRange; }
@@ -164,8 +163,9 @@ double Character::heavyLoad() const {
 }
 
 Character::Load Character::load() const {
-  double weight = boost::accumulate(
-      inventory(), 0, [](double i, Item* j) { return i + j->weight(); });
+  double weight = boost::accumulate(inventory(), 0, [](double sum, auto item) {
+    return sum + item->weight();
+  });
 
   if (weight > heavyLoad()) {
     return Load::overloaded;

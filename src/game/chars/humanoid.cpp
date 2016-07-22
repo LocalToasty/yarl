@@ -22,17 +22,12 @@
 #include "weapon.h"
 #include "world.h"
 
-Humanoid::Humanoid(Tile const& t, int hp, Position pos, double speed,
-                   int visionRange, const Attributes& attributes,
-                   Attack* unarmed, std::vector<Item*> const& inventory,
-                   int bab, Size s, int naturalArmor)
-    : Character(t, hp, pos, speed, visionRange, attributes, unarmed, inventory,
-                bab, s, naturalArmor) {}
+Humanoid::Humanoid(Character&& c) : Character(c) {}
 
 void Humanoid::attack(std::shared_ptr<Entity> target) {
   setLastTarget(target);
   target->setLastAttacker(
-      std::static_pointer_cast<Character>(world()->entity(this)));
+      std::static_pointer_cast<Character>(world().entity(this)));
 
   Weapon* w1 = dynamic_cast<Weapon*>(_mainHand);
   Weapon* w2 = dynamic_cast<Weapon*>(_offHand);
@@ -71,14 +66,14 @@ void Humanoid::attack(std::shared_ptr<Entity> target) {
         }
       }
 
-      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, true));
+      world().addEvent(std::make_unique<AttackEvent>(*this, *target, true));
       if (damage <= 0) {
         damage = 1;
       }
 
       target->doDamage(damage);
     } else {  // miss
-      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, false));
+      world().addEvent(std::make_unique<AttackEvent>(*this, *target, false));
     }
   }
 
@@ -108,11 +103,11 @@ void Humanoid::attack(std::shared_ptr<Entity> target) {
         }
       }
 
-      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, true));
+      world().addEvent(std::make_unique<AttackEvent>(*this, *target, true));
 
       target->doDamage(damage);
     } else {
-      world()->addEvent(std::make_unique<AttackEvent>(*this, *target, false));
+      world().addEvent(std::make_unique<AttackEvent>(*this, *target, false));
     }
   }
 
@@ -124,16 +119,16 @@ void Humanoid::attack(std::shared_ptr<Entity> target) {
 int Humanoid::armorClass() {
   int ac = Character::armorClass();
 
-  Armor* s = dynamic_cast<Armor*>(_mainHand);
+  Armor* armor_main = dynamic_cast<Armor*>(_mainHand);
 
-  if (s && s->isShield()) {
-    ac += s->ac();
+  if (armor_main && armor_main->isShield()) {
+    ac += armor_main->ac();
   }
 
-  Armor* s2 = dynamic_cast<Armor*>(_offHand);
+  Armor* armor_off = dynamic_cast<Armor*>(_offHand);
 
-  if (s2 && s2->isShield() && s2 != s) {
-    ac += s2->ac();
+  if (armor_off && armor_off->isShield() && armor_off != armor_main) {
+    ac += armor_off->ac();
   }
 
   return ac;
@@ -145,20 +140,22 @@ int Humanoid::attributeMod(Character::Attribute attribute) const {
   if (attribute == dexterity || attribute == strength) {
     bonus += loadCheckPenalty();
 
-    Armor* s1 = dynamic_cast<Armor*>(_mainHand);
-    Armor* s2 = dynamic_cast<Armor*>(_offHand);
+    Armor* armor_main = dynamic_cast<Armor*>(_mainHand);
+    Armor* armor_off = dynamic_cast<Armor*>(_offHand);
 
     if (attribute == dexterity) {
       if (armor() && bonus > armor()->maxDexBon()) {
         bonus = armor()->maxDexBon();
       }
 
-      if (s1 && s1->isShield() && bonus > s1->maxDexBon()) {
-        bonus = s1->maxDexBon();
+      if (armor_main && armor_main->isShield() &&
+          bonus > armor_main->maxDexBon()) {
+        bonus = armor_main->maxDexBon();
       }
 
-      if (s2 && s2->isShield() && bonus > s2->maxDexBon()) {
-        bonus = s2->maxDexBon();
+      if (armor_off && armor_off->isShield() &&
+          bonus > armor_off->maxDexBon()) {
+        bonus = armor_off->maxDexBon();
       }
 
       if (bonus > loadMaxDexBon()) {

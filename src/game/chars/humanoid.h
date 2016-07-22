@@ -25,16 +25,13 @@ class Item;
 
 class Humanoid : public Character {
  private:
-  Item* _mainHand{nullptr};
-  Item* _offHand{nullptr};
+  Item* _mainHand{};
+  Item* _offHand{};
 
   bool _twoWeaponFighting{false};
 
  public:
-  Humanoid(const Tile& t, int hp, Position pos, double speed, int visionRange,
-           const Attributes& attributes, Attack* unarmed,
-           const std::vector<Item*>& inventory = {}, int bab = 0,
-           Size s = Size::medium, int naturalArmor = 0);
+  Humanoid(Character&& c);
 
   void attack(std::shared_ptr<Entity> target);
   int armorClass();

@@ -24,12 +24,9 @@
 
 class Player : public Humanoid {
  public:
-  Player(Tile const& t, int hp, Position pos, double speed, int visionRange,
-         Attributes& attributes, Attack* unarmed,
-         std::vector<Item*> const& inventory = {}, int bab = 0,
-         Size s = Size::medium, int naturalArmor = 0);
+  Player(Humanoid&& h);
 
-  std::string itemStatus(Item* i) const;
+  std::string itemStatus(const Item* item) const;
 };
 
 #endif

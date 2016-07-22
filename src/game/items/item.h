@@ -26,8 +26,7 @@ class Item : public Entity {
   double _weight;
 
  public:
-  Item(const Tile& t, double weight, int hp, Position pos = {-1, -1},
-       Size s = Size::medium);
+  Item(Entity&& ent, double weight);
 
   double weight() const;
 };

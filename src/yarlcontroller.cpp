@@ -309,20 +309,26 @@ void YarlController::moveCommand(Command direction) {
 void YarlController::showInventory() {
   auto player = _world->player();
   _view->showItemList("Inventory", _world->player()->inventory(),
-                      [player](Item* i) { return player->itemStatus(i); });
+                      [player](std::shared_ptr<Item> const& item) {
+                        return player->itemStatus(item.get());
+                      });
 }
 
 void YarlController::equip() {
-  auto player = _world->player();
+  std::shared_ptr<Player> player = _world->player();
 
   // prompt the player for equippable items
-  if (boost::optional<Item*> item = _view->promptItem(
-          "Select an item to equip:", player->inventory().begin(),
-          player->inventory().end(), [](Item* i) {
-            return dynamic_cast<Armor*>(i) || dynamic_cast<Weapon*>(i);
-          })) {
-    Armor* armor = dynamic_cast<Armor*>(*item);
-    Weapon* weapon = dynamic_cast<Weapon*>(*item);
+  if (Item* item = _view
+                       ->promptItem("Select an item to equip:",
+                                    player->inventory().begin(),
+                                    player->inventory().end(),
+                                    [](std::shared_ptr<Item> const& i) {
+                                      return dynamic_cast<Armor*>(i.get()) ||
+                                             dynamic_cast<Weapon*>(i.get());
+                                    })
+                       .get()) {
+    Armor* armor = dynamic_cast<Armor*>(item);
+    Weapon* weapon = dynamic_cast<Weapon*>(item);
 
     if (armor && !armor->isShield()) {  // item is armor
       if (player->armor()) {
@@ -339,15 +345,15 @@ void YarlController::equip() {
 
         switch (hand) {
           case main_hand:
-            player->setMainHand(*item);
+            player->setMainHand(item);
             break;
 
           case off_hand:
-            player->setOffHand(*item);
+            player->setOffHand(item);
             break;
 
           case both_hands:
-            player->setBothHands(*item);
+            player->setBothHands(item);
             break;
 
           default:
@@ -357,11 +363,11 @@ void YarlController::equip() {
         // check if any hands are blocked by other items
         std::string items;
 
-        if (player->mainHand() && player->mainHand() != item) {
+        if (player->mainHand() != item) {
           items += player->mainHand()->desc();
         }
 
-        if (player->offHand() && player->offHand() != item &&
+        if (player->offHand() != item &&
             player->mainHand() != player->offHand()) {
           if (!items.empty()) {
             items += " and your ";
@@ -374,9 +380,9 @@ void YarlController::equip() {
           _view->addStatusMessage("You have to unequip your " + items +
                                   " first.");
         } else {
-          player->setMainHand(*item);
-          player->setOffHand(*item);
-          _view->addStatusMessage("You are now holding the " + (*item)->desc() +
+          player->setMainHand(item);
+          player->setOffHand(item);
+          _view->addStatusMessage("You are now holding the " + item->desc() +
                                   " in both hands.");
         }
       }
@@ -390,21 +396,25 @@ void YarlController::equip() {
 
 void YarlController::unequip() {
   auto player = _world->player();
-  if (boost::optional<Item*> item = _view->promptItem(
-          "What item do you want do take off?", player->inventory().begin(),
-          player->inventory().end(), [player](Item* i) {
-            return player->mainHand() == i || player->offHand() == i ||
-                   player->armor() == i;
-          })) {
-    if (player->mainHand() == *item) {
+  if (Item* item = _view
+                       ->promptItem("What item do you want do take off?",
+                                    player->inventory().begin(),
+                                    player->inventory().end(),
+                                    [player](std::shared_ptr<Item> const& i) {
+                                      return player->mainHand() == i.get() ||
+                                             player->offHand() == i.get() ||
+                                             player->armor() == i.get();
+                                    })
+                       .get()) {
+    if (player->mainHand() == item) {
       player->setMainHand(nullptr);
     }
 
-    if (player->offHand() == *item) {
+    if (player->offHand() == item) {
       player->setOffHand(nullptr);
     }
 
-    if (player->armor() == *item) {
+    if (player->armor() == item) {
       player->setArmor(nullptr);
     }
   }
@@ -413,17 +423,17 @@ void YarlController::unequip() {
 void YarlController::drop() {
   auto player = _world->player();
   auto inventory = player->inventory();
-  if (Item* item =
+  if (std::shared_ptr<Item> item =
           _view->promptItem("What item do you want to drop?", inventory.begin(),
-                            inventory.end(), [](Item*) { return true; })) {
-    if (player->armor() == item) {
+                            inventory.end(), [](auto) { return true; })) {
+    if (player->armor() == item.get()) {
       // you have to take off armor before you can drop armor
       _view->addStatusMessage("You cannot drop worn armor.");
     } else {
       // unequip item if it's being held
-      if (player->mainHand() == item) {
+      if (player->mainHand() == item.get()) {
         player->setMainHand(nullptr);
-      } else if (player->offHand() == item) {
+      } else if (player->offHand() == item.get()) {
         player->setOffHand(nullptr);
       }
 
@@ -432,8 +442,9 @@ void YarlController::drop() {
 
       Character::Load before = player->load();
 
-      item->setPos(player->pos());
       boost::remove(player->inventory(), item);
+      item->setPos(player->pos());
+      _world->addEntity(item);
 
       Character::Load after = player->load();
 
@@ -494,10 +505,10 @@ void YarlController::pickup() {
 
   // search for entities in reach of the player
   for (auto ent : _world->entities(*player->pos())) {
-    if (dynamic_cast<Item*>(ent.get()) != nullptr) {
-      _world->removeEntity(ent.get());
-      ent->setPos(Position({-1, -1}));
-      player->inventory().push_back((Item*)ent.get());
+    if (auto item = std::dynamic_pointer_cast<Item>(ent)) {
+      // if it's an item, pick it up
+      ent->setPos(boost::none);
+      player->inventory().push_back(item);
 
       _view->addStatusMessage("You pick up the " + ent->desc() + '.');
       _world->letTimePass(2);

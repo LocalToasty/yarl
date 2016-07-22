@@ -37,11 +37,7 @@ class Companion : public NPC {
   boost::optional<Position> _waypoint;
 
  public:
-  Companion(const Tile& t, std::weak_ptr<Character const> companion, int hp,
-            Position pos, double speed, int visionRange,
-            const Attributes& attributes, Attack* unarmed,
-            const std::vector<Item*>& inventory = {}, int bab = 0,
-            Size s = Size::medium, int naturalArmor = 0);
+  Companion(Character&& npc, std::weak_ptr<Character const> companion);
 
   void think();
 };

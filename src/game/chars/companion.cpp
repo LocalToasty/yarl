@@ -21,15 +21,8 @@
 #include "attack.h"
 #include "world.h"
 
-Companion::Companion(
-    const Tile& t, std::weak_ptr<Character const> companion, int hp,
-    Position pos, double speed, int visionRange,
-    const std::array<int, Character::noOfAttributes>& attributes,
-    Attack* unarmed, const std::vector<Item*>& inventory, int bab,
-    Entity::Size s, int naturalArmor)
-    : NPC(t, hp, pos, speed, visionRange, attributes, unarmed, inventory, bab,
-          s, naturalArmor),
-      _companion(companion) {}
+Companion::Companion(Character&& npc, std::weak_ptr<Character const> companion)
+    : NPC(std::move(npc)), _companion(companion) {}
 
 void Companion::think() {
   if (auto attacker = lastAttacker().lock()) {
@@ -63,7 +56,7 @@ void Companion::think() {
     // a waypoint is set
     if ((*pos() - *_waypoint).norm() > unarmed()->range()) {
       // target is not in attack range
-      auto const route = world()->route(*pos(), *_waypoint, true);
+      auto const route = world().route(*pos(), *_waypoint, true);
 
       if (!route.empty()) {
         Position const diff(route.front());
@@ -81,6 +74,6 @@ void Companion::think() {
     }
   } else {
     // do nothing
-    setLastAction(world()->time());
+    setLastAction(world().time());
   }
 }

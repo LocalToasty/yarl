@@ -25,6 +25,7 @@ class Item;
 class Entity;
 
 struct DropEvent : public Event {
+  // TODO make smart pointer
   DropEvent(Entity const& dropper, Item const& droppedItem)
       : dropper(dropper), item(droppedItem) {}
 

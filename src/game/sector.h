@@ -59,6 +59,8 @@ class Sector {
   // a list of all entities in the sector (i.e. characters, items, props)
   // the bottommost entity has highest render priority
   std::list<std::shared_ptr<Entity>> _entities;
+
+  std::size_t posToIndex(Position pos) const;
 };
 
 #endif

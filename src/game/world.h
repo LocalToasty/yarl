@@ -65,7 +65,7 @@ class World {
                                                 Position botRight);
   std::vector<std::shared_ptr<Entity const>> entities(Position topLeft,
                                                       Position botRight) const;
-  void addEntitiy(std::shared_ptr<Entity> ent);
+  void addEntity(std::shared_ptr<Entity> ent);
   void removeEntity(Entity* ent);
   void updateEntity(Entity* ent);
 

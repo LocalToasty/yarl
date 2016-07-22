@@ -26,10 +26,7 @@ class NPC : public Character {
   double _lastAction{0};
 
  public:
-  NPC(const Tile& t, int hp, Position pos, double speed, int visionRange,
-      const Attributes& attributes, Attack* unarmed,
-      const std::vector<Item*>& inventory = {}, int bab = 0,
-      Size s = Size::medium, int naturalArmor = 0);
+  NPC(Character&& c);
 
   virtual void think() = 0;
 
