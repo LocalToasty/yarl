@@ -59,7 +59,7 @@ World& Entity::world() { return _world; }
 
 const World& Entity::world() const { return _world; }
 
-bool Entity::seen() const { return _lastKnownPos == boost::none; }
+bool Entity::seen() const { return _lastKnownPos != boost::none; }
 
 boost::optional<Position> Entity::lastKnownPos() const { return _lastKnownPos; }
 
