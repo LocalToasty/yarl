@@ -438,7 +438,7 @@ void YarlController::drop() {
       }
 
       // drop item
-      _world->addEvent(std::make_unique<DropEvent>(*player, *item));
+      _world->addEvent(std::make_unique<DropEvent>(player, item));
 
       Character::Load before = player->load();
 

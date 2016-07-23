@@ -19,12 +19,13 @@
 #ifndef DEATHEVENT_H
 #define DEATHEVENT_H
 
+#include <memory>
 #include "event.h"
 
 struct DeathEvent : public Event {
-  DeathEvent(Entity const& victim) : victim(victim) {}
+  DeathEvent(std::shared_ptr<Entity const> victim) : victim(victim) {}
 
-  Entity const& victim;
+  std::shared_ptr<Entity const> victim;
 };
 
 #endif

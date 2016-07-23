@@ -97,13 +97,15 @@ void Entity::setPos(boost::optional<Position> pos) {
 void Entity::setHp(int hp) {
   if (hp <= 0) {
     // Entity is dead
-    world().addEvent(std::make_unique<DeathEvent>(*this));
+    if (auto this_ptr = world().entity(this)) {
+      world().addEvent(std::make_unique<DeathEvent>(this_ptr));
 
-    // drop inventory
-    for (auto ent : _inventory) {
-      ent->setPos(pos());
-      ent->setLastKnownPos(boost::none);
-      world().addEvent(std::make_unique<DropEvent>(*this, *ent));
+      // drop inventory
+      for (auto ent : _inventory) {
+        ent->setPos(pos());
+        ent->setLastKnownPos(boost::none);
+        world().addEvent(std::make_unique<DropEvent>(this_ptr, ent));
+      }
     }
 
     _world.removeEntity(this);

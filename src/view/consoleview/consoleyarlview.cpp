@@ -379,26 +379,27 @@ void ConsoleYarlView::handleEvents() {
 
     // entity "dies"
     else if (DeathEvent* death = dynamic_cast<DeathEvent*>(event.get())) {
-      if (&death->victim == player.get()) {
+      if (death->victim == player) {
         addStatusMessage("You die.");
         _running = false;
-      } else if (player->los(death->victim)) {
-        if (dynamic_cast<Character const*>(&death->victim)) {
-          addStatusMessage("The " + death->victim.desc() + " dies.");
+      } else if (player->los(*death->victim)) {
+        if (dynamic_cast<Character const*>(death->victim.get())) {
+          addStatusMessage("The " + death->victim->desc() + " dies.");
         } else {
-          addStatusMessage("The " + death->victim.desc() + " is destroyed.");
+          addStatusMessage("The " + death->victim->desc() + " is destroyed.");
         }
       }
     }
 
     // somebody dropped something
     else if (DropEvent* drop = dynamic_cast<DropEvent*>(event.get())) {
-      if (drop->dropper.hp() > 0) {
-        if (&drop->dropper == player.get()) {
-          addStatusMessage("You dropped your " + drop->item.desc() + '.');
-        } else if (player->los(drop->dropper)) {
-          addStatusMessage("The " + drop->dropper.desc() + " dropped " +
-                           drop->item.prefix() + ' ' + drop->item.desc() + '.');
+      if (drop->dropper->hp() > 0) {
+        if (drop->dropper == player) {
+          addStatusMessage("You dropped your " + drop->item->desc() + '.');
+        } else if (player->los(*drop->dropper)) {
+          addStatusMessage("The " + drop->dropper->desc() + " dropped " +
+                           drop->item->prefix() + ' ' + drop->item->desc() +
+                           '.');
         }
       }
     }

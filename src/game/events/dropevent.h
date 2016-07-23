@@ -19,18 +19,19 @@
 #ifndef DROPEVENT_H
 #define DROPEVENT_H
 
+#include <memory>
 #include "event.h"
 
 class Item;
 class Entity;
 
 struct DropEvent : public Event {
-  // TODO make smart pointer
-  DropEvent(Entity const& dropper, Item const& droppedItem)
+  DropEvent(std::shared_ptr<Entity const> dropper,
+            std::shared_ptr<Item const> droppedItem)
       : dropper(dropper), item(droppedItem) {}
 
-  Entity const& dropper;
-  Item const& item;
+  std::shared_ptr<Entity const> dropper;
+  std::shared_ptr<Item const> item;
 };
 
 #endif
