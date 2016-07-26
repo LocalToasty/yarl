@@ -329,7 +329,9 @@ void YarlController::equip() {
         player->setArmor(armor);
       }
     } else if (armor || weapon) {  // the item is a shield or a weapon
-      if ((weapon && !weapon->twoHanded()) || armor) {
+      Weapon* mainHand = dynamic_cast<Weapon*>(player->mainHand());
+      if (((weapon && !weapon->twoHanded()) || armor) &&
+          !mainHand->twoHanded()) {
         enum { main_hand = 0, off_hand = 1, both_hands = 2 };
         int hand = _view->multipleChoiceDialog(
             "What hand do you want to equip it in?",
